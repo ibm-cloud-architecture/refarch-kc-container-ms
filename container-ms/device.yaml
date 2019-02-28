@@ -1,0 +1,23 @@
+myConfig = {
+    "identity": {
+        "orgId": "yxa4fl",
+        "typeId": "raspberry-pi-container"
+        "deviceId": "container-rasp-1"
+    }.
+    "auth" {
+        "token": "Pb6PxN!Nn2ogxzw7uf"
+    },
+    "options": {
+        "domain": "internetofthings.ibmcloud.com",
+        "logLevel": "error|warning|info|debug",
+        "mqtt": {
+            "port": 8883,
+            "transport": "tcp|websockets",
+            "cleanStart": True|False,
+            "sessionExpiry": 3600,
+            "keepAlive": 60,
+            "caFile": "/path/to/certificateAuthorityFile.pem"
+        }
+    }
+}
+client = wiotp.sdk.device.DeviceClient(config=myConfig, logHandlers=None)
