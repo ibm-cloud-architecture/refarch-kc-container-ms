@@ -1,1 +1,2 @@
-wiotp-sdk>=0.9.1
+confluent_kafka
+request

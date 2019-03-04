@@ -21,7 +21,7 @@ def delivery_report(err, msg):
 def publishEvent():
     data = {"timestamp": int(time.time()), "type": "OrderContainerAllocated", "version": "1", "payload": {"containerID": "c10", "orderID": orderID}}
     dataStr = json.dumps(data)
-    containerProducer.produce('orders', dataStr.encode('utf-8'), callback=delivery_report)
+    containerProducer.produce('container', dataStr.encode('utf-8'), callback=delivery_report)
     containerProducer.flush()
 
 
