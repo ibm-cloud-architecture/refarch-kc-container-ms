@@ -11,7 +11,7 @@ containerProducer = Producer({
 })
 
 data = generateData.buildJSON('containerData.csv')
-print('Data', data)
+print('Data', data[0])
 
 def delivery_report(err, msg):
     """ Called once for each message produced to indicate delivery result.
