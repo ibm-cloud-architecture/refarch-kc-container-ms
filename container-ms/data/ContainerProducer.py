@@ -4,14 +4,14 @@ import csv
 from confluent_kafka import KafkaError, Producer
 import generateData
 
-KAFKA_BROKERS = os.environ['KAFKA_BROKERS']
+#KAFKA_BROKERS = os.environ['KAFKA_BROKERS']
 
-containerProducer = Producer({
-    'bootstrap.servers': KAFKA_BROKERS
-})
+#containerProducer = Producer({
+#    'bootstrap.servers': KAFKA_BROKERS
+#})
 
 data = generateData.buildJSON('containerData.csv')
-print('Data', data[0])
+print('Data', data[6])
 
 def delivery_report(err, msg):
     """ Called once for each message produced to indicate delivery result.
