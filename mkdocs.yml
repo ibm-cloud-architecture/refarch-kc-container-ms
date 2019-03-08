@@ -1,0 +1,9 @@
+site_name: Reefer Container Management Service
+repo_url: https://github.com/ibm-cloud-architecture/refarch-kc-container-ms
+nav:
+  - Home: index.md
+  - Container Metrics: metrics.md
+  - Kafka Streams Implementation: kstream.md
+theme: 
+  name: material
+extra_css: ["extra.css"]
