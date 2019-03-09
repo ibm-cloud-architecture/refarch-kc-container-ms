@@ -9,3 +9,9 @@ The fleetms microservice is generating simulated container metrics events to emu
 ## Data set creation for container metrics
 
 As we are not in the business of reefer container shipment we do not have data set. 
+
+
+## Predictive maintenance
+
+https://medium.com/bigdatarepublic/machine-learning-for-predictive-maintenance-where-to-start-5f3b7586acfb
+
