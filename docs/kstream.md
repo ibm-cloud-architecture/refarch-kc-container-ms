@@ -48,6 +48,8 @@ Here is an example of terminal stream to print what is coming to the topic:
     streams.start();
 ```
 
+Adding an intermediate processing node @@@ TBF 
+
 See detail of the Streams DSL API [here](https://kafka.apache.org/21/documentation/streams/developer-guide/dsl-api.html). 
 
 ## TDD

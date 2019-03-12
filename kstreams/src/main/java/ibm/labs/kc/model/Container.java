@@ -8,6 +8,7 @@ public class Container {
 	private String type;
 	private String status;
 	private String brand;
+	private int capacity;
 	
 	public Container(String cid, String type, double lat, double lo) {
 		this.containerID = cid;
@@ -62,6 +63,14 @@ public class Container {
 
 	public void setBrand(String brand) {
 		this.brand = brand;
+	}
+
+	public int getCapacity() {
+		return capacity;
+	}
+
+	public void setCapacity(int capacity) {
+		this.capacity = capacity;
 	}
 	
 	
