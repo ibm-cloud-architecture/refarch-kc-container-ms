@@ -9,8 +9,10 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.config.SaslConfigs;
 import org.apache.kafka.common.config.SslConfigs;
+import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.apache.kafka.streams.StreamsConfig;
 
 /**
  *
@@ -18,6 +20,7 @@ import org.apache.kafka.common.serialization.StringSerializer;
 public class ApplicationConfig {
 
     public static final String ORDER_TOPIC = "orders";
+    public static final String CONTAINER_TOPIC = "containers";
     public static final String ERROR_TOPIC = "errors";
     public static final long PRODUCER_TIMEOUT_SECS = 10;
     public static final long PRODUCER_CLOSE_TIMEOUT_SEC = 10;
@@ -26,39 +29,9 @@ public class ApplicationConfig {
     public static final Duration CONSUMER_CLOSE_TIMEOUT = Duration.ofSeconds(10);
     public static final long TERMINATION_TIMEOUT_SEC = 10;
 
-    public static Properties getProducerProperties(String clientId) {
-        Properties properties = buildCommonProperties();
-        properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-        properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-        properties.put(ProducerConfig.CLIENT_ID_CONFIG, clientId);
-        properties.put(ProducerConfig.ACKS_CONFIG, "1");
-        return properties;
-    }
+    
 
-    public static Properties getConsumerProperties() {
-        Properties properties = buildCommonProperties();
-        properties.put(ConsumerConfig.GROUP_ID_CONFIG, CONSUMER_GROUP_ID);
-        properties.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG,"true");
-        properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
-        properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-        properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-        properties.put(ConsumerConfig.CLIENT_ID_CONFIG, "order-command-consumer");
-        return properties;
-    }
-
-    public static Properties getConsumerReloadProperties() {
-        Properties properties = buildCommonProperties();
-        properties.put(ConsumerConfig.GROUP_ID_CONFIG, CONSUMER_GROUP_ID);
-        properties.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
-        properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
-
-        properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-        properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-        properties.put(ConsumerConfig.GROUP_ID_CONFIG, CONSUMER_GROUP_ID + "-reload");
-        properties.put(ConsumerConfig.CLIENT_ID_CONFIG, "order-command-reload");
-        return properties;
-    }
-
+    
     /**
      * Take into account the environment variables if set
      * 
@@ -92,6 +65,25 @@ public class ApplicationConfig {
             }
         }
 
+        return properties;
+    }
+
+    // Kafka Streams requires at least the APPLICATION_ID_CONFIG and BOOTSTRAP_SERVERS_CONFIG
+	public static Properties getStreamsProperties(String appID) {
+	    Properties properties = buildCommonProperties();
+	    properties.put(StreamsConfig.APPLICATION_ID_CONFIG, appID);
+	    properties.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+	    properties.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass());
+	    properties.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass());
+		return properties;
+	}
+
+    public static Properties getProducerProperties(String clientId) {
+        Properties properties = buildCommonProperties();
+        properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+        properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+        properties.put(ProducerConfig.CLIENT_ID_CONFIG, clientId);
+        properties.put(ProducerConfig.ACKS_CONFIG, "1");
         return properties;
     }
 

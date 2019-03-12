@@ -41,7 +41,7 @@ public class ContainerOrderAssignment {
     public static void main(String[] args) throws Exception {
         Properties props = new Properties();
         // same as group id: kafka distributes the load to applications having the same ids.
-        props.put(StreamsConfig.APPLICATION_ID_CONFIG, "container-streams");
+        props.put(StreamsConfig.APPLICATION_ID_CONFIG, "order-streams");
         props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass());
