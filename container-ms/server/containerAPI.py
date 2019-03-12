@@ -41,13 +41,13 @@ class containerList(Resource):
 
 @ns.route('/<int:id>')
 @ns.response(404, 'Container not found')
-@ns.param('id', 'The task identifier')
+@ns.param('id', 'Container ID')
 class Container(Resource):
-    '''Show a single container item and lets you delete them'''
-    @ns.doc('get_container')
-    def get(self, id):
-        '''Fetch a given resource'''
-        return {'Show '}
+    '''Funtions to set the status of a container'''
+    @ns.doc('containerAddedToInventory')
+    def post(self, id):
+        '''Returns if the container is on a ship or not.'''
+        return {'status':'false'}
 
     @ns.doc('delete_container')
     @ns.response(204, 'container deleted')
@@ -56,9 +56,71 @@ class Container(Resource):
         return '', 204
 
     @ns.expect(container)
-    def put(self, id):
+    def get(self, id):
         '''Update a task given its identifier'''
         return  api.payload
+
+class containerActions(object):
+    def __init__(self):
+        self.counter = 0
+        self.todos = []
+
+    def ContainerAddedToInventory(self, id):
+        for todo in self.todos:
+            if todo['id'] == id:
+                return todo
+        api.abort(404, "Todo {} doesn't exist".format(id))
+
+    def ContainerRemovedFromInventory(self, data):
+        todo = data
+        todo['id'] = self.counter = self.counter + 1
+        self.todos.append(todo)
+        return todo
+
+    def ContainerAtLocation(self, id, data):
+        todo = self.get(id)
+        todo.update(data)
+        return todo
+
+    def ContainerOnMaintence(self, id):
+        todo = self.get(id)
+        self.todos.remove(todo)
+
+    def ContainerOffMaintence(self, id):
+        todo = self.get(id)
+        self.todos.remove(todo)
+
+    def ConatinerAssignedToOrder(self, id):
+        todo = self.get(id)
+        self.todos.remove(todo)
+
+    def ContainerReleasedFromOrder(self, id):
+        todo = self.get(id)
+        self.todos.remove(todo)
+
+    def ContainerGoodLoaded(self, id):
+        todo = self.get(id)
+        self.todos.remove(todo)
+
+    def ContainerGoodUnLoaded(self, id):
+        todo = self.get(id)
+        self.todos.remove(todo)
+
+    def ContainerOnShip(self, id):
+        todo = self.get(id)
+        self.todos.remove(todo)
+
+    def ContainerOffShip(self, id):
+        todo = self.get(id)
+        self.todos.remove(todo)
+
+    def ContainerOnTruck(self, id):
+        todo = self.get(id)
+        self.todos.remove(todo)
+
+    def ContainerOffTruck(self, id):
+        todo = self.get(id)
+        self.todos.remove(todo)
 
 @nsg.route('/healthcheck')
 class generalChecks(Resource):
@@ -66,7 +128,7 @@ class generalChecks(Resource):
     @nsg.doc('healthcheck')
     def get(self):
         '''Runs a basic health check'''
-        return 'OK', 200
+        return {'status': 'UP'}, 200
 
 if __name__ == '__main__':
     app.run(debug=True)

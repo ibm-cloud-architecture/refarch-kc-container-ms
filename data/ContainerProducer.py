@@ -24,5 +24,5 @@ def delivery_report(err, msg):
 
 def publishEvent():
     dataStr = json.dumps(data)
-    containerProducer.produce('containers', dataStr.encode('utf-8'), callback=delivery_report)
+    containerProducer.produce('ContainerMetrics', dataStr.encode('utf-8'), callback=delivery_report)
     containerProducer.flush()
