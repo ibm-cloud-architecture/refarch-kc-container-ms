@@ -18,7 +18,7 @@ This repository illustrates how to implement this service in different ways: kSt
 * As a kafka streams consumer of orderCreated event published in the Kafka `orders` topic: the code will look at the pickup location and searchdx in the container inventory the containers close to this location. 
 * As a kafka streams agent consuming container events from the `containers` topic and managing a stateful table to keep container inventory in memory.
 
-Finally an important element of this project is the integration of Kafka topic as datasource to develop a machine learning model for the container predictive maintenance. See details in [this note](./metrics).
+Finally an important element of this project is the integration of Kafka topic as datasource to develop a machine learning model for the container predictive maintenance scoring. See details in [this note](./metrics).
 
 ## Component view
 
@@ -44,7 +44,6 @@ docker run -e KAFKA_BROKERS=$KAFKA_BROKERS -v $(pwd):/home --network=docker_defa
 root@2f049cb7b4f2:/ cd home
 root@2f049cb7b4f2:/ python ProduceContainerCreatedEvent.py 
 ```
-
 
 
 

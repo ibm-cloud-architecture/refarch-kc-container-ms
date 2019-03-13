@@ -28,7 +28,9 @@ import org.apache.kafka.streams.Topology;
 
 import com.google.gson.Gson;
 
+import ibm.labs.kc.model.Order;
 import ibm.labs.kc.model.events.OrderEvent;
+import ibm.labs.kc.utils.ApplicationConfig;
 
 /**
  * In this example, we implement a simple LineSplit program using the high-level Streams DSL
@@ -39,20 +41,21 @@ import ibm.labs.kc.model.events.OrderEvent;
 public class ContainerOrderAssignment {
 
     public static void main(String[] args) throws Exception {
-        Properties props = new Properties();
-        // same as group id: kafka distributes the load to applications having the same ids.
-        props.put(StreamsConfig.APPLICATION_ID_CONFIG, "order-streams");
-        props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
-        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
-        props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass());
-        props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass());
+
+        Properties props = ApplicationConfig.getStreamsProperties("order-streams");
+
+        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
+
 
         final StreamsBuilder builder = new StreamsBuilder();
         Gson parser = new Gson();
         
         builder.stream("orders")
-        		.foreach((key,value) -> System.out.println("received order " + key 
-        				+ " " + parser.fromJson((String)value, OrderEvent.class)));
+        		.foreach((key,value) -> {
+        			Order order = parser.fromJson((String)value, OrderEvent.class).getPayload();
+        			// TODO do something to the order
+        			System.out.println("received order " + key + " " + value);
+        		});
 
         final Topology topology = builder.build();
         System.out.println(topology.describe());
