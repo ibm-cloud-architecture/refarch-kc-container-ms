@@ -1,6 +1,7 @@
 from flask import Flask, Blueprint
 from flask_restplus import Api, Resource, fields
 from werkzeug.contrib.fixers import ProxyFix
+from confluent_kafka import KafkaError, Producer, Consumer
 
 app = Flask(__name__)
 blueprint = Blueprint('api', __name__, url_prefix='/container')
@@ -23,6 +24,17 @@ container = api.model('container', {
 	'Humidity': fields.String(required = True, description = 'The task details'),
 	'CO2': fields.String(required = True, description = 'The task details')
 })
+
+containerConsumer = KafkaConsumer('container',
+                         group_id='my-group',
+                         bootstrap_servers=['localhost:9092'])
+
+for message in containerConsumer:
+    # message value and key are raw bytes -- decode if necessary!
+    # e.g., for unicode: `message.value.decode('utf-8')`
+    print ("%s:%d:%d: key=%s value=%s" % (message.topic, message.partition,
+                                          message.offset, message.key,
+                                          message.value))
 
 
 @ns.route('/')
