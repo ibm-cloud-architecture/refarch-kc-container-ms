@@ -134,6 +134,17 @@
             <version>${kafka.version}</version>
         </dependency>
         <dependency>
+    		<groupId>org.apache.kafka</groupId>
+    		<artifactId>kafka-clients</artifactId>
+    		<version>${kafka.version}</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.apache.kafka</groupId>
+		    <artifactId>kafka-streams-test-utils</artifactId>
+		    <version>${kafka.version}</version>
+		    <scope>test</scope>
+		</dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.12</version>

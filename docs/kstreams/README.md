@@ -1,4 +1,4 @@
-# Kafka Streams Implementation
+# KStream implementation of the container inventory management
 
 The [Apache Kafka Streams API](https://kafka.apache.org/documentation/streams/) is a client library for building applications and microservices, where the input and output data are stored in Kafka clusters. It simplifies the implementation of the stateless or stateful event processing to transform and enrich data. It supports time windowing processing.
 
@@ -6,13 +6,14 @@ We encourage to do [this tutorial](https://kafka.apache.org/21/documentation/str
 
 So the features in this project are:
 
-* Listen to OrderCreated event from `orders` and assign a container to `containers` topics.
-* Implemented as java application packaged with dockerfile 
-* Deploy to kubernetes
+* Listen to ContainerAdded event from the `containers` topic and maintains a stateful table of container inventory. 
+* Listen to OrderCreated event from `orders` and assign a container from the inventory based on the pickup location and the container location and characteristics.
+* Implemented as JAXRS application deployed on Liberty and packaged with dockerfile.
+* Deploy to kubernetes or run with docker-compose
 
 ## Start with maven
 
-Kafka stream deliver a Maven archetype to create a squeleton project.
+Kafka stream delivers a Maven archetype to create a squeleton project.
 ```sh
 mvn archetype:generate -DarchetypeGroupId=org.apache.kafka -DarchetypeArtifactId=streams-quickstart-java     -DarchetypeVersion=2.1.0     -DgroupId=kc-container     -DartifactId=kc-container-streams    -Dversion=0.1     -Dpackage=containerManager
 ```
@@ -48,11 +49,11 @@ Here is an example of terminal stream to print what is coming to the topic:
     streams.start();
 ```
 
-Adding an intermediate processing node @@@ TBF 
 
 See detail of the Streams DSL API [here](https://kafka.apache.org/21/documentation/streams/developer-guide/dsl-api.html). 
 
 ## TDD
+We want to document two major tests. One for building the internal view of the container inventory.
 
 The business logic we want to implement is to get an order with the source pickup city, the type of product, the quantity and the expected pickup date, manage the internal list of containers and search for a container located close to the pickup city from the order.
 The test is under kstreams/src/test/java/ut. 
@@ -60,5 +61,3 @@ The test is under kstreams/src/test/java/ut.
 ## Resiliency
 
 ## Scaling
-
-

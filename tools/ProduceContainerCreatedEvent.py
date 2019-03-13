@@ -33,7 +33,7 @@ def postContainerCreated(containerID):
             }
         }
     dataStr = json.dumps(data)
-    containerProducer.produce('containers',dataStr.encode('utf-8'), callback=delivery_report)
+    containerProducer.produce('containers',value=dataStr.encode('utf-8'),key= containerID.encode('utf-8'), callback=delivery_report)
     containerProducer.flush()
 
 

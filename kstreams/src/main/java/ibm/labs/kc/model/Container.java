@@ -9,6 +9,7 @@ public class Container {
 	private String status;
 	private String brand;
 	private int capacity;
+
 	
 	public Container(String cid, String type, double lat, double lo) {
 		this.containerID = cid;
@@ -16,6 +17,10 @@ public class Container {
 		this.latitude = lat;
 		this.longitude = lo;
 	}
+	
+	// need default constructor for jackson deserialization
+	public Container() {}
+	
 
 	public String getContainerID() {
 		return containerID;
@@ -72,6 +77,5 @@ public class Container {
 	public void setCapacity(int capacity) {
 		this.capacity = capacity;
 	}
-	
 	
 }
