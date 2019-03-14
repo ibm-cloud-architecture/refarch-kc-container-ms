@@ -11,9 +11,6 @@ containerProducer = Producer({
     'bootstrap.servers': 'localhost:9092'
 })
 
-data = buildJSON(os.path.join(os.path.dirname(os.path.dirname(sys.path[0])),'data','containerData.csv'))
-print('Data', json.dumps(data, indent=4, sort_keys=True))
-
 class ContainerPublish:
     def delivery_report(this,err, msg):
          """ Called once for each message produced to indicate delivery result.
@@ -33,8 +30,9 @@ class ContainerPublish:
 
 ContainerPublisher = ContainerPublish()
 
-data = buildJSON(os.path.join(os.path.dirname(os.path.dirname(sys.path[0])),'data','containerData.csv'))
-print('Data', json.dumps(data, indent=4, sort_keys=True))
-print(data[0])
+data = buildJSON(os.path.join(os.path.dirname(os.path.dirname(sys.path[0])),'data','container_matrix_door_open.csv'))
 
-ContainerPublisher.publishEvent(data[0])
+for i in data:
+    print(i)
+    ContainerPublisher.publishEvent(i)
+    time.sleep(3)
