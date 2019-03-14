@@ -30,7 +30,7 @@ class ContainerPublish:
 
 ContainerPublisher = ContainerPublish()
 
-data = buildJSON(os.path.join(os.path.dirname(os.path.dirname(sys.path[0])),'data','containerData.csv'))
+data = buildJSON(os.path.join(os.path.dirname(os.path.dirname(sys.path[0])),'data','container_matrix_door_open.csv'))
 
 for i in data:
     print(i)
