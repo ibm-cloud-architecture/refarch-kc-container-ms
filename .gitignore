@@ -2,3 +2,4 @@ site/
 kstreams/target/
 kstreams/bin/
 /.vscode
+kstreams/.settings/

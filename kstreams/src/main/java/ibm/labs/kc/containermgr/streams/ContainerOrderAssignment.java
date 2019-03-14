@@ -14,36 +14,53 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ibm.labs.kc.streams.containerManager;
-
-import org.apache.kafka.common.serialization.Serdes;
-import org.apache.kafka.streams.KafkaStreams;
-import org.apache.kafka.streams.StreamsBuilder;
-import org.apache.kafka.streams.StreamsConfig;
-import org.apache.kafka.streams.Topology;
+package ibm.labs.kc.containermgr.streams;
 
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.streams.KafkaStreams;
+import org.apache.kafka.streams.StreamsBuilder;
+import org.apache.kafka.streams.Topology;
+
+import com.google.gson.Gson;
+
+import ibm.labs.kc.model.Order;
+import ibm.labs.kc.model.events.OrderEvent;
+import ibm.labs.kc.utils.ApplicationConfig;
+
 /**
  * In this example, we implement a simple LineSplit program using the high-level Streams DSL
- * that reads from a source topic "streams-plaintext-input", where the values of messages represent lines of text,
- * and writes the messages as-is into a sink topic "streams-pipe-output".
+ * that reads from a source topic "streams-plaintext-input", where the values of messages represent lines of text;
+ * the code split each text line in string into words and then write back into a sink topic "streams-linesplit-output" where
+ * each record represents a single word.
  */
-public class Pipe {
+public class ContainerOrderAssignment {
 
+	public static Topology buildProcessFlow() {
+		 final StreamsBuilder builder = new StreamsBuilder();
+	        Gson parser = new Gson();
+	        
+	        builder.stream("orders")
+	        		.foreach((key,value) -> {
+	        			Order order = parser.fromJson((String)value, OrderEvent.class).getPayload();
+	        			// TODO do something to the order
+	        			System.out.println("received order " + key + " " + value);
+	        		});
+
+	        return builder.build();
+	}
+	
     public static void main(String[] args) throws Exception {
-        Properties props = new Properties();
-        props.put(StreamsConfig.APPLICATION_ID_CONFIG, "streams-pipe");
-        props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
-        props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass());
-        props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass());
 
-        final StreamsBuilder builder = new StreamsBuilder();
+        Properties props = ApplicationConfig.getStreamsProperties("order-streams");
 
-        builder.stream("streams-plaintext-input").to("streams-pipe-output");
+        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
 
-        final Topology topology = builder.build();
+
+        final Topology topology = buildProcessFlow();
+        System.out.println(topology.describe());
         final KafkaStreams streams = new KafkaStreams(topology, props);
         final CountDownLatch latch = new CountDownLatch(1);
 
@@ -57,6 +74,7 @@ public class Pipe {
         });
 
         try {
+        	streams.cleanUp(); // delete the app local state
             streams.start();
             latch.await();
         } catch (Throwable e) {

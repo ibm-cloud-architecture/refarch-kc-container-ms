@@ -2,10 +2,11 @@ package ut;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import ibm.labs.kc.streams.containerManager.CityDAO;
+import ibm.labs.kc.containermgr.dao.CityDAO;
 
 public class TestCityLocation {
 	

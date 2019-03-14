@@ -44,6 +44,7 @@ There are different meodeling approach to tackle predictive maintenance:
 There are multiple different potential issues that could happen to a refrigerator container. We are choosing to model the "Sensor Malfunctions" issue: Sensors in the refrigeration unit need to be calibrated and be continuously operational. An example of failure may come from the air sensor making inaccurate readings of temperatures, which lead to sploiled content. A potential reason may come from a faulty calibration, which can go unnoticed for a good time period. It may be diffiult to know if there is an issue. 
 
 The other common potential issues are:
+
 * Fluid leaks, like engine oil, coolant liquid. The preassure sensors added to the circuit may help identify preassure lost over time.
 * Faulty belts and hoses.
 * Faulty calibration: A non-calibrated reefer can cool at a slower or faster rate than desired.
@@ -74,7 +75,11 @@ Here is a diagram for the data scientist environment:
 For the runtime execution we will plug the model as a consumer of `containerMetrics` topic which keeps container metrics in the form of event like below, keyed by containerID.
 
 ```json
-
+{
+    "timestamp": 1234567,
+    "containerID": "C10",
+    
+}
 ```
 
 

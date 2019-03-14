@@ -1,15 +1,43 @@
 package ibm.labs.kc.model.events;
 
+import java.util.Date;
+
 import ibm.labs.kc.model.Container;
 
 public class ContainerEvent {
+	
+	public static final String CONTAINER_ADDED = "ContainerAdded";
+	public static final String CONTAINER_REMOVED = "ContainerRemoved";
+	public static final String CONTAINER_AT_LOCATION = "ContainerAtLocation";
+	public static final String CONTAINER_ON_MAINTENANCE = "ContainerOnMaintenance";
+	public static final String CONTAINER_OFF_MAINTENANCE =  "ContainerOffMaintenance";
+	public static final String CONTAINER_ORDER_ASSIGNED = "ContainerAssignedToOrder";
+	public static final String CONTAINER_ORDER_RELEASED = "ContainerReleasedFromOrder";
+	public static final String CONTAINER_GOOD_LOADED = "ContainerGoodLoaded";
+	public static final String CONTAINER_GOOD_UNLOADED = "ContainerGoodUnLoaded";
+	public static final String CONTAINER_ON_SHIP = "ContainerOnShip";
+	public static final String CONTAINER_OFF_SHIP = "ContainerOffShip";
+	public static final String CONTAINER_ON_TRUCK = "ContainerOnTruck";
+	public static final String CONTAINER_OFF_TRUCK = "ContainerOffTruck";
+ 
 	protected long timestamp;
+	protected String containerID;
 	protected String type;
 	protected String version;
 	protected Container payload;
 	
-	public ContainerEvent() {}
+	public ContainerEvent() {
+		this.timestamp = (new Date()).getTime();
+	}
 
+	public ContainerEvent(String type,String version, Container p) {
+		this.timestamp = (new Date()).getTime();
+		this.containerID = p.getContainerID();
+		this.type = type;
+		this.version = version;
+		this.payload = p;
+	}
+	
 	public long getTimestamp() {
 		return timestamp;
 	}
@@ -40,6 +68,14 @@ public class ContainerEvent {
 
 	public void setPayload(Container payload) {
 		this.payload = payload;
+	}
+
+	public String getContainerID() {
+		return containerID;
+	}
+
+	public void setContainerID(String containerID) {
+		this.containerID = containerID;
 	}
 	
 }

@@ -112,4 +112,16 @@ public class Order {
     public boolean equals(Object obj) {
         return EqualsBuilder.reflectionEquals(this, obj);
     }
+
+	public void setOrderID(String orderID) {
+		this.orderID = orderID;
+	}
+
+	public void setProductID(String productID) {
+		this.productID = productID;
+	}
+
+	public void setQuantity(int quantity) {
+		this.quantity = quantity;
+	}
 }
