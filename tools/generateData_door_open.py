@@ -34,6 +34,6 @@ with open('../data/container_matrix_door_open.csv', mode='w') as container_file:
         gauss(10.5, 5.5), gauss(10.5, 5.0), 1, 0, 6])
         index=index+1
 
-print(buildJSON('../data/container_matrix.csv'))
+print(buildJSON('../data/container_matrix_door_open.csv'))
 
 
