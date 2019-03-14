@@ -4,13 +4,13 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import ibm.labs.kc.containermgr.dao.CityDAO;
 import ibm.labs.kc.model.Container;
-import ibm.labs.kc.streams.containerManager.CityDAO;
 
 
 /**
  * A container is at a location with (long,lat) 
- * @author jeromeboyer
+ * @author jerome boyer
  *
  */
 public class TestContainerAssignment {
@@ -22,10 +22,17 @@ public class TestContainerAssignment {
 	}
 	
 	@Test
-	public void testIfContainerIsInCity() {
-		Container c = new Container("c01", "Reefer", 37.8000,-122.25);
+	public void shouldContainerBeInCity() {
+		Container c = new Container("c01", "Brand", "Reefer",100, 37.8000,-122.25);
 		String city = dao.getCity(c.getLatitude(), c.getLongitude());
 		Assert.assertNotNull(city);
+	}
+	
+	@Test
+	public void shouldNotContainerBeInCity() {
+		Container c = new Container("c01", "Brand", "Reefer",100, 45,-120);
+		String city = dao.getCity(c.getLatitude(), c.getLongitude());
+		Assert.assertNull(city);
 	}
 
 }

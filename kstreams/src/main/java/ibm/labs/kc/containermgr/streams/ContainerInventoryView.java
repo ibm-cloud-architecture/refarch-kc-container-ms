@@ -1,4 +1,4 @@
-package ibm.labs.kc.streams.containerManager;
+package ibm.labs.kc.containermgr.streams;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,6 +21,8 @@ import org.apache.kafka.streams.state.KeyValueIterator;
 import org.apache.kafka.streams.state.QueryableStoreTypes;
 import org.apache.kafka.streams.state.ReadOnlyKeyValueStore;
 
+import com.google.gson.Gson;
+
 import ibm.labs.kc.model.Container;
 import ibm.labs.kc.model.events.ContainerEvent;
 import ibm.labs.kc.utils.ApplicationConfig;
@@ -40,6 +42,18 @@ public class ContainerInventoryView {
 		
 	}
 	
+	public  Topology buildProcessFlow() {
+		 final StreamsBuilder builder = new StreamsBuilder();
+	        Gson parser = new Gson();
+	        
+	        builder.stream("containers")
+	        		.foreach((key,value) -> {
+	        			Container c = parser.fromJson((String)value, ContainerEvent.class).getPayload();
+	        			System.out.println("received container " + key + " " + value);
+	        		});
+
+	        return builder.build();
+	}
 	
 	/**
 	 * Can be used as a command tool.

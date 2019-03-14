@@ -1,8 +1,14 @@
-package ibm.labs.kc.streams.containerManager;
+package ibm.labs.kc.containermgr.dao;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Data access to the cities having harbors and fields to keep containers.
+ * 
+ * @author jeromeboyer
+ *
+ */
 public class CityDAO {
 	private Map<String,Location[]> cities;
 	
@@ -19,11 +25,15 @@ public class CityDAO {
 		cities.put("Oakland", rect);
 	}
 	
-	public String getCity(double la, double lo) {
-		// TODO Auto-generated method stub
-		
+	/**
+	 * Return the city that includes the given longitude and latitude in a rectangle boundary
+	 * @param latitude
+	 * @param longitude
+	 * @return a city name or null if the location is out of any known cities
+	 */
+	public String getCity(double latitude, double longitude) {
 		for (String c: this.cities.keySet()) {
-			if (within(la,lo,cities.get(c))) {
+			if (within(latitude,longitude,cities.get(c))) {
 				return c;
 			}
 		}

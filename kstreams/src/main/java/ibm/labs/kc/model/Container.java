@@ -11,10 +11,12 @@ public class Container {
 	private int capacity;
 
 	
-	public Container(String cid, String type, double lat, double lo) {
+	public Container(String cid, String brand, String type, int capacity, double lat, double lo) {
 		this.containerID = cid;
 		this.type = type;
 		this.latitude = lat;
+		this.brand = brand;
+		this.capacity = capacity;
 		this.longitude = lo;
 	}
 	

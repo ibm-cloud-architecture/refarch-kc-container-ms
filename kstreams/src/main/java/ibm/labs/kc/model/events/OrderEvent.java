@@ -33,4 +33,8 @@ public class OrderEvent extends AbstractEvent {
 		return payload;
 	}
 
+	public void setPayload(Order payload) {
+		this.payload = payload;
+	}
+
 }
