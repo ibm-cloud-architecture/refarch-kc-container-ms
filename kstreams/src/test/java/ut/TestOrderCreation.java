@@ -20,6 +20,7 @@ import org.junit.Test;
 
 import com.google.gson.Gson;
 
+import ibm.labs.kc.containermgr.rest.ContainerMgrService;
 import ibm.labs.kc.model.Address;
 import ibm.labs.kc.model.Container;
 import ibm.labs.kc.model.ContainerAssignment;
@@ -56,6 +57,7 @@ public class TestOrderCreation {
 	 * a parser like Gson to get the object. 
 	 */
 	public void testBasicOrderPrint() {	
+		System.out.println(" ***** testBasicOrderPrint");
 		// build a topology that just get event from the stream, get the order and print the quantity ordered
 		StreamsBuilder builder = new StreamsBuilder();
 		
@@ -84,6 +86,7 @@ public class TestOrderCreation {
 	 * It just adds only pending orders. 
 	 */
 	public void testValueTypeTransformation() {
+		System.out.println(" ***** testValueTypeTransformation");
 		StreamsBuilder builder = new StreamsBuilder();
 		
 		builder.stream("orders").flatMapValues((value) -> {
@@ -124,16 +127,16 @@ public class TestOrderCreation {
 	 * order to assign a container to the order.
 	 */
 	public void shouldAssignOneContainerToOrder() {
+		System.out.println(" ***** shouldAssignOneContainerToOrder");
 		StreamsBuilder builder = new StreamsBuilder();
 		//KTable containers = populateContainerKTable(builder);
-		builder.stream("orders").flatMapValues((orderEvent) -> {
+		builder.stream("orders").mapValues((orderEvent) -> {
 			 Order order = parser.fromJson((String)orderEvent, OrderEvent.class).getPayload();
-			 List<String> results = new LinkedList<>();
 			 if (order.getStatus().equals("pending")) {
 				 ContainerAssignment ca = new ContainerAssignment(order.getOrderID(),"c01");
-				 results.add(parser.toJson(ca));
+				 return parser.toJson(ca);
 			 }
-			 return results;
+			 return null;
 		}).to("assignedOrders");
 		
 		TopologyTestDriver testDriver = buildTestDriver(builder);

@@ -91,6 +91,21 @@ The test is illustrating how to use the [TopologyTestDriver](https://kafka.apach
 The business logic we want to implement is to get an order with the source pickup city, the type of product, the quantity and the expected pickup date, manage the internal list of containers and search for a container located close to the pickup city from the order.
 The test is under kstreams/src/test/java/ut. 
 
+### Run test
+
+Recall with maven we can run all the unit tests, one test and skip integration tests.
+
+```shell
+# Test a unique test
+$  mvn -Dtest=TestContainerInventory test
+# Skip all tests
+mvn install -DskipTests
+# Keep integration test
+mvn install -DskipITs
+```
+
+To start the liberty server use the script: `./script/startLocalLiberty` or `mvn liberty:run-server`
+
 ## Resiliency
 
 ## Scaling

@@ -1,33 +1,23 @@
 package ibm.labs.kc.containermgr.streams;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.CountDownLatch;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.common.serialization.Deserializer;
-import org.apache.kafka.common.serialization.Serde;
-import org.apache.kafka.common.serialization.Serdes;
-import org.apache.kafka.common.serialization.Serializer;
 import org.apache.kafka.streams.KafkaStreams;
-import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.Topology;
-import org.apache.kafka.streams.kstream.Consumed;
-import org.apache.kafka.streams.kstream.KTable;
 import org.apache.kafka.streams.kstream.Materialized;
-import org.apache.kafka.streams.state.KeyValueIterator;
 import org.apache.kafka.streams.state.QueryableStoreTypes;
 import org.apache.kafka.streams.state.ReadOnlyKeyValueStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
+import ibm.labs.kc.containermgr.dao.ContainerDAO;
 import ibm.labs.kc.model.Container;
 import ibm.labs.kc.model.events.ContainerEvent;
 import ibm.labs.kc.utils.ApplicationConfig;
-import ibm.labs.kc.utils.JsonPOJODeserializer;
-import ibm.labs.kc.utils.JsonPOJOSerializer;
 
 /**
  * Process container events to build a container inventory view.
@@ -35,90 +25,63 @@ import ibm.labs.kc.utils.JsonPOJOSerializer;
  * @author jeromeboyer
  *
  */
-public class ContainerInventoryView {
-	
-	
-	public ContainerInventoryView() {
+public class ContainerInventoryView  implements ContainerDAO {
+	private static final Logger logger = LoggerFactory.getLogger(ContainerInventoryView.class);
 		
-	}
+	private static ContainerInventoryView  instance;
+	private KafkaStreams streams;
+	private Gson jsonParser = new Gson();
+	public static String CONTAINERS_STORE_NAME = "queryable-container-store";
+	public static String CONTAINERS_TOPIC = "containers";
+	
+	public synchronized static ContainerDAO instance() {
+        if (instance == null) {
+            instance = new ContainerInventoryView();
+        }
+        return instance;
+    }
 	
 	public  Topology buildProcessFlow() {
-		 final StreamsBuilder builder = new StreamsBuilder();
-	        Gson parser = new Gson();
-	        
-	        builder.stream("containers")
-	        		.foreach((key,value) -> {
-	        			Container c = parser.fromJson((String)value, ContainerEvent.class).getPayload();
-	        			System.out.println("received container " + key + " " + value);
-	        		});
-
-	        return builder.build();
+		final StreamsBuilder builder = new StreamsBuilder();
+	   
+	    builder.stream(CONTAINERS_TOPIC).mapValues((containerEvent) -> {
+	    		 // the container payload is of interest to keep in table
+	   			 Container c = jsonParser.fromJson((String)containerEvent, ContainerEvent.class).getPayload();
+	   			 return jsonParser.toJson(c);
+	   		 }).groupByKey()
+	   		 	.reduce((key,container) -> {
+	   		 		System.out.println("received container " + container );
+	   		 		return container;
+	   		 	},
+	   	    	  Materialized.as(CONTAINERS_STORE_NAME));
+	    return builder.build();
 	}
 	
-	/**
-	 * Can be used as a command tool.
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		
-        Properties props = ApplicationConfig.getStreamsProperties("container-streams");
+	public  synchronized void start() {
+		if (streams == null) {
+			Properties props = ApplicationConfig.getStreamsProperties("container-streams");
+		    props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+		    streams = new KafkaStreams(buildProcessFlow(), props);
+			try {
+	        	streams.cleanUp(); 
+	            streams.start();
+	        } catch (Throwable e) {
+	            System.exit(1);
+	        }
+		}
+	}
+	
+	public void stop() {
+		streams.close();
+	}
 
-        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
-        
-        Map<String, Object> serdeProps = new HashMap<>();
-        final Serializer<ContainerEvent> containerSerializer = new JsonPOJOSerializer<>();
-        serdeProps.put("JsonPOJOClass", ContainerEvent.class);
-        containerSerializer.configure(serdeProps, false);
-        final Deserializer<ContainerEvent> containerDeserializer = new JsonPOJODeserializer<>();
-        containerDeserializer.configure(serdeProps, false);
-        
-        final Serde<ContainerEvent> containerSerde = Serdes.serdeFrom(containerSerializer, containerDeserializer);
-        
-        final StreamsBuilder builder = new StreamsBuilder();
-
-
-        // State stores should only be mutated by the corresponding processor topology
-        KTable<String,ContainerEvent> containers = builder.table("containers", 
-        		Consumed.with(Serdes.String(), containerSerde),
-        		 Materialized.as("queryable-container-store"));
-
-		//.foreach((key,value) -> System.out.println("received container " + key 
-		//		+ " " + value));
-        final Topology topology = builder.build();
-        System.out.println(topology.describe());
-        final KafkaStreams streams = new KafkaStreams(topology, props);
-        final CountDownLatch latch = new CountDownLatch(1);
-
-        // attach shutdown handler to catch control-c
-        Runtime.getRuntime().addShutdownHook(new Thread("streams-shutdown-hook") {
-            @Override
-            public void run() {
-            	// access to the table of containers
-            	ReadOnlyKeyValueStore<String, ContainerEvent> keyValueStore =
-            		    streams.store("queryable-container-store", QueryableStoreTypes.keyValueStore());
-            	
-                // Mockup to read all rows of the table
-            	KeyValueIterator<String, ContainerEvent> range = keyValueStore.all();
-            	while (range.hasNext()) {
-            	  KeyValue<String, ContainerEvent> next = range.next();
-            	  System.out.println("Container " + next.key + ": " + next.value.getPayload().getType());
-            	}
-            	
-            	// Mockup call by container ID
-            	
-                streams.close();
-                latch.countDown();
-            }
-        });
-
-        try {
-        	streams.cleanUp(); // delete the app local state
-            streams.start();
-            latch.await();
-        } catch (Throwable e) {
-            System.exit(1);
-        }
-        System.exit(0);
-    }
+	@Override
+	public Container getById(String containerId) {
+		ReadOnlyKeyValueStore<String,String> view = streams.store(CONTAINERS_STORE_NAME, QueryableStoreTypes.keyValueStore());
+		String cStrg = view.get(containerId);
+		if (cStrg != null) 
+			return jsonParser.fromJson(cStrg, Container.class);
+		return null;
+	}
 
 }

@@ -15,17 +15,17 @@ import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.TopologyTestDriver;
-import org.apache.kafka.streams.kstream.Consumed;
-import org.apache.kafka.streams.kstream.ValueMapper;
 import org.apache.kafka.streams.kstream.Materialized;
 import org.apache.kafka.streams.state.KeyValueIterator;
 import org.apache.kafka.streams.state.KeyValueStore;
 import org.apache.kafka.streams.test.ConsumerRecordFactory;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.google.gson.Gson;
 
+import ibm.labs.kc.containermgr.streams.ContainerInventoryView;
 import ibm.labs.kc.model.Container;
 import ibm.labs.kc.model.events.ContainerEvent;
 import ibm.labs.kc.utils.ApplicationConfig;
@@ -38,91 +38,55 @@ import ibm.labs.kc.utils.JsonPOJOSerializer;
  *
  */
 public class TestContainerInventory {
-
+	
+	static Gson parser = new Gson();
+	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 	}
 
-	public static Topology buildProcessFlow(Serde<ContainerEvent> valueSerde,Serde<Container> newValue) {
-		 final StreamsBuilder builder = new StreamsBuilder();
-	        /*
-	        builder.stream("containers",Consumed.with(Serdes.String(), valueSerde))
-	        		// containers topic has ContainerEvent with the key being the containerID
-	        		.groupByKey()
-	        		.reduce((key,value) -> {
-	        			System.out.println("received container event " + key + " " + value.getType());
-	        			return value;})
-	        		.mapValues(new ValueMapper<ContainerEvent, Container>() {
-	        			public Container apply(ContainerEvent ce) {
-	        				return ce.getPayload();
-	        			}
-	        		}, 
-	        		Materialized.as("queryable-container-store"));
-*/
-	       builder.table("containers",Consumed.with(Serdes.String(), valueSerde))
-	       .mapValues(new ValueMapper<ContainerEvent,Container>() {
-   			public Container apply(ContainerEvent ce) {
-   				return ce.getPayload();
-   			}
-   		}, 
-   		Materialized.as("queryable-container-store"));
-
-	        return builder.build();
-	}
-	
-	public Serde<ContainerEvent> buildContainerEventSerde() {
-		Map<String, Object> serdeProps = new HashMap<>();
-		final Serializer<ContainerEvent> containerEventSerializer = new JsonPOJOSerializer<>();
-        serdeProps.put("JsonPOJOClass", ContainerEvent.class);
-        containerEventSerializer.configure(serdeProps, false);
-        final Deserializer<ContainerEvent> containerEventDeserializer = new JsonPOJODeserializer<>();
-        containerEventDeserializer.configure(serdeProps, false);
-        
-        return Serdes.serdeFrom(containerEventSerializer, containerEventDeserializer);
-	}
-	
-	public Serde<Container> buildContainerSerde() {
-		Map<String, Object> serdeProps = new HashMap<>();
-		final Serializer<Container> containerSerializer = new JsonPOJOSerializer<>();
-        serdeProps.put("JsonPOJOClass", Container.class);
-        containerSerializer.configure(serdeProps, false);
-        final Deserializer<Container> containerDeserializer = new JsonPOJODeserializer<>();
-        containerDeserializer.configure(serdeProps, false);
-        
-        return Serdes.serdeFrom(containerSerializer, containerDeserializer);
-	}
 	
 	
-	//@Test
-	public void testContainerCreated() {
+	private ContainerEvent buildContainerEvent() {
 		Container c = new Container("c01", "Brand", "Reefer",100, 37.8000,-122.25);
 		c.setStatus("atDock");
-		ContainerEvent ce =  new ContainerEvent(ContainerEvent.CONTAINER_ADDED,"1.0",c);
-		Gson parser = new Gson();
-		String ceStr = parser.toJson(ce);
+		return  new ContainerEvent(ContainerEvent.CONTAINER_ADDED,"1.0",c);
+	}
+	
+	
+	@Test
+	public void shouldHaveContainerInTableFromContainerCreatedEvent() {
+		
+		ContainerEvent ce = buildContainerEvent();
+		ContainerInventoryView dao = (ContainerInventoryView)ContainerInventoryView.instance();
+		
 		Properties props = ApplicationConfig.getStreamsProperties("test");
 		props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "dummy:1234");
-
 		
-        //props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, containerSerde);
-    	
-		Serde<Container> containerSerde = buildContainerSerde();
-		Serde<ContainerEvent> containerEventSerde = buildContainerEventSerde();
 		TopologyTestDriver testDriver = new TopologyTestDriver(
-				buildProcessFlow(containerEventSerde, containerSerde), props);
-		ConsumerRecordFactory<String, ContainerEvent> factory = new ConsumerRecordFactory<String, ContainerEvent>("containers",
-				new StringSerializer(), containerEventSerde.serializer());
-		ConsumerRecord<byte[],byte[]> record = factory.create("containers","c01", ce);
+				dao.buildProcessFlow(), props);
+
+		ConsumerRecordFactory<String, String> factory = new ConsumerRecordFactory<String, String>("containers",
+				new StringSerializer(), new StringSerializer());
+		ConsumerRecord<byte[],byte[]> record = factory.create("containers",ce.getContainerID(), parser.toJson(ce));
+		
 		testDriver.pipeInput(record);
 		
-		KeyValueStore<String, Container> store = testDriver.getKeyValueStore("queryable-container-store");
-		KeyValueIterator<String, Container> i = store.all();
-		while (i.hasNext()) {
-			//Container cStored = i.next().value;
-			//System.out.println(cStored.getContainerID());
-			System.out.println( i.next().value);
-		}
-		//fail("Not yet implemented");
+	//	Container container = dao.getById(ce.getContainerID());
+		KeyValueStore<String, String> store = testDriver.getKeyValueStore(ContainerInventoryView.CONTAINERS_STORE_NAME);
+		String containerStrg = store.get(ce.getContainerID());
+		Assert.assertNotNull(containerStrg);
+		Assert.assertTrue(containerStrg.contains(ce.getContainerID()));
+		Assert.assertTrue(containerStrg.contains("atDock"));
+		System.out.println("From store -> " + containerStrg);
+		// now send a new event the container is updated in the table - keep last data
+		ce.getPayload().setStatus("onTruck");
+		record = factory.create("containers",ce.getContainerID(), parser.toJson(ce));
+		testDriver.pipeInput(record);
+		containerStrg = store.get(ce.getContainerID());
+		Assert.assertFalse(containerStrg.contains("atDock"));
+		Assert.assertTrue(containerStrg.contains("onTruck"));
+		testDriver.close();
 	}
 
 }
