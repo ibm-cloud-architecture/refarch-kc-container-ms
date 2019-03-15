@@ -1,2 +1,2 @@
 #!/bin/sh
-python3 containerProducer.py
+python containerProducer.py
