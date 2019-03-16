@@ -49,9 +49,9 @@ public class ContainerInventoryView  implements ContainerDAO {
 	   			 Container c = jsonParser.fromJson((String)containerEvent, ContainerEvent.class).getPayload();
 	   			 return jsonParser.toJson(c);
 	   		 }).groupByKey()
-	   		 	.reduce((key,container) -> {
-	   		 		System.out.println("received container " + container );
-	   		 		return container;
+	   		 	.reduce((container,container1) -> {
+	   		 		System.out.println("received container " + container1 );
+	   		 		return container1;
 	   		 	},
 	   	    	  Materialized.as(CONTAINERS_STORE_NAME));
 	    return builder.build();
@@ -77,10 +77,12 @@ public class ContainerInventoryView  implements ContainerDAO {
 
 	@Override
 	public Container getById(String containerId) {
-		ReadOnlyKeyValueStore<String,String> view = streams.store(CONTAINERS_STORE_NAME, QueryableStoreTypes.keyValueStore());
-		String cStrg = view.get(containerId);
-		if (cStrg != null) 
-			return jsonParser.fromJson(cStrg, Container.class);
+		if (streams != null) {
+			ReadOnlyKeyValueStore<String,String> view = streams.store(CONTAINERS_STORE_NAME, QueryableStoreTypes.keyValueStore());
+			String cStrg = view.get(containerId);
+			if (cStrg != null) 
+				return jsonParser.fromJson(cStrg, Container.class);
+		} 
 		return null;
 	}
 
