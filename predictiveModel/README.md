@@ -1,6 +1,6 @@
 # Predictive maintainence for reefer containers
 
-In this section, we have a model trained to predict whether maintainence is required for the reefer container
+In this section, we have a model trained to predict whether maintainence is required for the reefer container.
 
 ## Getting Started
 
