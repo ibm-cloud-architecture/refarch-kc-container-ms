@@ -1,4 +1,5 @@
 # Predictive maintainence for reefer containers
+A reefer container is a refrigerated shipping container used to store or transport frozen or cold goods perishable items or goods that require temperature control. Reefers make an excellent, portable solution to short or long term storage and can be used to ship or truck goods over long distances as they can be plugged into the power station on ships or have clip on generators attached.
 
 In this section, we have a model trained to predict whether maintainence is required for the reefer container.
 
