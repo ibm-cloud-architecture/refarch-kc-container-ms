@@ -21,8 +21,6 @@ class ContainerPublish:
              print('Message delivered to {} [{}]'.format(msg.topic(), msg.partition()))
 
     def publishEvent(self,data):
-        print('PED', data)
-        print('PUBLISH')
         dataStr = json.dumps(data)
         containerProducer.produce('ContainerMetrics', dataStr.encode('utf-8'), callback=ContainerPublisher.delivery_report)
         containerProducer.flush()
@@ -36,4 +34,5 @@ data = buildJSON(sys.argv[1])
 for i in data:
     print(i)
     ContainerPublisher.publishEvent(i)
+    print('\n')
     time.sleep(3)
