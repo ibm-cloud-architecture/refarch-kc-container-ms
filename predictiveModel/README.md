@@ -9,6 +9,22 @@ The model uses the generated data from three scenarios: 1) when the container's 
 ### Code execution
 The simulator continuosly generates container metrics, publishes it to Kafka and run the predictMaintainence.ipynb to predict if maintainence is sought at this point in time. 
 
+## Dataset
+
+We do not have datset for reefer containers now. We have manually created the training and testing data. The container metrics genertaed by the simulator is also manually created. The dataset has the following format.
+
+Timestamp,ID,Temperature(celsius),Target_Temperature(celsius),Amp,CumulativePowerConsumption,ContentType,Humidity,CO2,Door_Open,Maintainence_Required,Defrost_Cycle
+====================================================================================================================================================================
+
+
+
+## Result (prediction)
+
+We are using Root Mean Squared Error (RMSE) for evaluating the model performance.
+
+Root Mean Squared Error (RMSE) is the square root of the mean of the squared errors: 
+
+<img src="https://latex.codecogs.com/svg.latex?\Large&space;x=\frac{-b\pm\sqrt{b^2-4ac}}{2a}" title="\Large x=\frac{-b\pm\sqrt{b^2-4ac}}{2a}" />
 
 ### Author
 
