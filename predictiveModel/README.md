@@ -1,71 +1,15 @@
-# Project Title (working on it..)
+# Predictive maintainence for reefer containers
 
-One Paragraph of project description goes here
+In this section, we have a model trained to predict whether maintainence is required fore the reefer conatiner
 
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
-
-### Prerequisites
-
-What things you need to install the software and how to install them
-
-```
-Give examples
-```
+The model uses the generated data from two scenarios: 1) when the container's door is open for a longer time - this gives a false positive that maintainence is required 2) when sensors are malfunctioning, it records arbitrary readings, 3) when the readings are normal. We have currently trained our model on 3000 datapoints from the three scenarios above. 
 
 ### Code execution
-
-A step by step series of examples that tell you how to get a development env running
-
-Say what the step will be
-
-```
-Give the example
-```
-
-And repeat
-
-```
-until finished
-```
-
-End with an example of getting some data out of the system or using it for a little demo
-
-## Running the tests
-
-Explain how to run the automated tests for this system
-
-### Break down into end to end tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-### And coding style tests
+The simulator continuosly generates container metrics, publishes it to Kafka and run the predictMaintainence.ipynb to predict if maintainence is sought at this point in time. 
 
 
-```
-```
+###Author
 
-## Deployment
-
-Add additional notes about how to deploy this on a live system
-
-
-## Contributing
-
-
-## Versioning
-
-
-## Authors
-
-
-## License
-
-
-## Acknowledgments
-
+Shilpi Bhattacharyya
