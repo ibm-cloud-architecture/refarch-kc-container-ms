@@ -15,7 +15,7 @@ def buildJSON(csvfile):
         return containerData
 
 
-with open('../data/container_matrix_sensor_malfunction.csv', mode='w') as container_file:
+with open('../data/container_matrix_test.csv', mode='w') as container_file:
     container_writer = csv.writer(container_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL, lineterminator='\n')
 
     container_writer.writerow(['Timestamp', 'ID', 'Temperature(celsius)', 'Target_Temperature(celsius)', 'Amp', 'CumulativePowerConsumption', 'ContentType', 'Humidity', 'CO2', 'Door_Open', 
@@ -31,12 +31,12 @@ with open('../data/container_matrix_sensor_malfunction.csv', mode='w') as contai
     for i in range_list:
 
         timestamp = date_list[index].strftime('%Y-%m-%d T%H:%M Z')
-    	container_writer.writerow([timestamp, id, gauss(5.0, 4.0), 4.4, gauss(2.5,1.0), gauss(10.0,2.0), random.randint(1,5), 
+    	container_writer.writerow([timestamp, id, gauss(5.0, 2.0), 4.4, gauss(2.5,1.0), gauss(10.0,2.0), random.randint(1,5), 
         gauss(10.5, 5.5), gauss(10.5, 5.0), 0, 1, 6])
-        container_writer.writerow([timestamp, id, gauss(6.0, 2.0), 4.4, gauss(2.5,1.0), gauss(10.0,2.0), random.randint(1,5), 
+        container_writer.writerow([timestamp, id, gauss(10.0, 3.0), 4.4, gauss(2.5,1.0), gauss(10.0,2.0), random.randint(1,5), 
         gauss(10.5, 5.5), gauss(10.5, 5.0), 0, 1, 6])
         index=index+1
 
-print(buildJSON('../data/container_matrix_sensor_malfunction.csv'))
+print(buildJSON('../data/container_matrix_test.csv'))
 
 
