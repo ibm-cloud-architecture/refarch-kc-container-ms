@@ -28,6 +28,17 @@ We are using Root Mean Squared Error (RMSE) for evaluating the model performance
 
 Root Mean Squared Error (RMSE) is the square root of the mean of the squared errors.
 
+
+## Todos
+
+
+## References
+
+http://www.sfb637.uni-bremen.de/pubdb/repository/SFB637-B6-10-011-IC.pdf
+https://www.omega.com/technical-learning/temperature-monitoring-during-transportation.html
+https://cargostore.com/blog/what-are-reefer-containers/
+https://towardsdatascience.com/machine-learning-classifiers-a5cc4e1b0623
+
 ### Author
 
 Shilpi Bhattacharyya
