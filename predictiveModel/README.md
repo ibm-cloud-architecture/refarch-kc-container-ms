@@ -1,6 +1,6 @@
 # Predictive maintainence for reefer containers
 
-In this section, we have a model trained to predict whether maintainence is required fore the reefer conatiner
+In this section, we have a model trained to predict whether maintainence is required for the reefer container
 
 ## Getting Started
 
@@ -10,6 +10,6 @@ The model uses the generated data from two scenarios: 1) when the container's do
 The simulator continuosly generates container metrics, publishes it to Kafka and run the predictMaintainence.ipynb to predict if maintainence is sought at this point in time. 
 
 
-###Author
+### Author
 
 Shilpi Bhattacharyya
