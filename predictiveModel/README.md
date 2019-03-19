@@ -5,6 +5,10 @@ Perishable products must be kept at a controlled temperature, from point of orig
 
 Throughout this chain the risk of failure is ever-present, meaning there is always a possibility of cargo exceeding permissible or safe temperature levels, even if only briefly. For example, a truck might be stopped without power in desert heat, allowing temperatures in the reefer to rise. Then power is restored and the temperature in the container comes back down, but the product is damaged.
 
+When cargo such as any of those items listed above are exposed to temperatures outside of prescribed limits it can be damaged. In some cases this is evident, such as with bananas, but in other situations, like the transport of vaccines, it may not be apparent that damage has occurred and the vaccine becomes ineffective. For some products, going over temperature, even only briefly, can reduce shelf life dramatically, incurring substantial costs when it cannot be sold. 
+
+Organizations contracting to ship perishable products often specify the permissible temperature range. However, even if it is possible to show that product was exposed to conditions outside of those contracted, proving where it happened, and thus responsibility, can be much harder.
+
 In this section, we have a model trained to predict whether maintainence is required for the reefer container.
 
 ## Getting Started
