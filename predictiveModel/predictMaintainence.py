@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[18]:
+# In[1]:
 
 
 import pandas as pd
@@ -10,14 +10,14 @@ from sklearn import linear_model
 from sklearn import metrics
 
 
-# In[19]:
+# In[6]:
 
 
-data = pd.read_csv('../data/container_matrix_door_open.csv', delimiter=",")
+data = pd.read_csv('../data/container_matrix_test.csv', delimiter=",")
 data.head()
 
 
-# In[20]:
+# In[7]:
 
 
 # create a Python list of feature names
@@ -32,7 +32,7 @@ y = data['Maintainence_Required']
 X.head()
 
 
-# In[24]:
+# In[8]:
 
 
 import pickle
@@ -41,7 +41,7 @@ import pickle
 model = pickle.load(open("model.pkl","r"))
 
 
-# In[27]:
+# In[9]:
 
 
 # make predictions on the input set
