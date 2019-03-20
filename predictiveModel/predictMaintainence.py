@@ -10,14 +10,14 @@ from sklearn import linear_model
 from sklearn import metrics
 
 
-# In[6]:
+# In[10]:
 
 
 data = pd.read_csv('../data/container_matrix_test.csv', delimiter=",")
 data.head()
 
 
-# In[7]:
+# In[11]:
 
 
 # create a Python list of feature names
@@ -32,7 +32,7 @@ y = data['Maintainence_Required']
 X.head()
 
 
-# In[8]:
+# In[12]:
 
 
 import pickle

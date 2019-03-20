@@ -18,11 +18,11 @@ echo 'Kafka Done \n'
 echo 'Testing Model'
 modelDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd ../../predictiveModel && pwd )
 echo $modelDIR
-
-python -m IPython nbconvert --to python ../../predictiveModel/predictMaintainence.ipynb
-python ../../predictiveModel/predictMaintainence.py 
-#jupyter nbconvert --to python "$modelDIR/predictMaintainence.ipynb"
-#jupyter nbconvert --execute "$modelDIR/predictMaintainence.ipynb"
-
-data=pd.read_csv("$dataDIR/container_matrix_sensor_malfunction.csv", delimiter=",")
+sudo pip install --ignore-installed numpy
+sudo pip install --ignore-installed pandas
+sudo pip install --ignore-installed scipy
+sudo pip install --ignore-installed sklearn
+sudo pip install --ignore-installed IPython
+jupyter nbconvert --to python $modelDIR/predictMaintainence.ipynb
+python $modelDIR/predictMaintainence.py 
 echo 'Model Tested'
