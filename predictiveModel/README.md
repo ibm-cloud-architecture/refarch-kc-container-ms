@@ -27,14 +27,14 @@ We do not have datset for reefer containers now. We have manually created the tr
 We are using Machine Learning supervised learning here. There are two types of supervised learning - 1) Classification: Predict a categorical response, 2) Regression: Predict a continuous response
 
 Linear regression Pros and Cons
+
 Pros: 1) Fast 2) No tuning required 3) Highly interpretable 4) Well-understood
 
 Cons: 1) Unlikely to produce the best predictive accuracy 2) Presumes a linear relationship between the features and response 3) If the relationship is highly non-linear as with many scenarios, linear relationship will not effectively model the relationship and its prediction would not be accurate
 
-Naive Bayes
+Naive Bayes classification
 
 Naive Bayes is a probabilistic classifier inspired by the Bayes theorem under a simple assumption which is the attributes are conditionally independent.
-
 
 The classification is conducted by deriving the maximum posterior which is the maximal P(Ci|X) with the above assumption applying to Bayes theorem. This assumption greatly reduces the computational cost by only counting the class distribution. Even though the assumption is not valid in most cases since the attributes are dependent, surprisingly Naive Bayes has able to perform impressively.
 
@@ -52,7 +52,6 @@ Root Mean Squared Error (RMSE) is the square root of the mean of the squared err
 
 
 ## Todos
-
 
 ## References
 
