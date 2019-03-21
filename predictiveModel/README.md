@@ -9,7 +9,7 @@ When cargo such as any of those items listed above are exposed to temperatures o
 
 Organizations contracting to ship perishable products often specify the permissible temperature range. However, even if it is possible to show that product was exposed to conditions outside of those contracted, proving where it happened, and thus responsibility, can be much harder.
 
-In this section, we have a model trained to predict whether maintainence is required for the reefer container.
+In this section, we discuss possible machine learning models we can train with the help of historical data to predict whether maintainence is required for the reefer container at a certain point in time.
 
 ## Getting Started
 
