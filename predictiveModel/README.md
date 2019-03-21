@@ -24,12 +24,25 @@ We do not have datset for reefer containers now. We have manually created the tr
 
 ## Model description
 
-We are using Machine Learning Linear Regression here. There are two types of supervised learning - 1) Classification: Predict a categorical response, 2) Regression: Predict a continuous response
+We are using Machine Learning supervised learning here. There are two types of supervised learning - 1) Classification: Predict a categorical response, 2) Regression: Predict a continuous response
 
 Linear regression Pros and Cons
 Pros: 1) Fast 2) No tuning required 3) Highly interpretable 4) Well-understood
 
 Cons: 1) Unlikely to produce the best predictive accuracy 2) Presumes a linear relationship between the features and response 3) If the relationship is highly non-linear as with many scenarios, linear relationship will not effectively model the relationship and its prediction would not be accurate
+
+Naive Bayes
+
+Naive Bayes is a probabilistic classifier inspired by the Bayes theorem under a simple assumption which is the attributes are conditionally independent.
+
+
+The classification is conducted by deriving the maximum posterior which is the maximal P(Ci|X) with the above assumption applying to Bayes theorem. This assumption greatly reduces the computational cost by only counting the class distribution. Even though the assumption is not valid in most cases since the attributes are dependent, surprisingly Naive Bayes has able to perform impressively.
+
+Naive Bayes is a very simple algorithm to implement and good results have obtained in most cases. It can be easily scalable to larger datasets since it takes linear time, rather than by expensive iterative approximation as used for many other types of classifiers.
+
+Naive Bayes can suffer from a problem called the zero probability problem. When the conditional probability is zero for a particular attribute, it fails to give a valid prediction. This needs to be fixed explicitly using a Laplacian estimator.
+
+
 
 ## Model evaluation
 
