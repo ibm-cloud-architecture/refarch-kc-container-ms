@@ -7,13 +7,14 @@ In this ection, we discuss our strategy on how we generate datset in three scena
 
 1. When the door of the reefer container is open
 
-
+    We are using exponential distribution here to generate data which varies at a very fast rate.
 
 2. When there is a sensor malfunction (or sensors are incorrectly calibrated)
 
+    We are using random gaussian distribution here to generate data with arbitrary variations
 
-3. When the reefer conatiner is functioning as expected (baseline/groundtruth for our model)
+3. When the reefer container is functioning as expected (baseline/groundtruth for our model)
 
-
+    We are using uniform distribution here to generate expected data.
 
 ## To publish containerCreated event. 
