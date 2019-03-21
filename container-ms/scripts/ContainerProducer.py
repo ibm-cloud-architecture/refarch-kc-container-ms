@@ -35,4 +35,4 @@ for i in data:
     print(i)
     ContainerPublisher.publishEvent(i)
     print('\n')
-    time.sleep(3)
+    time.sleep(1)
