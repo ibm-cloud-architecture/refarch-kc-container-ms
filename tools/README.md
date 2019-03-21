@@ -1,6 +1,6 @@
 # Tools
 
-## to create data set
+## To create dataset
 We do not have real-world reefer container metrics. So, we are creating the dataset with certain assumptions as below:
 
 In this ection, we discuss our strategy on how we generate datset in three scenarios, which we are considering at this point in time.

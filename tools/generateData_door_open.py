@@ -31,7 +31,7 @@ with open(sys.argv[1], mode='w') as container_file:
     for i in  range_list:
 
         timestamp = date_list[index].strftime('%Y-%m-%d T%H:%M Z')
-    	container_writer.writerow([timestamp, id, np.exp(np.random.uniform(i+0.1, i+0.5)), 4.4, gauss(2.5,1.0), gauss(10.0,2.0), random.randint(1,5), gauss(10.5, 5.5), gauss(10.5, 5.0), 1, 0, 6])
+    	container_writer.writerow([timestamp, id, np.exp(np.random.uniform(i+0.1, i+0.5)), 4.4, gauss(2.5,1.0), gauss(10.0,2.0), random.randint(1,5), np.exp(np.random.uniform(10.5, 5.5)), gauss(3.0, 1.0), 1, 0, 6])
         index=index+1
 
 print(buildJSON(sys.argv[1]))
