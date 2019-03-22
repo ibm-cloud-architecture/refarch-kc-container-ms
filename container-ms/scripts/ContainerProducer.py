@@ -5,10 +5,10 @@ import csv
 from confluent_kafka import KafkaError, Producer
 from generateData import buildJSON
 
-#KAFKA_BROKERS = os.environ['KAFKA_BROKERS']
+#KAFKA_BROKERS=os.environ['KAFKA_BROKERS']
 
 containerProducer = Producer({
-    'bootstrap.servers': 'localhost:9092'
+    'bootstrap.servers': 'kafka1:9092'
 })
 
 class ContainerPublish:

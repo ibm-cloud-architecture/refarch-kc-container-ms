@@ -8,15 +8,12 @@ from confluent_kafka import KafkaError, Consumer, KafkaException
  #   exit
 
 containerConsumer = Consumer({
-    'bootstrap.servers': 'localhost:9092',
+    'bootstrap.servers': 'kafka1:9092',
     'group.id':'test-group',
-    'default.topic.config': {'auto.offset.reset': 'latest'} 
+    'default.topic.config': {'auto.offset.reset': 'earliest'} 
 })
 
 topics = ['orders','containers', 'ContainerMetrics']
-
-def print_assignment(consumer, partitions):
-        print('Assignment:', partitions)
 
 containerConsumer.subscribe(topics)
 
@@ -25,26 +22,30 @@ def pollMessages():
     while running:
         msg = containerConsumer.poll()
         if not msg.error():
-            print("Good Message:")
-            print("    Topic: " + str(msg.topic()))
-            print("    Partition: " + str(msg.partition()))
-            print("    Offset: " + str(msg.offset()))
-            pass
+            print("    Topic: " + (msg.topic()))
+            print("    Message: " + (msg.value()))
+            
+            if msg.topic() == 'orders':
+                print('MESSAGE TOPIC = ORDERS')
+                print('Message Data: ', msg.value())
+            if msg.topic() == 'containers':
+                print('MESSAGE TOPIC = CONTAINERS')
+                print('Message Data: ', msg.value())
+            if msg.topic() == 'ContainerMetrics':
+                print('MESSAGE TOPIC = CONTAINERMETRICS')
+                print('Container Metric: ', msg.value())
+            
         else:
             if msg.error().code() == KafkaError._PARTITION_EOF:
-                print("Error Message:")
-                print("    Topic: " + str(msg.topic()))
-                print("    Partition: " + str(msg.partition()))
-                print("    Offset: " + str(msg.offset()))
-                print("    Error: " + str(msg.error()))
-                running = True
+                print("\n\nError Message: End of Messages")
+                running = False
             else:
                 print(msg.error())
-                running = True
+                running = False
 
 print("\nPolling...")
 pollMessages()
-print("\nWaiting for 3 seconds for broker to repopulate...")
-time.sleep(3)
+print("\nWaiting for 10 seconds for broker to repopulate...")
+time.sleep(10)
 print("\nSecond Poll...")
 pollMessages()
