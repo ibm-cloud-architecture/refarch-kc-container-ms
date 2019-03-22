@@ -50,6 +50,8 @@ We are using Root Mean Squared Error (RMSE) for evaluating the model performance
 
 Root Mean Squared Error (RMSE) is the square root of the mean of the squared errors.
 
+Classification does better here as the scenarion is more of a classification problem.
+
 
 ## Todos
 
