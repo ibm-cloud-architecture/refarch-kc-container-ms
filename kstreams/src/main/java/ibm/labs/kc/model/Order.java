@@ -10,6 +10,7 @@ public class Order {
     public static final String ASSIGNED_STATUS = "assigned";
     public static final String BOOKED_STATUS = "booked";
     public static final String REJECTED_STATUS = "rejected";
+    public static final String ONHOLD_STATUS = "onhold";
     public static final String COMPLETED_STATUS = "completed";
     public static final String CONTAINER_ALLOCATED_STATUS = "container-allocated";
     public static final String FULL_CONTAINER_VOYAGE_READY_STATUS = "full-container-voyage-ready";
@@ -20,6 +21,7 @@ public class Order {
     private String orderID;
     private String productID;
     private String customerID;
+    private String containerID;
     private int quantity;
 
     private Address pickupAddress;
@@ -123,5 +125,13 @@ public class Order {
 
 	public void setQuantity(int quantity) {
 		this.quantity = quantity;
+	}
+
+	public String getContainerID() {
+		return containerID;
+	}
+
+	public void setContainerID(String containerID) {
+		this.containerID = containerID;
 	}
 }

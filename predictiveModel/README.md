@@ -9,7 +9,7 @@ When cargo such as any of those items listed above are exposed to temperatures o
 
 Organizations contracting to ship perishable products often specify the permissible temperature range. However, even if it is possible to show that product was exposed to conditions outside of those contracted, proving where it happened, and thus responsibility, can be much harder.
 
-In this section, we have a model trained to predict whether maintainence is required for the reefer container.
+In this section, we discuss possible machine learning models we can train with the help of historical data to predict whether maintainence is required for the reefer container at a certain point in time.
 
 ## Getting Started
 
@@ -26,15 +26,15 @@ We do not have datset for reefer containers now. We have manually created the tr
 
 We are using Machine Learning supervised learning here. There are two types of supervised learning - 1) Classification: Predict a categorical response, 2) Regression: Predict a continuous response
 
-Linear regression Pros and Cons
+### Linear regression
+
 Pros: 1) Fast 2) No tuning required 3) Highly interpretable 4) Well-understood
 
 Cons: 1) Unlikely to produce the best predictive accuracy 2) Presumes a linear relationship between the features and response 3) If the relationship is highly non-linear as with many scenarios, linear relationship will not effectively model the relationship and its prediction would not be accurate
 
-Naive Bayes
+### Naive Bayes classification
 
 Naive Bayes is a probabilistic classifier inspired by the Bayes theorem under a simple assumption which is the attributes are conditionally independent.
-
 
 The classification is conducted by deriving the maximum posterior which is the maximal P(Ci|X) with the above assumption applying to Bayes theorem. This assumption greatly reduces the computational cost by only counting the class distribution. Even though the assumption is not valid in most cases since the attributes are dependent, surprisingly Naive Bayes has able to perform impressively.
 
@@ -50,9 +50,10 @@ We are using Root Mean Squared Error (RMSE) for evaluating the model performance
 
 Root Mean Squared Error (RMSE) is the square root of the mean of the squared errors.
 
+Classification does better here as the scenarion is more of a classification problem.
+
 
 ## Todos
-
 
 ## References
 

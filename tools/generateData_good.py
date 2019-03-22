@@ -31,6 +31,8 @@ with open('../data/container_matrix.csv', mode='w') as container_file:
         timestamp = date_list[i].strftime('%Y-%m-%d T%H:%M Z')
     	container_writer.writerow([timestamp, id, gauss(4.0,0.4), 4.4, gauss(2.5,1.0), gauss(10.0,2.0), random.randint(1,5), 
         gauss(10.5, 5.5), gauss(10.5, 5.0), 0, 0, 6])
+        container_writer.writerow([timestamp, id, gauss(4.0,0.3), 4.4, gauss(2.5,1.0), gauss(10.0,2.0), random.randint(1,5), 
+        gauss(10.5, 5.0), gauss(9.5, 4.0), 0, 0, 6])
 
 print(buildJSON('../data/container_matrix.csv'))
 

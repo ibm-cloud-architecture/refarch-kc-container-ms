@@ -20,11 +20,11 @@ import org.junit.Test;
 
 import com.google.gson.Gson;
 
-import ibm.labs.kc.containermgr.rest.ContainerMgrService;
 import ibm.labs.kc.model.Address;
 import ibm.labs.kc.model.Container;
-import ibm.labs.kc.model.ContainerAssignment;
 import ibm.labs.kc.model.Order;
+import ibm.labs.kc.model.events.ContainerAssignment;
+import ibm.labs.kc.model.events.ContainerCreation;
 import ibm.labs.kc.model.events.ContainerEvent;
 import ibm.labs.kc.model.events.OrderEvent;
 import ibm.labs.kc.utils.ApplicationConfig;
@@ -157,13 +157,13 @@ public class TestOrderCreation {
 		ConsumerRecordFactory<String, String> factory = new ConsumerRecordFactory<String, String>("containers",
 				new StringSerializer(), new StringSerializer());
 		Container c = new Container("c01", "Brand", "Reefer",100, 37.8000,-122.25);
-		ContainerEvent ce = new ContainerEvent(ContainerEvent.CONTAINER_ADDED,"1.0",c);
+		ContainerCreation ce = new ContainerCreation(ContainerEvent.CONTAINER_ADDED,"1.0",c);
 		ConsumerRecord<byte[],byte[]> record = factory.create("containers",
 									ce.getPayload().getContainerID(), 
 									parser.toJson(ce));
 		testDriver.pipeInput(record);
 		Container c2 = new Container("c02", "Brand", "Reefer",100, 50,100.25);
-		ContainerEvent ce2 = new ContainerEvent(ContainerEvent.CONTAINER_ADDED,"1.0",c2);
+		ContainerCreation ce2 = new ContainerCreation(ContainerEvent.CONTAINER_ADDED,"1.0",c2);
 		record = factory.create("containers",
 									ce2.getPayload().getContainerID(), 
 									parser.toJson(ce2));

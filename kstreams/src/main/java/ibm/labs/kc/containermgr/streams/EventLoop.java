@@ -13,12 +13,16 @@ public class EventLoop implements ServletContextListener{
 		// Initialize the Container consumer
 		ContainerInventoryView cView = (ContainerInventoryView)ContainerInventoryView.instance();
 		cView.start();
+		ContainerOrderAssignment oAssignment = ContainerOrderAssignment.instance();
+		oAssignment.start();
 	}
 
 	@Override
 	public void contextDestroyed(ServletContextEvent sce) {
 		ContainerInventoryView cView = (ContainerInventoryView)ContainerInventoryView.instance();
 		cView.stop();
+		ContainerOrderAssignment oAssignment = ContainerOrderAssignment.instance();
+		oAssignment.stop();
 	}
 
 }

@@ -26,8 +26,7 @@ public class OrderProducer {
 	     kafkaProducer = new KafkaProducer<String, String>(properties);
 	}
 
-	public static void main(String[] args) throws InterruptedException, ExecutionException, TimeoutException {
-
+	public OrderEvent buildOrderEvent(){
 		Address aSrc = new Address("street", "Oakland", "USA", "CA", "zipcode");
 		Address aDest = new Address("street", "Singapore", "SGP", "", "zipcode");
 		Order o = new Order(UUID.randomUUID().toString(),
@@ -35,8 +34,12 @@ public class OrderProducer {
 	                aSrc, "2019-01-10T13:30Z",
 	                aDest, "2019-02-10T13:30Z",
 	                Order.PENDING_STATUS);
-		OrderEvent oe = new OrderEvent(new Date().getTime(),OrderEvent.TYPE_CREATED,"1.0",o);
+		return new OrderEvent(new Date().getTime(),OrderEvent.TYPE_CREATED,"1.0",o);
+	}
+
+	public static void main(String[] args) throws InterruptedException, ExecutionException, TimeoutException {
 		OrderProducer p = new OrderProducer();
+		OrderEvent oe = p.buildOrderEvent();
 		p.emit(oe);
 	}
 
@@ -50,6 +53,10 @@ public class OrderProducer {
 	    Future<RecordMetadata> send = kafkaProducer.send(record);
 	    send.get(ApplicationConfig.PRODUCER_TIMEOUT_SECS, TimeUnit.SECONDS);
 	    System.out.println(" Emit order event " + oe.getPayload().getOrderID());
+
+	}
+
+	public void stop() {
 	    kafkaProducer.close();
 	}
 }

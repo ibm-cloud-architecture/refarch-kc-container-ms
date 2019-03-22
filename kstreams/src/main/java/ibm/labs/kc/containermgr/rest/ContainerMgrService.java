@@ -23,10 +23,12 @@ import ibm.labs.kc.model.Container;
 public class ContainerMgrService {
 	 private static final Logger logger = LoggerFactory.getLogger(ContainerMgrService.class);
 	 private ContainerDAO containerDAO;
+	
 	 
 	 public ContainerMgrService(){
-		 containerDAO = ContainerInventoryView.instance();
-		 containerDAO.start();
+		 this.containerDAO = ContainerInventoryView.instance();
+		 this.containerDAO.start();
+		 
 	 }
 	 
 	@GET
@@ -46,4 +48,5 @@ public class ContainerMgrService {
 	        return Response.status(Status.NOT_FOUND).build();
 	    }
 	}
+
 }
