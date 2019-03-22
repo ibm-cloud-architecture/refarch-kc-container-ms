@@ -1,15 +1,13 @@
 package ibm.labs.kc.model;
 
-public class Container {
-	
-	private String containerID; 
-	private double latitude;
-	private double longitude;
-	private String type;
-	private String status;
-	private String brand;
-	private int capacity;
+public class Container extends ContainerPayload {
 
+	protected double latitude;
+	protected double longitude;
+	protected String type;
+	protected String status;
+	protected String brand;
+	protected int capacity;
 	
 	public Container(String cid, String brand, String type, int capacity, double lat, double lo) {
 		this.containerID = cid;
@@ -18,19 +16,14 @@ public class Container {
 		this.brand = brand;
 		this.capacity = capacity;
 		this.longitude = lo;
+		this.orderID = "NotAssigned";
 	}
 	
 	// need default constructor for jackson deserialization
 	public Container() {}
 	
 
-	public String getContainerID() {
-		return containerID;
-	}
 
-	public void setContainerID(String containerID) {
-		this.containerID = containerID;
-	}
 
 	public double getLatitude() {
 		return latitude;
@@ -79,5 +72,7 @@ public class Container {
 	public void setCapacity(int capacity) {
 		this.capacity = capacity;
 	}
+
+
 	
 }

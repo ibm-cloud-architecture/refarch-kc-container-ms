@@ -27,6 +27,7 @@ import org.junit.Test;
 import com.google.gson.Gson;
 
 import ibm.labs.kc.model.Container;
+import ibm.labs.kc.model.events.ContainerCreation;
 import ibm.labs.kc.model.events.ContainerEvent;
 import ibm.labs.kc.utils.ApplicationConfig;
 import ibm.labs.kc.utils.JsonPOJODeserializer;
@@ -45,7 +46,7 @@ public class TestContainerInventorySerDes {
 	public static void setUpBeforeClass() throws Exception {
 	}
 
-	public static Topology buildProcessFlow(Serde<ContainerEvent> valueSerde,Serde<Container> newValue) {
+	public static Topology buildProcessFlow(Serde<ContainerCreation> valueSerde,Serde<Container> newValue) {
 		 final StreamsBuilder builder = new StreamsBuilder();
 	        /*
 	        builder.stream("containers",Consumed.with(Serdes.String(), valueSerde))
@@ -62,19 +63,19 @@ public class TestContainerInventorySerDes {
 	        		Materialized.as("queryable-container-store"));
 */	
 			 builder.stream("containers",Consumed.with(Serdes.String(), valueSerde))
-		 	.mapValues( containerEvent ->  containerEvent.getPayload())
+		 	.mapValues( containerEvent ->  (Container)containerEvent.getPayload())
 		 	.groupByKey(Grouped.with(Serdes.String(),newValue)) 
 		 	.reduce((container,container2) -> container,Materialized.as("queryable-container-store"));
 
 	    return builder.build();
 	}
 	
-	public Serde<ContainerEvent> buildContainerEventSerde() {
+	public Serde<ContainerCreation> buildContainerEventSerde() {
 		Map<String, Object> serdeProps = new HashMap<>();
-		final Serializer<ContainerEvent> containerEventSerializer = new JsonPOJOSerializer<>();
-        serdeProps.put("JsonPOJOClass", ContainerEvent.class);
+		final Serializer<ContainerCreation> containerEventSerializer = new JsonPOJOSerializer<>();
+        serdeProps.put("JsonPOJOClass", ContainerCreation.class);
         containerEventSerializer.configure(serdeProps, false);
-        final Deserializer<ContainerEvent> containerEventDeserializer = new JsonPOJODeserializer<>();
+        final Deserializer<ContainerCreation> containerEventDeserializer = new JsonPOJODeserializer<>();
         containerEventDeserializer.configure(serdeProps, false);
         
         return Serdes.serdeFrom(containerEventSerializer, containerEventDeserializer);
@@ -96,17 +97,17 @@ public class TestContainerInventorySerDes {
 	public void testContainerCreated() {
 		Container c = new Container("c01", "Brand", "Reefer",100, 37.8000,-122.25);
 		c.setStatus("atDock");
-		ContainerEvent ce =  new ContainerEvent(ContainerEvent.CONTAINER_ADDED,"1.0",c);
+		ContainerCreation ce =  new ContainerCreation(ContainerEvent.CONTAINER_ADDED,"1.0",c);
 
 		Properties props = ApplicationConfig.getStreamsProperties("test");
 		props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "dummy:1234");
     	
 		Serde<Container> containerSerde = buildContainerSerde();
-		Serde<ContainerEvent> containerEventSerde = buildContainerEventSerde();
+		Serde<ContainerCreation> containerEventSerde = buildContainerEventSerde();
 		
 		TopologyTestDriver testDriver = new TopologyTestDriver(
 				buildProcessFlow(containerEventSerde, containerSerde), props);
-		ConsumerRecordFactory<String, ContainerEvent> factory = new ConsumerRecordFactory<String, ContainerEvent>("containers",
+		ConsumerRecordFactory<String, ContainerCreation> factory = new ConsumerRecordFactory<String, ContainerCreation>("containers",
 				new StringSerializer(), containerEventSerde.serializer());
 		ConsumerRecord<byte[],byte[]> record = factory.create("containers","c01", ce);
 		testDriver.pipeInput(record);

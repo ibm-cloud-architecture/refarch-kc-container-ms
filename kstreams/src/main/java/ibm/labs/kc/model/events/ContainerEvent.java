@@ -2,10 +2,9 @@ package ibm.labs.kc.model.events;
 
 import java.util.Date;
 
-import ibm.labs.kc.model.Container;
-
 public class ContainerEvent {
-	
+
+	// those are the list of event type
 	public static final String CONTAINER_ADDED = "ContainerAdded";
 	public static final String CONTAINER_REMOVED = "ContainerRemoved";
 	public static final String CONTAINER_AT_LOCATION = "ContainerAtLocation";
@@ -19,23 +18,18 @@ public class ContainerEvent {
 	public static final String CONTAINER_OFF_SHIP = "ContainerOffShip";
 	public static final String CONTAINER_ON_TRUCK = "ContainerOnTruck";
 	public static final String CONTAINER_OFF_TRUCK = "ContainerOffTruck";
- 
 	protected long timestamp;
 	protected String containerID;
 	protected String type;
 	protected String version;
-	protected Container payload;
-	
+
+
 	public ContainerEvent() {
 		this.timestamp = (new Date()).getTime();
 	}
-
-	public ContainerEvent(String type,String version, Container p) {
-		this.timestamp = (new Date()).getTime();
-		this.containerID = p.getContainerID();
+	
+	public ContainerEvent(String type) {
 		this.type = type;
-		this.version = version;
-		this.payload = p;
 	}
 	
 	public long getTimestamp() {
@@ -45,7 +39,7 @@ public class ContainerEvent {
 	public void setTimestamp(long timestamp) {
 		this.timestamp = timestamp;
 	}
-
+	
 	public String getType() {
 		return type;
 	}
@@ -61,15 +55,7 @@ public class ContainerEvent {
 	public void setVersion(String version) {
 		this.version = version;
 	}
-
-	public Container getPayload() {
-		return payload;
-	}
-
-	public void setPayload(Container payload) {
-		this.payload = payload;
-	}
-
+	
 	public String getContainerID() {
 		return containerID;
 	}
@@ -77,5 +63,4 @@ public class ContainerEvent {
 	public void setContainerID(String containerID) {
 		this.containerID = containerID;
 	}
-	
 }

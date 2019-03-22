@@ -1,5 +1,6 @@
 package ut;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
@@ -7,6 +8,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import ibm.labs.kc.containermgr.dao.CityDAO;
+import ibm.labs.kc.model.City;
 
 public class TestCityLocation {
 	
@@ -19,14 +21,22 @@ public class TestCityLocation {
 
 	@Test
 	public void testCityMatch() {
-		String city = dao.getCity(37.8000,-122.25);
+		String city = dao.getCityName(37.8000,-122.25);
 		assertNotNull(city);
+		assertEquals("Oakland",city);
 	}
 	
 	@Test
 	public void testCityUnMatch() {
-		String city = dao.getCity(38.8000,-124.25);
+		String city = dao.getCityName(38.8000,-124.25);
 		assertNull(city);
 	}
 
+	@Test
+	public void getCity() {
+		City c = dao.getCity("NYC");
+		assertNotNull(c);
+		assertEquals("NYC",c.getName());
+	}
+	
 }

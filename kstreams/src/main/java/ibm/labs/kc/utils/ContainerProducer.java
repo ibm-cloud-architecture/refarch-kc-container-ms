@@ -1,6 +1,5 @@
 package ibm.labs.kc.utils;
 
-import java.util.Date;
 import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
@@ -14,11 +13,9 @@ import org.apache.kafka.clients.producer.RecordMetadata;
 
 import com.google.gson.Gson;
 
-import ibm.labs.kc.model.Address;
 import ibm.labs.kc.model.Container;
-import ibm.labs.kc.model.Order;
+import ibm.labs.kc.model.events.ContainerCreation;
 import ibm.labs.kc.model.events.ContainerEvent;
-import ibm.labs.kc.model.events.OrderEvent;
 
 public class ContainerProducer {
 	private KafkaProducer<String, String> kafkaProducer;
@@ -28,10 +25,10 @@ public class ContainerProducer {
 	     kafkaProducer = new KafkaProducer<String, String>(properties);
 	}
 
-	public ContainerEvent buildContainerEvent() {
-		Container c = new Container("cid-01", "IntegrationTests", "Reefer",100, 37.8000,-122.25);
+	public ContainerCreation buildContainerEvent() {
+		Container c = new Container(UUID.randomUUID().toString(), "IntegrationTestBrand", "Reefer",100, 37.8000,-122.25);
 		c.setStatus("atDock");
-		return  new ContainerEvent(ContainerEvent.CONTAINER_ADDED,"1.0",c);
+		return  new ContainerCreation(ContainerEvent.CONTAINER_ADDED,"1.0",c);
 	}
 	
 	public static void main(String[] args) throws InterruptedException, ExecutionException, TimeoutException {
@@ -40,7 +37,7 @@ public class ContainerProducer {
 	}
 
 	
-	public void emit(ContainerEvent e) throws InterruptedException, ExecutionException, TimeoutException {		
+	public void emit(ContainerCreation e) throws InterruptedException, ExecutionException, TimeoutException {		
 		String key = e.getPayload().getContainerID();
 		
 		String value = new Gson().toJson(e);
@@ -49,6 +46,10 @@ public class ContainerProducer {
 	    Future<RecordMetadata> send = kafkaProducer.send(record);
 	    send.get(ApplicationConfig.PRODUCER_TIMEOUT_SECS, TimeUnit.SECONDS);
 	    System.out.println(" Emit container event " + e.getPayload().getContainerID());
-	    kafkaProducer.close();
+	    
+	}
+
+	public void stop() {
+		kafkaProducer.close();
 	}
 }

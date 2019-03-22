@@ -16,19 +16,32 @@
  */
 package ibm.labs.kc.containermgr.streams;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.CountDownLatch;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.common.serialization.Deserializer;
+import org.apache.kafka.common.serialization.Serde;
+import org.apache.kafka.common.serialization.Serdes;
+import org.apache.kafka.common.serialization.Serializer;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.Topology;
+import org.apache.kafka.streams.kstream.Consumed;
+import org.apache.kafka.streams.kstream.KStream;
 
 import com.google.gson.Gson;
 
+import ibm.labs.kc.containermgr.dao.CityDAO;
+import ibm.labs.kc.model.City;
+import ibm.labs.kc.model.Container;
 import ibm.labs.kc.model.Order;
+import ibm.labs.kc.model.events.ContainerAssignment;
 import ibm.labs.kc.model.events.OrderEvent;
 import ibm.labs.kc.utils.ApplicationConfig;
+import ibm.labs.kc.utils.JsonPOJODeserializer;
+import ibm.labs.kc.utils.JsonPOJOSerializer;
 
 /**
  * In this example, we implement a simple LineSplit program using the high-level Streams DSL
@@ -38,48 +51,111 @@ import ibm.labs.kc.utils.ApplicationConfig;
  */
 public class ContainerOrderAssignment {
 
-	public static Topology buildProcessFlow() {
-		 final StreamsBuilder builder = new StreamsBuilder();
-	        Gson parser = new Gson();
-	        
-	        builder.stream("orders")
-	        		.foreach((key,value) -> {
-	        			Order order = parser.fromJson((String)value, OrderEvent.class).getPayload();
-	        			// TODO do something to the order
-	        			System.out.println("received order " + key + " " + value);
-	        		});
+    public static ContainerOrderAssignment instance;
 
+	private KafkaStreams streams;
+	private CityDAO cityDAO = new CityDAO();
+    private Gson jsonParser = new Gson();
+    
+    public static String ORDERS_TOPIC = "orders";
+    public static String CONTAINERS_TOPIC = "containers";
+
+    public synchronized static ContainerOrderAssignment instance() {
+        if ( instance == null ) {
+            instance = new ContainerOrderAssignment();
+        }
+        return instance;
+    }
+
+    public synchronized void start() {
+        if ( streams == null ) {
+            Properties props = ApplicationConfig.getStreamsProperties("order-streams");
+		    props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
+		    streams = new KafkaStreams(buildProcessFlow(), props);
+			try {
+	        	streams.cleanUp(); 
+	            streams.start();
+	        } catch (Throwable e) {
+	            System.exit(1);
+	        }
+        }
+    }
+
+    public synchronized void stop() {
+        if ( streams == null ) {
+            streams.close();
+        }
+    }
+    
+    private Serde<OrderEvent> buildOrderEventSerde() {
+		Map<String, Object> serdeProps = new HashMap<>();
+		final Serializer<OrderEvent> orderEventSerializer = new JsonPOJOSerializer<>();
+        serdeProps.put("JsonPOJOClass", OrderEvent.class);
+        orderEventSerializer.configure(serdeProps, false);
+        final Deserializer<OrderEvent> orderEventDeserializer = new JsonPOJODeserializer<>();
+        orderEventDeserializer.configure(serdeProps, false);
+        
+        return Serdes.serdeFrom(orderEventSerializer, orderEventDeserializer);
+	}
+    
+    /**
+     * Get the pending order or order with voyage and search a container from the inventory based on location and time to pickup
+     * Assign the container id to the order to generate a ContainerAssignment event to the orders topics
+     * Send the same event to containers topic too so the inventory is updated.
+     * If there is no container available put the order on hold and send the order event rejected
+     * @return the topology for the process flow
+     */
+	public Topology buildProcessFlow() {
+		final StreamsBuilder builder = new StreamsBuilder();
+	  
+	        KStream<String,OrderEvent>[] branches = builder.stream(ORDERS_TOPIC,Consumed.with(Serdes.String(), buildOrderEventSerde()))
+	        		.filter((key,orderEvent) -> {
+	        			   return (OrderEvent.TYPE_BOOKED.equals(orderEvent.getType())); 
+	        		})
+	        		.mapValues((key,orderEvent) -> {
+	        			 Order orderOut=assignContainerToOrder(orderEvent.getPayload());
+	        			 return orderEvent;
+	        		})
+	        		.branch((key,orderEvent) -> {
+	        				Order order =  orderEvent.getPayload();
+	        				return (order.getContainerID() == null);
+	        				},
+	        				(key,orderEvent) -> true);
+            
+	        branches[0].mapValues(orderEvent -> {
+	        	orderEvent.getPayload().setStatus(Order.ONHOLD_STATUS);
+	        	orderEvent.setType(OrderEvent.TYPE_REJECTED);
+	        	return orderEvent;
+	        }).through(ORDERS_TOPIC);
+	        
+	        branches[1].mapValues(orderEvent -> {
+	        	orderEvent.getPayload().setStatus(Order.CONTAINER_ALLOCATED_STATUS);
+	        	orderEvent.setType(OrderEvent.TYPE_CONTAINER_ALLOCATED);
+	        	return orderEvent;
+	        }).through(ORDERS_TOPIC)
+	        .mapValues(orderEvent -> {
+	        		Container c = new Container();
+	        		c.setContainerID(orderEvent.getPayload().getContainerID());
+	        		c.setOrderID(orderEvent.getPayload().getOrderID());
+	        		return c;
+		        }).through(CONTAINERS_TOPIC);
+	        
 	        return builder.build();
 	}
 	
-    public static void main(String[] args) throws Exception {
-
-        Properties props = ApplicationConfig.getStreamsProperties("order-streams");
-
-        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
-
-
-        final Topology topology = buildProcessFlow();
-        System.out.println(topology.describe());
-        final KafkaStreams streams = new KafkaStreams(topology, props);
-        final CountDownLatch latch = new CountDownLatch(1);
-
-        // attach shutdown handler to catch control-c
-        Runtime.getRuntime().addShutdownHook(new Thread("streams-shutdown-hook") {
-            @Override
-            public void run() {
-                streams.close();
-                latch.countDown();
-            }
-        });
-
-        try {
-        	streams.cleanUp(); // delete the app local state
-            streams.start();
-            latch.await();
-        } catch (Throwable e) {
-            System.exit(1);
-        }
-        System.exit(0);
-    }
+	public Order assignContainerToOrder(Order order) {
+		
+		City city = this.cityDAO.getCity(order.getPickupAddress().getCity());
+		// this is not the best implementation but as of now we have few containers so we can do that
+		for (Container c : ContainerInventoryView.instance().getAllContainers(city)) {
+			// test the capacity and the type... so here we do nothing, just use the first container not allocated
+			if (c.getOrderID() == null || "NotAssigned".equals(c.getOrderID())) {
+				c.setOrderID(order.getOrderID());
+				order.setContainerID(c.getContainerID());
+				return order;
+			}
+		}
+		return order;
+	}
+	
 }
