@@ -102,6 +102,10 @@ public class ContainerInventoryView  implements ContainerDAO {
 		return null;
 	}
 
+	/**
+	 * Get all the container within a city.
+	 * ATTENTION this is not implemented by city now, it is just all containers
+	 */
 	@Override
 	public List<Container> getAllContainers(City city) {
 		List<Container> l = new ArrayList<Container>();
@@ -117,6 +121,12 @@ public class ContainerInventoryView  implements ContainerDAO {
 			}	
 		}
 		return l;
+	}
+	
+	// ATTENTION this is not implemented by city now, it is just all containers
+	@Override
+	public List<Container> getAllContainers(String city) {
+		return this.getAllContainers(new City(city));
 	}
 
 	ReadOnlyKeyValueStore<String,String> store ;
@@ -160,4 +170,6 @@ public class ContainerInventoryView  implements ContainerDAO {
 		}
 		 
     }
+
+
 }
