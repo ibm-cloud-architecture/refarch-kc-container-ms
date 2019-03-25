@@ -5,6 +5,7 @@ import random
 import datetime
 import numpy as np
 import sys
+import pandas as pd
 
 containerData = []
 def buildJSON(csvfile):
@@ -21,7 +22,8 @@ with open(sys.argv[1], mode='w') as container_file:
 
     container_writer.writerow(['Timestamp', 'ID', 'Temperature(celsius)', 'Target_Temperature(celsius)', 'Amp', 'CumulativePowerConsumption', 'ContentType', 'Humidity', 'CO2', 'Door_Open', 
     'Maintainence_Required', 'Defrost_Cycle'])
-
+    df = pd.DataFrame(columns=['Timestamp', 'ID', 'Temperature(celsius)', 'Target_Temperature(celsius)', 'Amp', 'CumulativePowerConsumption', 'ContentType', 'Humidity', 'CO2', 'Door_Open', 
+    'Maintainence_Required', 'Defrost_Cycle'])
     #faulty sensor data
     id = random.randint(1001,2000)
     Today= datetime.datetime.today()
@@ -31,10 +33,13 @@ with open(sys.argv[1], mode='w') as container_file:
     index=0
     for i in range_list:
 
+
         timestamp = date_list[index].strftime('%Y-%m-%d T%H:%M Z')
+        df.loc[i] = [timestamp, id, gauss(5.0, 4.0), 4.4, gauss(2.5,1.0), gauss(10.0,2.0), random.randint(1,5),gauss(10.5, 5.5), gauss(10.5, 5.0), 0, 1, 6]
     	container_writer.writerow([timestamp, id, gauss(5.0, 4.0), 4.4, gauss(2.5,1.0), gauss(10.0,2.0), random.randint(1,5),gauss(10.5, 5.5), gauss(10.5, 5.0), 0, 1, 6])
         container_writer.writerow([timestamp, id, gauss(8.0, 3.0), 4.4, gauss(2.5,1.0), gauss(10.0,2.0), random.randint(1,5),gauss(12.5, 4.5), gauss(10.5, 5.0), 0, 1, 6])
         index=index+1
+    print df
 
 print(buildJSON(sys.argv[1]))
 #print(buildJSON('../data/container_matrix_sensor_malfunction.csv'))
