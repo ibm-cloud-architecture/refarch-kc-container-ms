@@ -12,5 +12,7 @@ public interface ContainerDAO {
 	void start();
 
 	List<Container> getAllContainers(City city);
+	
+	List<Container> getAllContainers(String city);
 
 }

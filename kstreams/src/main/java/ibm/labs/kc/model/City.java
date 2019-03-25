@@ -10,6 +10,10 @@ public class City {
 		this.name = n;
 		this.locations = locations;
 	}
+	
+	public City(String name) {
+		this.name = name;
+	}
 
 	public String getName() {
 		return name;

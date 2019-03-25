@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "containerkstreams.fullname" . }}
+  labels:
+    app: {{ template "containerkstreams.name" . }}
+    chart: {{ template "containerkstreams.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app: {{ template "containerkstreams.name" . }}
+    release: {{ .Release.Name }}
