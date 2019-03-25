@@ -8,40 +8,29 @@ import sys
 import pandas as pd
 
 containerData = []
-def buildJSON(csvfile):
-    with open(csvfile) as csvfile:
-        dataReader = csv.DictReader(csvfile)
-        for row in dataReader:
-            x = json.dumps(row)
-            containerData.append(x)
-        return containerData
-
-#with open('../data/container_matrix_sensor_malfunction.csv', mode='w') as container_file:
-with open(sys.argv[1], mode='w') as container_file:
-    container_writer = csv.writer(container_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL, lineterminator='\n')
-
-    container_writer.writerow(['Timestamp', 'ID', 'Temperature(celsius)', 'Target_Temperature(celsius)', 'Amp', 'CumulativePowerConsumption', 'ContentType', 'Humidity', 'CO2', 'Door_Open', 
-    'Maintainence_Required', 'Defrost_Cycle'])
-    df = pd.DataFrame(columns=['Timestamp', 'ID', 'Temperature(celsius)', 'Target_Temperature(celsius)', 'Amp', 'CumulativePowerConsumption', 'ContentType', 'Humidity', 'CO2', 'Door_Open', 
-    'Maintainence_Required', 'Defrost_Cycle'])
-    #faulty sensor data
-    id = random.randint(1001,2000)
-    Today= datetime.datetime.today()
-    date_list = [Today + datetime.timedelta(minutes=15*x) for x in range(0, 1000)]
-
-    range_list=np.linspace(1,2,1000)
-    index=0
-    for i in range_list:
+def buildJSON(df):
+    
+    d = [dict([
+        (colname, row[i]) 
+        for i,colname in enumerate(df.columns)]) for row in df.values]
+    return json.dumps(d)
 
 
-        timestamp = date_list[index].strftime('%Y-%m-%d T%H:%M Z')
-        df.loc[i] = [timestamp, id, gauss(5.0, 4.0), 4.4, gauss(2.5,1.0), gauss(10.0,2.0), random.randint(1,5),gauss(10.5, 5.5), gauss(10.5, 5.0), 0, 1, 6]
-    	container_writer.writerow([timestamp, id, gauss(5.0, 4.0), 4.4, gauss(2.5,1.0), gauss(10.0,2.0), random.randint(1,5),gauss(10.5, 5.5), gauss(10.5, 5.0), 0, 1, 6])
-        container_writer.writerow([timestamp, id, gauss(8.0, 3.0), 4.4, gauss(2.5,1.0), gauss(10.0,2.0), random.randint(1,5),gauss(12.5, 4.5), gauss(10.5, 5.0), 0, 1, 6])
-        index=index+1
-    print df
+df = pd.DataFrame(columns=['Timestamp', 'ID', 'Temperature(celsius)', 'Target_Temperature(celsius)', 'Amp', 'CumulativePowerConsumption', 'ContentType', 'Humidity', 'CO2', 'Time_Door_Open', 
+'Maintainence_Required', 'Defrost_Cycle'])
+#faulty sensor data
+id = random.randint(1001,2000)
+Today= datetime.datetime.today()
+date_list = [Today + datetime.timedelta(minutes=15*x) for x in range(0, 1000)]
+range_list=np.linspace(1,2,1000)
+index=0
+for i in range_list:
 
-print(buildJSON(sys.argv[1]))
-#print(buildJSON('../data/container_matrix_sensor_malfunction.csv'))
+    timestamp = date_list[index].strftime('%Y-%m-%d T%H:%M Z')
+    df.loc[i] = [timestamp, id, gauss(5.0, 4.0), 4.4, gauss(2.5,1.0), gauss(10.0,2.0), random.randint(1,5),gauss(10.5, 5.5), gauss(10.5, 5.0), gauss(5.0, 3.0), 1, 6]
+    index=index+1
 
+
+print(buildJSON(df))
+#print(buildJSON(sys.argv[1]))
 
