@@ -13,24 +13,26 @@ else
 fi
 
 . ./scripts/setenv.sh
-if [[ $kcenv -ne "local" && -f ../../refarch-kc/certs/es-cert.pem ]] 
+if [[ $kcenv -ne "local" && -f ../../../refarch-kc/certs/es-cert.pem ]] 
 then
-   openssl x509 -in ../../refarch-kc/certs/es-cert.pem -inform pem -out es-cert.der -outform der
+   openssl x509 -in ../../../refarch-kc/certs/es-cert.pem -inform pem -out es-cert.der -outform der
 fi
 
 find target -iname "*SNAPSHOT*" -print | xargs rm -rf
-rm -rf target/liberty/wlp/usr/servers/defaultServer/apps/expanded
+# rm -rf target/liberty/wlp/usr/servers/defaultServer/apps/expanded
 tools=$(docker images | grep javatools)
 if [[ -z "$tools" ]]
 then
-  mvn install -DskipITs
+  # mvn install -DskipITs
+  echo ""
 else
    docker run -v $(pwd):/home -ti ibmcase/javatools bash -c "cd /home && mvn install -DskipITs"
 fi
 # image for public docker hub
-docker build --build-arg envkc=$kcenv -t ibmcase/$kname .
 if [[ $kcenv != "local" ]]
 then
    # image for private registry in IBM Cloud
-   docker tag ibmcase/$kname us.icr.io/ibmcaseeda/$kname
+   docker build --build-arg envkc=$kcenv -t us.icr.io/ibmcaseeda/$kname .
+else
+   docker build -f Dockerfile-local --build-arg envkc=$kcenv -t ibmcase/$kname .
 fi
