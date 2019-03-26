@@ -1,7 +1,8 @@
 #!/bin/sh
 echo 'Start Data Generation \n'
 toolsDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd ../../tools && pwd )
-dataFrames=python $toolsDIR/generateData_sensor_malfunction.py 
+
+dataFrames=`python -c 'import sys;import os;sys.path.insert(0,os.path.abspath("../../"));import tools.generateData_sensor_malfunction as m; m.buildJSON()'`
 echo $dataFrames
 echo '\n Done Generating \n'
 
