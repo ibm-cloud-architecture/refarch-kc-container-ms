@@ -6,7 +6,6 @@
 
 import pandas as pd
 import numpy as np
-import sys
 from sklearn import linear_model
 from sklearn import metrics
 
@@ -14,7 +13,7 @@ from sklearn import metrics
 # In[10]:
 
 
-data = pd.read_csv(sys.argv[1], delimiter=",")
+data = pd.read_csv('../data/container_matrix_test.csv', delimiter=",")
 data.head()
 
 
@@ -39,7 +38,7 @@ X.head()
 import pickle
 
 #loading a model from a file called model.pkl
-model = pickle.load(open(sys.argv[2],"r"))
+model = pickle.load(open("model.pkl","r"))
 
 
 # In[9]:

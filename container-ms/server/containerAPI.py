@@ -25,102 +25,51 @@ container = api.model('container', {
 	'CO2': fields.String(required = True, description = 'The task details')
 })
 
+class containerActions(object):
+    def __init__(self):
+        self.counter = 0
+
+    def getAllContainers(self):
+        return {"Type" : "Hello"}
+
+    def getContainerByID(self, id):
+        todo = self.get(id)
+        self.todos.remove(todo)
+
+    def getCityContainers(self, city):
+        todo = self.get(id)
+        self.todos.remove(todo)
+
+
+cActions = containerActions()
+
 @ns.route('/')
 class containerList(Resource):
     '''Shows a list of all the containers in the system.'''
     @ns.doc('list_containers')
     def get(self):
-        '''Lists Container Data'''
-        return {'task': 'hello'}
-
-    @ns.doc('create_container')
-    @ns.expect(container)
-    def post(self):
-        '''Create a Container'''
-        return api.payload, 201
+        '''Lists Containers'''
+        return cActions.getAllContainers()
 
 @ns.route('/<int:id>')
 @ns.response(404, 'Container not found')
 @ns.param('id', 'Container ID')
 class Container(Resource):
     '''Funtions to set the status of a container'''
-    @ns.doc('containerAddedToInventory')
-    def post(self, id):
-        '''Returns if the container is on a ship or not.'''
-        return {'status':'false'}
-
-    @ns.doc('delete_container')
-    @ns.response(204, 'container deleted')
-    def delete(self, id):
-        '''Delete a task given its identifier'''
-        return '', 204
-
     @ns.expect(container)
     def get(self, id):
-        '''Update a task given its identifier'''
-        return  api.payload
+        '''Returns data about a specified container.'''
+        return  cActions.getContainerByID(id)
 
-class containerActions(object):
-    def __init__(self):
-        self.counter = 0
-        self.todos = []
-
-    def ContainerAddedToInventory(self, id):
-        for todo in self.todos:
-            if todo['id'] == id:
-                return todo
-        api.abort(404, "Todo {} doesn't exist".format(id))
-
-    def ContainerRemovedFromInventory(self, data):
-        todo = data
-        todo['id'] = self.counter = self.counter + 1
-        self.todos.append(todo)
-        return todo
-
-    def ContainerAtLocation(self, id, data):
-        todo = self.get(id)
-        todo.update(data)
-        return todo
-
-    def ContainerOnMaintence(self, id):
-        todo = self.get(id)
-        self.todos.remove(todo)
-
-    def ContainerOffMaintence(self, id):
-        todo = self.get(id)
-        self.todos.remove(todo)
-
-    def ConatinerAssignedToOrder(self, id):
-        todo = self.get(id)
-        self.todos.remove(todo)
-
-    def ContainerReleasedFromOrder(self, id):
-        todo = self.get(id)
-        self.todos.remove(todo)
-
-    def ContainerGoodLoaded(self, id):
-        todo = self.get(id)
-        self.todos.remove(todo)
-
-    def ContainerGoodUnLoaded(self, id):
-        todo = self.get(id)
-        self.todos.remove(todo)
-
-    def ContainerOnShip(self, id):
-        todo = self.get(id)
-        self.todos.remove(todo)
-
-    def ContainerOffShip(self, id):
-        todo = self.get(id)
-        self.todos.remove(todo)
-
-    def ContainerOnTruck(self, id):
-        todo = self.get(id)
-        self.todos.remove(todo)
-
-    def ContainerOffTruck(self, id):
-        todo = self.get(id)
-        self.todos.remove(todo)
+@ns.route('/<string:city>')
+@ns.response(404, 'City not found')
+@ns.param('city', 'Container ID')
+class Container(Resource):
+    '''Funtions to set the status of a container'''
+    @ns.expect(container)
+    def get(self, city):
+        '''Returns containers in the city specified.'''
+        return cActions.getCityContainers(city)
 
 @nsg.route('/healthcheck')
 class generalChecks(Resource):

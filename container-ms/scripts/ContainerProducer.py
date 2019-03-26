@@ -21,15 +21,15 @@ class ContainerPublish:
              print('Message delivered to {} [{}]'.format(msg.topic(), msg.partition()))
 
     def publishEvent(self,data):
-        dataStr = json.dumps(data)
-        containerProducer.produce('ContainerMetrics', dataStr.encode('utf-8'), callback=ContainerPublisher.delivery_report)
+        #dataStr = json.dumps(data)
+        containerProducer.produce('ContainerMetrics', data.encode('utf-8'), callback=ContainerPublisher.delivery_report)
         containerProducer.flush()
 
 
 ContainerPublisher = ContainerPublish()
 
 print("This is the name of the script: ", sys.argv[1])
-data = buildJSON(sys.argv[1])
+data=sys.argv[1]
 
 for i in data:
     print(i)

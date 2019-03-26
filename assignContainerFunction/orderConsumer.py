@@ -13,7 +13,7 @@ containerConsumer = Consumer({
     'default.topic.config': {'auto.offset.reset': 'earliest'} 
 })
 
-topics = ['containers']
+topics = ['orders']
 
 containerConsumer.subscribe(topics)
 
@@ -22,8 +22,10 @@ def pollMessages():
     while running:
         msg = containerConsumer.poll()
         if not msg.error():
-            if msg.topic() == 'containers':
-                print('MESSAGE TOPIC = CONTAINERS')
+            print("    Topic: " + (msg.topic()))
+            print("    Message: " + (msg.value()))
+            if msg.topic() == 'orders':
+                print('MESSAGE TOPIC = ORDERS')
                 print('Message Data: ', msg.value())
         else:
             if msg.error().code() == KafkaError._PARTITION_EOF:
