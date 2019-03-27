@@ -13,9 +13,9 @@ else
 fi
 
 . ./scripts/setenv.sh
-if [[ $kcenv -ne "local" && -f ../../../refarch-kc/certs/es-cert.pem ]] 
+if [[ "$kcenv" != "local" && -f ../../refarch-kc/certs/es-cert.pem ]] 
 then
-   openssl x509 -in ../../../refarch-kc/certs/es-cert.pem -inform pem -out es-cert.der -outform der
+   openssl x509 -in ../../refarch-kc/certs/es-cert.pem -inform pem -out es-cert.der -outform der
 fi
 
 find target -iname "*SNAPSHOT*" -print | xargs rm -rf
@@ -23,16 +23,19 @@ find target -iname "*SNAPSHOT*" -print | xargs rm -rf
 tools=$(docker images | grep javatools)
 if [[ -z "$tools" ]]
 then
-  # mvn install -DskipITs
-  echo ""
+   mvn install -DskipITs
 else
    docker run -v $(pwd):/home -ti ibmcase/javatools bash -c "cd /home && mvn install -DskipITs"
 fi
-# image for public docker hub
+
+
 if [[ $kcenv != "local" ]]
 then
    # image for private registry in IBM Cloud
+   echo "Build docker image for $kname to deploy on $kcenv"
    docker build --build-arg envkc=$kcenv -t us.icr.io/ibmcaseeda/$kname .
 else
-   docker build -f Dockerfile-local --build-arg envkc=$kcenv -t ibmcase/$kname .
+   # image for public docker hub or local repo - no CA certificate
+   echo "Build docker image for $kname local run"
+   docker build -f Dockerfile-local -t ibmcase/$kname .
 fi
