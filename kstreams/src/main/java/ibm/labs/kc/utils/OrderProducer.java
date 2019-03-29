@@ -22,7 +22,7 @@ public class OrderProducer {
 	private KafkaProducer<String, String> kafkaProducer;
 	 
 	public OrderProducer() {
-		 Properties properties = ApplicationConfig.getProducerProperties("order-producer");
+		 Properties properties = KafkaStreamConfig.getProducerProperties("order-producer");
 	     kafkaProducer = new KafkaProducer<String, String>(properties);
 	}
 
@@ -48,10 +48,10 @@ public class OrderProducer {
 		String key = oe.getPayload().getOrderID();
 		
 		String value = new Gson().toJson(oe);
-	    ProducerRecord<String, String> record = new ProducerRecord<>(ApplicationConfig.ORDER_TOPIC, key, value);
+	    ProducerRecord<String, String> record = new ProducerRecord<>(KafkaStreamConfig.ORDERS_TOPIC, key, value);
 
 	    Future<RecordMetadata> send = kafkaProducer.send(record);
-	    send.get(ApplicationConfig.PRODUCER_TIMEOUT_SECS, TimeUnit.SECONDS);
+	    send.get(KafkaStreamConfig.PRODUCER_TIMEOUT_SECS, TimeUnit.SECONDS);
 	    System.out.println(" Emit order event " + oe.getPayload().getOrderID());
 
 	}

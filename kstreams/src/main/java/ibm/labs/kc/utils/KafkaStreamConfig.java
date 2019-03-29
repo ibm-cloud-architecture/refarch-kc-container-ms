@@ -15,11 +15,15 @@ import org.apache.kafka.streams.StreamsConfig;
 /**
  *
  */
-public class ApplicationConfig {
+public class KafkaStreamConfig {
 
-    public static final String ORDER_TOPIC = "orders";
-    public static final String CONTAINER_TOPIC = "containers";
+    public static final String ORDERS_TOPIC = "orders";
+    public static final String CONTAINERS_TOPIC = "containers";
+	public static final String CONTAINERS_STORE_NAME = "queryable-container-store";
+	
     public static final String ERROR_TOPIC = "errors";
+    public static final String ICP_ENV = "ICP";
+    public static final String IC_ENV = "IBMCLOUD";
     public static final long PRODUCER_TIMEOUT_SECS = 10;
     public static final long PRODUCER_CLOSE_TIMEOUT_SEC = 10;
     public static final String CONSUMER_GROUP_ID = "order-command-grp";
@@ -39,7 +43,7 @@ public class ApplicationConfig {
         Properties properties = new Properties();
         Map<String, String> env = System.getenv();
 
-        if ("IBMCLOUD".equals(env.get("KAFKA_ENV")) || "ICP".equals(env.get("KAFKA_ENV"))) {
+        if (IC_ENV.equals(env.get("KAFKA_ENV")) || ICP_ENV.equals(env.get("KAFKA_ENV"))) {
             if (env.get("KAFKA_BROKERS") == null) {
                 throw new IllegalStateException("Missing environment variable KAFKA_BROKERS");
             }

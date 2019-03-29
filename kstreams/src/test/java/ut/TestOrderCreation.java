@@ -27,7 +27,7 @@ import ibm.labs.kc.model.events.ContainerAssignment;
 import ibm.labs.kc.model.events.ContainerCreation;
 import ibm.labs.kc.model.events.ContainerEvent;
 import ibm.labs.kc.model.events.OrderEvent;
-import ibm.labs.kc.utils.ApplicationConfig;
+import ibm.labs.kc.utils.KafkaStreamConfig;
 
 public class TestOrderCreation {
 
@@ -68,7 +68,7 @@ public class TestOrderCreation {
  			System.out.println(order.getOrderID() + " " + order.getQuantity());
  		});
 		
-		Properties props = ApplicationConfig.getStreamsProperties("test");
+		Properties props = KafkaStreamConfig.getStreamsProperties("test");
 		props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "dummy:1234");
 		
 		TopologyTestDriver testDriver = new TopologyTestDriver(builder.build(), props);
@@ -150,7 +150,7 @@ public class TestOrderCreation {
 		// use the default string serdes for key and value - the topology is just a table from the stream
 		KTable containers=builder.table("containers",Materialized.as("queryable-container-store"));
 		
-		Properties props = ApplicationConfig.getStreamsProperties("test");
+		Properties props = KafkaStreamConfig.getStreamsProperties("test");
 		props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "dummy:1234");
 		
 		TopologyTestDriver testDriver = new TopologyTestDriver(builder.build(), props);
@@ -172,7 +172,7 @@ public class TestOrderCreation {
 	}
 	
 	private TopologyTestDriver buildTestDriver(StreamsBuilder builder) {
-		Properties props = ApplicationConfig.getStreamsProperties("test");
+		Properties props = KafkaStreamConfig.getStreamsProperties("test");
 		props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "dummy:1234");
 		return new TopologyTestDriver(builder.build(), props);	
 	}

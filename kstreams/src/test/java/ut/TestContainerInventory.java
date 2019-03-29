@@ -22,7 +22,7 @@ import ibm.labs.kc.model.Container;
 import ibm.labs.kc.model.events.ContainerAssignment;
 import ibm.labs.kc.model.events.ContainerCreation;
 import ibm.labs.kc.model.events.ContainerEvent;
-import ibm.labs.kc.utils.ApplicationConfig;
+import ibm.labs.kc.utils.KafkaStreamConfig;
 
 /**
  * Validate a set of expected behaviors for container inventory:
@@ -42,12 +42,12 @@ public class TestContainerInventory {
 	public static void setUpBeforeClass() throws Exception {
 		dao = (ContainerInventoryView)ContainerInventoryView.instance();
 		// do not start the stream flow as we are using testDriver
-		Properties props = ApplicationConfig.getStreamsProperties("test");
+		Properties props = KafkaStreamConfig.getStreamsProperties("test");
 		props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "dummy:1234");
 		
 		testDriver = new TopologyTestDriver(
 				dao.buildProcessFlow(), props);
-		containerEventFactory = new ConsumerRecordFactory<String, String>(ContainerInventoryView.CONTAINERS_TOPIC,
+		containerEventFactory = new ConsumerRecordFactory<String, String>(KafkaStreamConfig.CONTAINERS_TOPIC,
 				new StringSerializer(), new StringSerializer());
 	}
 
@@ -70,7 +70,7 @@ public class TestContainerInventory {
 	
 	@Test
 	public void shouldNotHaveThisContainer() {
-		KeyValueStore<String, String> store = testDriver.getKeyValueStore(ContainerInventoryView.CONTAINERS_STORE_NAME);
+		KeyValueStore<String, String> store = testDriver.getKeyValueStore(KafkaStreamConfig.CONTAINERS_STORE_NAME);
 		// inject the testing store, as we do not have started the real dao
 		dao.setStore(store);
 		
@@ -83,11 +83,11 @@ public class TestContainerInventory {
 	public void shouldHaveContainerInTableFromContainerCreatedEvent() {
 		
 		ContainerCreation ce = buildContainerEvent();
-		ConsumerRecord<byte[],byte[]> record = containerEventFactory.create(ContainerInventoryView.CONTAINERS_TOPIC,ce.getContainerID(), parser.toJson(ce));
+		ConsumerRecord<byte[],byte[]> record = containerEventFactory.create(KafkaStreamConfig.CONTAINERS_TOPIC,ce.getContainerID(), parser.toJson(ce));
 		
 		testDriver.pipeInput(record);
 		
-		KeyValueStore<String, String> store = testDriver.getKeyValueStore(ContainerInventoryView.CONTAINERS_STORE_NAME);
+		KeyValueStore<String, String> store = testDriver.getKeyValueStore(KafkaStreamConfig.CONTAINERS_STORE_NAME);
 		// inject the testing store
 		dao.setStore(store);
 		
@@ -111,11 +111,11 @@ public class TestContainerInventory {
 		ContainerCreation ce = buildContainerEvent();
 		ce.setContainerID("c034");
 		ce.getPayload().setContainerID(ce.getContainerID());
-		ConsumerRecord<byte[],byte[]> record = containerEventFactory.create(ContainerInventoryView.CONTAINERS_TOPIC,ce.getContainerID(), parser.toJson(ce));
+		ConsumerRecord<byte[],byte[]> record = containerEventFactory.create(KafkaStreamConfig.CONTAINERS_TOPIC,ce.getContainerID(), parser.toJson(ce));
 		testDriver.pipeInput(record);
 		Thread.sleep(1000);
 		// 2- verify attributes
-		KeyValueStore<String, String> store = testDriver.getKeyValueStore(ContainerInventoryView.CONTAINERS_STORE_NAME);
+		KeyValueStore<String, String> store = testDriver.getKeyValueStore(KafkaStreamConfig.CONTAINERS_STORE_NAME);
 		// inject the testing store
 		dao.setStore(store);
 		
@@ -125,7 +125,7 @@ public class TestContainerInventory {
 		Assert.assertTrue("NotAssigned".equals(container.getOrderID()));
 		// 3- now inject a container assignment event 
 		ContainerAssignment ca = new ContainerAssignment("order01",container.getContainerID());
-		record = containerEventFactory.create(ContainerInventoryView.CONTAINERS_TOPIC,ce.getContainerID(), parser.toJson(ca));
+		record = containerEventFactory.create(KafkaStreamConfig.CONTAINERS_TOPIC,ce.getContainerID(), parser.toJson(ca));
 		testDriver.pipeInput(record);
 		Thread.sleep(3000);
 		// 4- Verify only the orderID attribute was modified

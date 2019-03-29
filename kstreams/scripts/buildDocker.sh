@@ -13,10 +13,7 @@ else
 fi
 
 . ./scripts/setenv.sh
-if [[ "$kcenv" != "local" && -f ../../refarch-kc/certs/es-cert.pem ]] 
-then
-   openssl x509 -in ../../refarch-kc/certs/es-cert.pem -inform pem -out es-cert.der -outform der
-fi
+
 
 find target -iname "*SNAPSHOT*" -print | xargs rm -rf
 # rm -rf target/liberty/wlp/usr/servers/defaultServer/apps/expanded

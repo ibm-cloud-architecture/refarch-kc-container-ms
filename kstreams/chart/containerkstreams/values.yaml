@@ -12,7 +12,7 @@ image:
   resources:
     requests:
       cpu: 200m
-      memory: 300Mi
+      memory: 400Mi
 service:
   name: Node
   type: NodePort

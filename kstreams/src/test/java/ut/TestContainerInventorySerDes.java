@@ -29,7 +29,7 @@ import com.google.gson.Gson;
 import ibm.labs.kc.model.Container;
 import ibm.labs.kc.model.events.ContainerCreation;
 import ibm.labs.kc.model.events.ContainerEvent;
-import ibm.labs.kc.utils.ApplicationConfig;
+import ibm.labs.kc.utils.KafkaStreamConfig;
 import ibm.labs.kc.utils.JsonPOJODeserializer;
 import ibm.labs.kc.utils.JsonPOJOSerializer;
 
@@ -99,7 +99,7 @@ public class TestContainerInventorySerDes {
 		c.setStatus("atDock");
 		ContainerCreation ce =  new ContainerCreation(ContainerEvent.CONTAINER_ADDED,"1.0",c);
 
-		Properties props = ApplicationConfig.getStreamsProperties("test");
+		Properties props = KafkaStreamConfig.getStreamsProperties("test");
 		props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "dummy:1234");
     	
 		Serde<Container> containerSerde = buildContainerSerde();

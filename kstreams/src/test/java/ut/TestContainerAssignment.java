@@ -28,7 +28,7 @@ import ibm.labs.kc.model.Order;
 import ibm.labs.kc.model.events.ContainerCreation;
 import ibm.labs.kc.model.events.ContainerEvent;
 import ibm.labs.kc.model.events.OrderEvent;
-import ibm.labs.kc.utils.ApplicationConfig;
+import ibm.labs.kc.utils.KafkaStreamConfig;
 import ibm.labs.kc.utils.OrderProducer;
 
 
@@ -55,12 +55,12 @@ public class TestContainerAssignment {
 		serv = new ContainerOrderAssignment();
 		inventory = (ContainerInventoryView)ContainerInventoryView.instance();
 		
-		Properties props = ApplicationConfig.getStreamsProperties("test");
+		Properties props = KafkaStreamConfig.getStreamsProperties("test");
 		props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "dummy:1234");
 		
 		testDriver = new TopologyTestDriver(
 				inventory.buildProcessFlow(), props);
-		containerEventFactory = new ConsumerRecordFactory<String, String>(ContainerInventoryView.CONTAINERS_TOPIC,
+		containerEventFactory = new ConsumerRecordFactory<String, String>(KafkaStreamConfig.CONTAINERS_TOPIC,
 				new StringSerializer(), new StringSerializer());
 	}
 	
@@ -123,7 +123,7 @@ public class TestContainerAssignment {
 		ContainerCreation ce = buildContainerEvent();
 		Gson parser = new Gson();
 		
-		ConsumerRecord<byte[],byte[]> record = containerEventFactory.create(ContainerInventoryView.CONTAINERS_TOPIC,ce.getContainerID(), parser.toJson(ce));
+		ConsumerRecord<byte[],byte[]> record = containerEventFactory.create(KafkaStreamConfig.CONTAINERS_TOPIC,ce.getContainerID(), parser.toJson(ce));
 		List<ConsumerRecord<byte[],byte[]>> records = new ArrayList<ConsumerRecord<byte[],byte[]>>();
 		records.add(record);
 		ce = buildContainerEvent();
@@ -131,7 +131,7 @@ public class TestContainerAssignment {
 		ce.getPayload().setContainerID("c02");
 		ce.getPayload().setLatitude(31.5);
 		ce.getPayload().setLongitude(121.4);
-		record = containerEventFactory.create(ContainerInventoryView.CONTAINERS_TOPIC,ce.getContainerID(), parser.toJson(ce));
+		record = containerEventFactory.create(KafkaStreamConfig.CONTAINERS_TOPIC,ce.getContainerID(), parser.toJson(ce));
 		records.add(record);
 		return records;
 	}
@@ -146,7 +146,7 @@ public class TestContainerAssignment {
 
 		// So at this level the container is in the store
 		Thread.sleep(5000);
-		KeyValueStore<String, String> store = testDriver.getKeyValueStore(ContainerInventoryView.CONTAINERS_STORE_NAME);
+		KeyValueStore<String, String> store = testDriver.getKeyValueStore(KafkaStreamConfig.CONTAINERS_STORE_NAME);
 		inventory.setStore(store);
 		// 2- Add an order event to get food from oakland
 		OrderEvent orderEvent = buildOrderEvent();

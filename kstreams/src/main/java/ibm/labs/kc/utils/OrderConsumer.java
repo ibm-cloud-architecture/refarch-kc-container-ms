@@ -46,7 +46,7 @@ public class OrderConsumer {
 
     public synchronized void start() {
         if ( streams == null ) {
-            Properties props = ApplicationConfig.getStreamsProperties("order-streams");
+            Properties props = KafkaStreamConfig.getStreamsProperties("order-streams");
 		    props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
 		    final Topology topology = buildProcessFlow();
 	        System.out.println(topology.describe());

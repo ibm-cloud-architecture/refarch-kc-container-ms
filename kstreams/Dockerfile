@@ -7,13 +7,8 @@ COPY /src/main/liberty/config/jvmbx.options /config/jvm.options
 # Liberty document reference : https://hub.docker.com/_/websphere-liberty/
 USER root
 ARG envkc
-COPY es-cert.der /tmp/es-cert.der
 RUN apt-get update -q -y && apt-get dist-upgrade -q -y && chmod g+w /config/apps 
-RUN \
-   if [ "$envkc"  != "local" ]; then \
-    echo yes | keytool -importcert -alias startssl -keystore \
-      $JAVA_HOME/lib/security/cacerts -storepass changeit -file /tmp/es-cert.der; \
-   fi
+
 USER 1001
 # install any missing features required by server config
 RUN installUtility install --acceptLicense defaultServer 

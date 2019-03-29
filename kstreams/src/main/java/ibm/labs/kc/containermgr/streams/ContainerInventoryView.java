@@ -3,6 +3,7 @@ package ibm.labs.kc.containermgr.streams;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.UUID;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.streams.KafkaStreams;
@@ -24,7 +25,7 @@ import ibm.labs.kc.model.Container;
 import ibm.labs.kc.model.events.ContainerAssignment;
 import ibm.labs.kc.model.events.ContainerCreation;
 import ibm.labs.kc.model.events.ContainerEvent;
-import ibm.labs.kc.utils.ApplicationConfig;
+import ibm.labs.kc.utils.KafkaStreamConfig;
 
 /**
  * Process container events to build a container inventory view.
@@ -40,8 +41,7 @@ public class ContainerInventoryView  implements ContainerDAO {
 	private static ContainerInventoryView  instance;
 	private KafkaStreams streams;
 	private Gson jsonParser = new Gson();
-	public static String CONTAINERS_STORE_NAME = "queryable-container-store";
-	public static String CONTAINERS_TOPIC = "containers";
+
 	
 	public synchronized static ContainerDAO instance() {
         if (instance == null) {
@@ -58,7 +58,7 @@ public class ContainerInventoryView  implements ContainerDAO {
 	public  Topology buildProcessFlow() {
 		final StreamsBuilder builder = new StreamsBuilder();
 	   
-	    builder.stream(CONTAINERS_TOPIC).mapValues((containerEvent) -> {
+	    builder.stream(KafkaStreamConfig.CONTAINERS_TOPIC).mapValues((containerEvent) -> {
 	    		 // the container payload is of interest to keep in table
 	   			Container c = manageContainerUpdate((String)containerEvent);
 	   			 return jsonParser.toJson(c);
@@ -68,13 +68,13 @@ public class ContainerInventoryView  implements ContainerDAO {
 	   		 		
 	   		 		return container;
 	   		 	},
-	   	    	  Materialized.as(CONTAINERS_STORE_NAME));
+	   	    	  Materialized.as(KafkaStreamConfig.CONTAINERS_STORE_NAME));
 	    return builder.build();
 	}
 	
 	public  synchronized void start() {
 		if (streams == null) {
-			Properties props = ApplicationConfig.getStreamsProperties("container-streams");
+			Properties props = KafkaStreamConfig.getStreamsProperties("container-streams-" + UUID.randomUUID().toString());
 		    props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
 		    streams = new KafkaStreams(buildProcessFlow(), props);
 			try {
@@ -83,7 +83,7 @@ public class ContainerInventoryView  implements ContainerDAO {
 	        } catch (Throwable e) {
 	           e.printStackTrace();
 	        }
-			logger.debug("ContainerInventoryView started");
+			logger.info("ContainerInventoryView started");
 		}
 	}
 	
@@ -134,7 +134,7 @@ public class ContainerInventoryView  implements ContainerDAO {
     public ReadOnlyKeyValueStore<String,String> getStore(){
     	if ( store == null && streams != null ) {
     		try {
-    		store = streams.store(CONTAINERS_STORE_NAME, QueryableStoreTypes.keyValueStore());
+    		store = streams.store(KafkaStreamConfig.CONTAINERS_STORE_NAME, QueryableStoreTypes.keyValueStore());
     		} catch (InvalidStateStoreException e) {
     			// until the stream process flow is started it is possible the store does not exist.
     			store = null;

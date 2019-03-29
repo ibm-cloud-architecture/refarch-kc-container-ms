@@ -19,6 +19,7 @@ package ibm.labs.kc.containermgr.streams;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.UUID;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.Deserializer;
@@ -30,35 +31,32 @@ import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.KStream;
-
-import com.google.gson.Gson;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ibm.labs.kc.containermgr.dao.CityDAO;
 import ibm.labs.kc.model.City;
 import ibm.labs.kc.model.Container;
 import ibm.labs.kc.model.Order;
-import ibm.labs.kc.model.events.ContainerAssignment;
 import ibm.labs.kc.model.events.OrderEvent;
-import ibm.labs.kc.utils.ApplicationConfig;
 import ibm.labs.kc.utils.JsonPOJODeserializer;
 import ibm.labs.kc.utils.JsonPOJOSerializer;
+import ibm.labs.kc.utils.KafkaStreamConfig;
 
 /**
- * In this example, we implement a simple LineSplit program using the high-level Streams DSL
- * that reads from a source topic "streams-plaintext-input", where the values of messages represent lines of text;
- * the code split each text line in string into words and then write back into a sink topic "streams-linesplit-output" where
- * each record represents a single word.
+ * This is the container to order assignment 'service' implemented using streams.
+ * 
+ * 
  */
 public class ContainerOrderAssignment {
-
+	private static final Logger logger = LoggerFactory.getLogger(ContainerOrderAssignment.class);
+	// as there is only one thread consuming message in this code, singleton could have been avoided.
     public static ContainerOrderAssignment instance;
 
 	private KafkaStreams streams;
+	// As of now this is a mockup
 	private CityDAO cityDAO = new CityDAO();
-    private Gson jsonParser = new Gson();
     
-    public static String ORDERS_TOPIC = "orders";
-    public static String CONTAINERS_TOPIC = "containers";
 
     public synchronized static ContainerOrderAssignment instance() {
         if ( instance == null ) {
@@ -69,7 +67,7 @@ public class ContainerOrderAssignment {
 
     public synchronized void start() {
         if ( streams == null ) {
-            Properties props = ApplicationConfig.getStreamsProperties("order-streams");
+            Properties props = KafkaStreamConfig.getStreamsProperties("order-streams-" + UUID.randomUUID().toString());
 		    props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
 		    streams = new KafkaStreams(buildProcessFlow(), props);
 			try {
@@ -78,6 +76,7 @@ public class ContainerOrderAssignment {
 	        } catch (Throwable e) {
 	            System.exit(1);
 	        }
+			logger.info("ContainerOrderAssignment started");
         }
     }
 
@@ -108,7 +107,7 @@ public class ContainerOrderAssignment {
 	public Topology buildProcessFlow() {
 		final StreamsBuilder builder = new StreamsBuilder();
 	  
-	        KStream<String,OrderEvent>[] branches = builder.stream(ORDERS_TOPIC,Consumed.with(Serdes.String(), buildOrderEventSerde()))
+	        KStream<String,OrderEvent>[] branches = builder.stream(KafkaStreamConfig.ORDERS_TOPIC,Consumed.with(Serdes.String(), buildOrderEventSerde()))
 	        		.filter((key,orderEvent) -> {
 	        			   return (OrderEvent.TYPE_BOOKED.equals(orderEvent.getType())); 
 	        		})
@@ -126,19 +125,19 @@ public class ContainerOrderAssignment {
 	        	orderEvent.getPayload().setStatus(Order.ONHOLD_STATUS);
 	        	orderEvent.setType(OrderEvent.TYPE_REJECTED);
 	        	return orderEvent;
-	        }).through(ORDERS_TOPIC);
+	        }).through(KafkaStreamConfig.ORDERS_TOPIC);
 	        
 	        branches[1].mapValues(orderEvent -> {
 	        	orderEvent.getPayload().setStatus(Order.CONTAINER_ALLOCATED_STATUS);
 	        	orderEvent.setType(OrderEvent.TYPE_CONTAINER_ALLOCATED);
 	        	return orderEvent;
-	        }).through(ORDERS_TOPIC)
+	        }).through(KafkaStreamConfig.ORDERS_TOPIC)
 	        .mapValues(orderEvent -> {
 	        		Container c = new Container();
 	        		c.setContainerID(orderEvent.getPayload().getContainerID());
 	        		c.setOrderID(orderEvent.getPayload().getOrderID());
 	        		return c;
-		        }).through(CONTAINERS_TOPIC);
+		        }).through(KafkaStreamConfig.CONTAINERS_TOPIC);
 	        
 	        return builder.build();
 	}

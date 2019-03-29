@@ -21,7 +21,7 @@ public class ContainerProducer {
 	private KafkaProducer<String, String> kafkaProducer;
 	 
 	public ContainerProducer() {
-		 Properties properties = ApplicationConfig.getProducerProperties("container-producer");
+		 Properties properties = KafkaStreamConfig.getProducerProperties("container-producer");
 	     kafkaProducer = new KafkaProducer<String, String>(properties);
 	}
 
@@ -41,10 +41,10 @@ public class ContainerProducer {
 		String key = e.getPayload().getContainerID();
 		
 		String value = new Gson().toJson(e);
-	    ProducerRecord<String, String> record = new ProducerRecord<>(ApplicationConfig.CONTAINER_TOPIC, key, value);
+	    ProducerRecord<String, String> record = new ProducerRecord<>(KafkaStreamConfig.CONTAINERS_TOPIC, key, value);
 
 	    Future<RecordMetadata> send = kafkaProducer.send(record);
-	    send.get(ApplicationConfig.PRODUCER_TIMEOUT_SECS, TimeUnit.SECONDS);
+	    send.get(KafkaStreamConfig.PRODUCER_TIMEOUT_SECS, TimeUnit.SECONDS);
 	    System.out.println(" Emit container event " + e.getPayload().getContainerID());
 	    
 	}
