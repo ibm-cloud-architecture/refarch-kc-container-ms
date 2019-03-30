@@ -6,7 +6,6 @@ COPY /src/main/liberty/config/jvmbx.options /config/jvm.options
 # Grant write access to apps folder, this is to support old and new docker versions.
 # Liberty document reference : https://hub.docker.com/_/websphere-liberty/
 USER root
-ARG envkc
 RUN apt-get update -q -y && apt-get dist-upgrade -q -y && chmod g+w /config/apps 
 
 USER 1001

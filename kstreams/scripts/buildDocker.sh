@@ -30,9 +30,9 @@ if [[ $kcenv != "local" ]]
 then
    # image for private registry in IBM Cloud
    echo "Build docker image for $kname to deploy on $kcenv"
-   docker build --build-arg envkc=$kcenv -t us.icr.io/ibmcaseeda/$kname .
+   docker build -t us.icr.io/ibmcaseeda/$kname .
 else
    # image for public docker hub or local repo - no CA certificate
    echo "Build docker image for $kname local run"
-   docker build -f Dockerfile-local -t ibmcase/$kname .
+   docker build  -t ibmcase/$kname .
 fi
