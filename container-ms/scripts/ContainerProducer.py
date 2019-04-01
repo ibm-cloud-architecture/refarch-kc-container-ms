@@ -21,17 +21,30 @@ def delivery_report(err, msg):
 def publishEvent(data):
     #dataStr = json.dumps(data)
     print data
-    containerProducer.produce('ContainerMetrics', data.encode('utf-8'), callback=delivery_report)
+    containerProducer.produce('ContainerMetrics', callback=delivery_report)
+    #containerProducer.produce('ContainerMetrics', data.encode('utf-8'), callback=delivery_report)
     containerProducer.flush()
 
 
 
-#print("This is the name of the script: ", sys.argv[1])
 
-#data = json.loads(sys.argv[1])
-#ContainerPublisher.publishEvent(data)
-# for i in data:
-#     print(i)
-#     ContainerPublisher.publishEvent(i)
-#     print('\n')
-#     time.sleep(1)
+data = open(sys.argv[1], 'r')
+#print("This is the name of the script: ", data)
+#data = json.load(sys.argv[1])
+line = data.readline()
+# use the read line to read further.
+# If the file is not empty keep reading one line
+# at a time, till the file is empty
+while line:
+    print(line)
+    publishEvent(line)
+    print('\n')
+    time.sleep(1)
+    line = data.readline()
+data.close()
+
+#for i in data:
+#    print(i)
+#    publishEvent(i)
+#    print('\n')
+#    time.sleep(1)

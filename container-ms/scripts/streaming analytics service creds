@@ -1,0 +1,8 @@
+{
+  "apikey": "X-QUYKd6-VhU1hHP_p3OHQIPA9-vHyLGkpRWdkxDnxbq",
+  "iam_apikey_description": "Auto generated apikey during resource-key operation for Instance - crn:v1:bluemix:public:streaming-analytics:us-south:a/4548cd84c0854e87951b2b250c29041d:2023d2bb-3420-412c-b4b6-4013f73e7691::",
+  "iam_apikey_name": "auto-generated-apikey-68321d34-f087-418f-ae12-b6fd0e0b3f93",
+  "iam_role_crn": "crn:v1:bluemix:public:iam::::serviceRole:Manager",
+  "iam_serviceid_crn": "crn:v1:bluemix:public:iam-identity::a/4548cd84c0854e87951b2b250c29041d::serviceid:ServiceId-3dd47990-d452-4a5f-9e27-f6e5d1a0d7db",
+  "v2_rest_url": "https://svc-cf.us-south.streaming-analytics.cloud.ibm.com/v2/streaming_analytics/2023d2bb-3420-412c-b4b6-4013f73e7691"
+}
