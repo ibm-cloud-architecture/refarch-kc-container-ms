@@ -21,8 +21,8 @@ def delivery_report(err, msg):
 def publishEvent(data):
     #dataStr = json.dumps(data)
     print data
-    containerProducer.produce('ContainerMetrics', callback=delivery_report)
-    #containerProducer.produce('ContainerMetrics', data.encode('utf-8'), callback=delivery_report)
+    #containerProducer.produce('ContainerMetrics', callback=delivery_report)
+    containerProducer.produce('ContainerMetrics', data.encode('utf-8'), callback=delivery_report)
     containerProducer.flush()
 
 
