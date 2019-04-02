@@ -9,7 +9,7 @@ echo '\n Done Generating \n'
 
 #Publish to Kafka 
 echo 'Publish Kafka \n'
-python -c 'import ContainerProducer as m; m.publishEvent("$dataFrames")'
+python -c 'import ContainerProducer as m; dataFrames=$(python -c 'import sys;import os;sys.path.insert(0,os.path.abspath("../../"));import tools.generateData_sensor_malfunction as m; print m.buildJSON()'); m.publishEvent(dataFrames)'
 #python containerProducer.py "echo $dataFrames"
 echo 'Kafka Done \n'
 

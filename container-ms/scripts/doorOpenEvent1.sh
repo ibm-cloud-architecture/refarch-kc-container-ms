@@ -3,9 +3,9 @@
 #Generate Data
 echo 'Start Data Generation \n'
 dataDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd ../../data && pwd )
-dataFile="$dataDIR/container_matrix_door_open.csv"
+dataFile="$dataDIR/container_matrix_door_open1.csv"
 toolsDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd ../../tools && pwd )
-python $toolsDIR/generateData_door_open.py $dataFile
+#python $toolsDIR/generateData_door_open.py $dataFile
 echo '\n Done Generating \n'
 
 #Publish to Kafka 
@@ -13,6 +13,9 @@ echo 'Publish Kafka \n'
 python containerProducer.py $dataFile
 echo 'Kafka Done \n'
 
+#Consume
+python containerConsumer.py
+echo 'Kafka Cosumer Done \n'
 #Test the Model
 echo 'Testing Model'
 modelDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd ../../predictiveModel && pwd )
