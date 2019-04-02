@@ -25,14 +25,10 @@ else
    docker run -v $(pwd):/home -ti ibmcase/javatools bash -c "cd /home && mvn install -DskipITs"
 fi
 
-
+docker build  -t ibmcase/$kname .
 if [[ $kcenv != "local" ]]
 then
    # image for private registry in IBM Cloud
-   echo "Build docker image for $kname to deploy on $kcenv"
-   docker build -t us.icr.io/ibmcaseeda/$kname .
-else
-   # image for public docker hub or local repo - no CA certificate
-   echo "Build docker image for $kname local run"
-   docker build  -t ibmcase/$kname .
+   echo "Tag docker image for $kname to deploy on $kcenv"
+   docker tag ibmcase/$kname  us.icr.io/ibmcaseeda/$kname 
 fi
