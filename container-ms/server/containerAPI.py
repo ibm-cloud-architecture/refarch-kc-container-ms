@@ -2,6 +2,7 @@ from flask import Flask, Blueprint
 from flask_restplus import Api, Resource, fields
 from werkzeug.contrib.fixers import ProxyFix
 from confluent_kafka import KafkaError, Producer, Consumer
+import psycopg2
 
 app = Flask(__name__)
 blueprint = Blueprint('api', __name__, url_prefix='/container')
@@ -9,7 +10,6 @@ app.wsgi_app = ProxyFix(app.wsgi_app)
 api = Api(blueprint, version='1.0', title='Container MS API',
     description='API for checking container data', doc='/api/'
 )
-
 app.register_blueprint(blueprint)
 
 ns = api.namespace('container', description='Operations to get container data.')
@@ -30,16 +30,59 @@ class containerActions(object):
         self.counter = 0
 
     def getAllContainers(self):
-        return {"Type" : "Hello"}
+        conn = databaseActions.createConnection(self)
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM containers;")
+        containers=cur.fetchall()
+        cur.close()
+        conn.close()
+        if len(containers) == 0:
+            return 'There are no containers there.'
+        else:
+            return containers
 
     def getContainerByID(self, id):
-        todo = self.get(id)
-        self.todos.remove(todo)
+        conn = databaseActions.createConnection(self)
+        cur = conn.cursor()
+        cur.execute("SELECT * from container WHERE id=%s", (id))
+        containers=cur.fetchall()
+        cur.close()
+        conn.close()
+        if len(containers) == 0:
+            return 'There is no container with that ID.'
+        else:
+            return containers
 
     def getCityContainers(self, city):
-        todo = self.get(id)
-        self.todos.remove(todo)
+        conn = databaseActions.createConnection(self)
+        cur = conn.cursor()
+        cur.execute("SELECT * from container WHERE city=%s", (city))
+        containers=cur.fetchall()
+        cur.close()
+        conn.close()
+        if len(containers) == 0:
+            return 'There is no containers in the specified city.'
+        else:
+            return containers
 
+class databaseActions(object):
+    def __init__(self):
+        self.counter = 0
+
+    def createConnection(self):
+        try:
+            conn=psycopg2.connect(
+                host = "bd2d0216-0b7d-4575-8c0b-d2e934843e41.6131b73286f34215871dfad7254b4f7d.databases.appdomain.cloud",
+                port = "31384",
+                dbname = "ibmclouddb",
+                user = "ibm_cloud_c9587d97_28f1_4da3_9254_dd56907ef40c",
+                password = "2d1c5269de3ea3766a5a9329ef874bdc077e2e57a336a3ba2a4d95dad7b91fa3"
+            )
+            print ("Connected to the database")
+            return conn
+        except:
+            print ("Unable to connect to the database")
+            return "ERROR"
 
 cActions = containerActions()
 
