@@ -35,5 +35,5 @@ istio:
   enabled: false
   weight: 100
 eventstreams:
-  brokers: rolling-streams-ibm-es-kafka-broker-svc-0:9092,rolling-streams-ibm-es-kafka-broker-svc-1:9092,rolling-streams-ibm-es-kafka-broker-svc-2:9092
+  brokers: rolling-streams-ibm-es-kafka-broker-svc-0.streams.svc.cluster.local:9092,rolling-streams-ibm-es-kafka-broker-svc-1.streams.svc.cluster.local:9092,rolling-streams-ibm-es-kafka-broker-svc-2.streams.svc.cluster.local:9092
   env: ICP
