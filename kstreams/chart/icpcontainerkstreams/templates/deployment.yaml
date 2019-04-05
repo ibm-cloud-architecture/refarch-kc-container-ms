@@ -43,3 +43,10 @@ spec:
               secretKeyRef:
                 name: eventstreams-apikey
                 key: binding 
+          - name: JKS_LOCATION
+            value: "{{ .Values.eventstreams.jks_location }}"
+          - name: TRUSTSTORE_PWD
+            valueFrom: 
+              secretKeyRef:
+                name: truststore-pwd
+                key: binding 

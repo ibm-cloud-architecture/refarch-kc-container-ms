@@ -18,6 +18,8 @@ import org.apache.kafka.streams.StreamsConfig;
 public class KafkaStreamConfig {
 
     public static final String ORDERS_TOPIC = "orders";
+    public static final String REJECTED_ORDERS_TOPIC = "rejected-orders";
+    public static final String ALLOCATED_ORDERS_TOPIC = "allocated-orders";
     public static final String CONTAINERS_TOPIC = "containers";
 	public static final String CONTAINERS_STORE_NAME = "queryable-container-store";
 	
@@ -57,6 +59,13 @@ public class KafkaStreamConfig {
                     "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"token\" password=\""
                             + env.get("KAFKA_APIKEY") + "\";");
             properties.put(SslConfigs.SSL_PROTOCOL_CONFIG, "TLSv1.2");
+            if (env.get("JKS_LOCATION") != null) {
+            	 properties.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, env.get("JKS_LOCATION"));
+            }
+            if (env.get("TRUSTSTORE_PWD") != null) {
+            	properties.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, env.get("TRUSTSTORE_PWD"));
+            }
+            
             properties.put(SslConfigs.SSL_ENABLED_PROTOCOLS_CONFIG, "TLSv1.2");
             properties.put(SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG, "HTTPS");
         } else {

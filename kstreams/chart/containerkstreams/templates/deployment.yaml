@@ -29,7 +29,7 @@ spec:
           readinessProbe:
             httpGet:
               path: /health
-              port: "{{ .Values.service.servicePort }}"
+              port: {{ .Values.service.servicePort }}
             initialDelaySeconds: 20
           resources:
             requests:

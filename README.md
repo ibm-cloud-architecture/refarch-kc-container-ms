@@ -2,9 +2,16 @@
 
 This project is part of the container shipment implementation solution you can read detail [here.](https://ibm-cloud-architecture.github.io/refarch-kc/).
 
-The goal of this Container management service is to support the reefer containers inventory management and to process all the events related to the container entity. To read the best practices and the "how tos" relate to the different implementation we are doing see the book [format here](https://ibm-cloud-architecture.github.io/refarch-kc-container-ms). 
+The goal of this Container management service is to support the reefer containers inventory management and to process all the events related to the container entity. To read the best practices and the "how tos" relate to the different implementation we are doing see the [book format here](https://ibm-cloud-architecture.github.io/refarch-kc-container-ms). 
 
-Update 03/12/2019.
+Update 04/05/2019.
+
+## Implementations
+
+We are proposing different implementation of the services:
+
+* [Using kafka streams API within a microprofile app](./kstreams/README.md)
+* [A python implementation](./)
 
 ### Building this booklet locally
 
@@ -30,6 +37,9 @@ The content of this repository is written with markdown files, packaged with [Mk
 3. Run `mkdocs gh-deploy` from the root refarch-da directory.
 
 --- 
+## Feather Readings
+
+https://start.microprofile.io/
 
 ## Contribute
 
