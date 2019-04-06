@@ -85,6 +85,7 @@ public class KafkaStreamConfig {
 	    properties.put(StreamsConfig.APPLICATION_ID_CONFIG, appID);
 	    properties.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass());
 	    properties.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass());
+	    properties.put(StreamsConfig.REPLICATION_FACTOR_CONFIG, 3);
 		return properties;
 	}
 

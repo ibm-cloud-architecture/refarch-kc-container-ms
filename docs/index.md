@@ -2,7 +2,14 @@
 
 This project is part of the container shipment implementation solution you can read detail [here.](https://ibm-cloud-architecture.github.io/refarch-kc/).
 
-The goal of this Container management service is to support the reefer containers inventory management and to process all the events related to the container entity. We want to support the following events:
+The goal of this Container management service is to support the reefer containers inventory management and to process all the events related to the container entity. We are proposing 3 types of implementations:
+
+* Python with Flask and Confluent Kafka API for Python. See [this description](./flask/README.md)
+* Microprofile 2.2 using Kafka Streams. See [this description](./kstreams/README.md)
+* Springboot and spring kafka template and spring postgreSQL. [See this note](./springboot/README.md)
+
+
+We want to support the following events:
 
 * ContainerAddedToInventory, ContainerRemovedFromInventory
 * ContainerAtLocation
@@ -44,7 +51,6 @@ docker run -e KAFKA_BROKERS=$KAFKA_BROKERS -v $(pwd):/home --network=docker_defa
 root@2f049cb7b4f2:/ cd home
 root@2f049cb7b4f2:/ python ProduceContainerCreatedEvent.py 
 ```
-
 
 
 ## Assign container to order
