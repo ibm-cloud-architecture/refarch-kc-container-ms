@@ -3,3 +3,4 @@ kstreams/target/
 kstreams/bin/
 /.vscode
 kstreams/.settings/
+container-ms/server/dbConfig.yaml
