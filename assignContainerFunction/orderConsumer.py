@@ -7,7 +7,7 @@ from confluent_kafka import KafkaError, Consumer, KafkaException
  #   print("The KAFKA_BROKERS environment variable needs to be set.")
  #   exit
 
-containerConsumer = Consumer({
+orderConsumer = Consumer({
     'bootstrap.servers': 'kafka1:9092',
     'group.id':'test-group',
     'default.topic.config': {'auto.offset.reset': 'earliest'} 
@@ -15,29 +15,27 @@ containerConsumer = Consumer({
 
 topics = ['orders']
 
-containerConsumer.subscribe(topics)
+orderConsumer.subscribe(topics)
 
-def pollMessages():
-    running = True
-    while running:
-        msg = containerConsumer.poll()
-        if not msg.error():
-            print("    Topic: " + (msg.topic()))
-            print("    Message: " + (msg.value()))
-            if msg.topic() == 'orders':
-                print('MESSAGE TOPIC = ORDERS')
-                print('Message Data: ', msg.value())
+try:
+    while True:
+        msg = orderConsumer.poll(timeout=1.0)
+        if msg is None:
+            continue
+        if msg.error():
+            print('No Messages')
+            continue
         else:
-            if msg.error().code() == KafkaError._PARTITION_EOF:
-                print("\n\nError Message: End of Messages")
-                running = False
-            else:
-                print(msg.error())
-                running = False
+            # Proper message
+            sys.stderr.write('%% %s [%d] at offset %d with key %s:\n' %
+                                (msg.topic(), msg.partition(), msg.offset(),
+                                str(msg.key())))
+            print(msg.value())
 
-print("\nPolling...")
-pollMessages()
-print("\nWaiting for 10 seconds for broker to repopulate...")
-time.sleep(10)
-print("\nSecond Poll...")
-pollMessages()
+except KeyboardInterrupt:
+    sys.stderr.write('%% Aborted by user\n')
+
+finally:
+    # Close down consumer to commit final offsets.
+    orderConsumer.close()
+

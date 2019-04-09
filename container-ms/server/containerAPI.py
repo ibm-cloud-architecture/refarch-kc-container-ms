@@ -16,13 +16,14 @@ ns = api.namespace('container', description='Operations to get container data.')
 nsg = api.namespace('general', description='General application checks')
 
 container = api.model('container', {
-	'ID': fields.Integer(readOnly = True, description = 'The task unique identifier'),
-	'Temperature': fields.String(required = True, description = 'The task details'),
-	'Amp': fields.String(required = True, description = 'The task details'),
-	'CumlativePowerConsumption': fields.String(required = True, description = 'The task details'),
-	'ContentType': fields.String(required = True, description = 'The task details'),
-	'Humidity': fields.String(required = True, description = 'The task details'),
-	'CO2': fields.String(required = True, description = 'The task details')
+	'ID': fields.String(required = True, description = 'Container ID'),
+	'Latitude': fields.Integer(required = True,description = 'Container current latitude'),
+	'Longitude': fields.Integer(required = True,description = 'Container current longitude'),
+	'Type': fields.String(required = True, description = 'Container type'),
+	'Status': fields.String(required = True, description = 'Container status'),
+	'CurrentCity': fields.String(required = True, description = 'City container is currently in'),
+	'Brand': fields.String(required = True, description = 'Brand of the container'),
+    'Capacity': fields.Integer(required = True,description = 'Capacity of the container')
 })
 
 class containerActions(object):

@@ -17,25 +17,23 @@ topics = ['containers']
 
 containerConsumer.subscribe(topics)
 
-def pollMessages():
-    running = True
-    while running:
-        msg = containerConsumer.poll()
-        if not msg.error():
-            if msg.topic() == 'containers':
-                print('MESSAGE TOPIC = CONTAINERS')
-                print('Message Data: ', msg.value())
+try:
+    while True:
+        msg = containerConsumer.poll(timeout=1.0)
+        if msg is None:
+            continue
+        if msg.error():
+            raise KafkaException(msg.error())
         else:
-            if msg.error().code() == KafkaError._PARTITION_EOF:
-                print("\n\nError Message: End of Messages")
-                running = False
-            else:
-                print(msg.error())
-                running = False
+            # Proper message
+            sys.stderr.write('%% %s [%d] at offset %d with key %s:\n' %
+                                (msg.topic(), msg.partition(), msg.offset(),
+                                str(msg.key())))
+            print(msg.value())
 
-print("\nPolling...")
-pollMessages()
-print("\nWaiting for 10 seconds for broker to repopulate...")
-time.sleep(10)
-print("\nSecond Poll...")
-pollMessages()
+except KeyboardInterrupt:
+    sys.stderr.write('%% Aborted by user\n')
+
+finally:
+    # Close down consumer to commit final offsets.
+    containerConsumer.close()
