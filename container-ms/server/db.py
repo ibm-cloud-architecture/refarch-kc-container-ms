@@ -12,13 +12,15 @@ try:
 except:
     print ("Unable to connect to the database")
 
+city = 'Oakland'
+
 cur = conn.cursor()
-#cur.execute("CREATE TABLE CONTAINERS(ID INT NOT NULL,LATITUDE DOUBLE PRECISION,LONGITUDE DOUBLE PRECISION,TYPE  VARCHAR ,STATUS VARCHAR ,CURRENTCITY VARCHAR,BRAND VARCHAR,CAPACITY DOUBLE PRECISION, PRIMARY KEY (ID));")
-cur.execute("INSERT INTO CONTAINERS VALUES ('1843', 37.7749, 122.4194,'container','empty','san francisco','maersk','0')")
-#cur.execute("DROP TABLE CONTAINERS;")
-#cur.execute("SELECT column_name FROM information_schema.columns WHERE table_name='containers'")
-#cur.execute("select row_to_json(containers) from CONTAINERS")
-print(cur.fetchall())
+#cur.execute("CREATE TABLE CONTAINERS(ID VARVARCHAR (64) NOT NULL,LATITUDE DOUBLE PRECISION,LONGITUDE DOUBLE PRECISION,TYPE  VARCHAR (35) ,STATUS VARCHAR (35),CURRENT_CITY VARCHAR (35),BRAND VARCHAR (35),CAPACITY DOUBLE PRECISION, PRIMARY KEY (ID));")
+cur.execute("INSERT INTO CONTAINERS VALUES (%s, %s, %s,%s,%s,%s,%s,%s)", (2, 20, city))
+#cur.execute("DROP TABLE CUSTOMERS;")
+cur.execute("SELECT * FROM containers;")
+data=cur.fetchall()
+print(data)
 conn.commit()
 cur.close()
 conn.close()
