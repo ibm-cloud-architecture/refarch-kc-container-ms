@@ -2,7 +2,7 @@ from flask import Flask, Blueprint
 from flask_restplus import Api, Resource, fields
 from werkzeug.contrib.fixers import ProxyFix
 from confluent_kafka import KafkaError, Producer, Consumer
-import psycopg2
+import psycopg2, yaml
 
 app = Flask(__name__)
 blueprint = Blueprint('api', __name__, url_prefix='/container')
@@ -25,6 +25,11 @@ container = api.model('container', {
 	'Brand': fields.String(required = True, description = 'Brand of the container'),
     'Capacity': fields.Integer(required = True,description = 'Capacity of the container')
 })
+
+def loadDBConfig(filepath):
+    with open(filepath,"r") as dbConfig:
+        data = yaml.load(dbConfig)
+    return data
 
 class containerActions(object):
     def __init__(self):
@@ -70,6 +75,24 @@ class databaseActions(object):
     def __init__(self):
         self.counter = 0
 
+    def createConnection(self):
+            dbConfig = loadDBConfig('dbConfig.yaml')
+            print('DB CONFIG', dbConfig)
+            try:
+                conn=psycopg2.connect(
+                    host = dbConfig.containerDB.host,
+                    port = dbConfig.containerDB.port,
+                    dbname = dbConfig.containerDB.dbname,
+                    user = dbConfig.containerDB.user,
+                    password = dbConfig.containerDB.password
+                )
+                print ("Connected to the database")
+                return conn
+            except:
+                print ("Unable to connect to the database")
+                return "ERROR"
+
+cActions = containerActions()
 @ns.route('/')
 class containerList(Resource):
     '''Shows a list of all the containers in the system.'''

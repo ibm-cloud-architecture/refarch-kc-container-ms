@@ -1,0 +1,7 @@
+containerDB:
+  host: "HOSTNAME"
+  port: "PORT"
+  dbname: "DBNAME"
+  user: "USERNAME"
+  password: "PASSWORD"
+          
