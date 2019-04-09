@@ -4,6 +4,7 @@ from werkzeug.contrib.fixers import ProxyFix
 from confluent_kafka import KafkaError, Producer, Consumer
 import psycopg2, yaml
 
+#Function for loading an object with database credentials from a yaml file.
 app = Flask(__name__)
 blueprint = Blueprint('api', __name__, url_prefix='/container')
 app.wsgi_app = ProxyFix(app.wsgi_app)
@@ -12,9 +13,11 @@ api = Api(blueprint, version='1.0', title='Container MS API',
 )
 app.register_blueprint(blueprint)
 
+#Function for loading an object with database credentials from a yaml file.
 ns = api.namespace('container', description='Operations to get container data.')
 nsg = api.namespace('general', description='General application checks')
 
+#Function for loading an object with database credentials from a yaml file.
 container = api.model('container', {
 	'ID': fields.String(required = True, description = 'Container ID'),
 	'Latitude': fields.Integer(required = True,description = 'Container current latitude'),
@@ -26,6 +29,7 @@ container = api.model('container', {
     'Capacity': fields.Integer(required = True,description = 'Capacity of the container')
 })
 
+#Function for loading an object with database credentials from a yaml file.
 def loadDBConfig(filepath):
     with open(filepath,"r") as dbConfig:
         data = yaml.load(dbConfig)
@@ -34,19 +38,22 @@ def loadDBConfig(filepath):
 class containerActions(object):
     def __init__(self):
         self.counter = 0
-
+    
+    #connects to the DB and queries for everything in the containers table.
     def getAllContainers(self):
         conn = databaseActions.createConnection(self)
         cur = conn.cursor()
-        cur.execute("SELECT * FROM containers;")
+        cur.execute("SELECT * FROM CONTAINERS;")
         containers=cur.fetchall()
+        print('DATA', containers)
         cur.close()
         conn.close()
         if len(containers) == 0:
             return 'There are no containers there.'
         else:
             return containers
-
+    
+    #connects to the DB, passes in a container ID and queries the containers table for the container with that ID.
     def getContainerByID(self, id):
         conn = databaseActions.createConnection(self)
         cur = conn.cursor()
@@ -58,7 +65,8 @@ class containerActions(object):
             return 'There is no container with that ID.'
         else:
             return containers
-
+    
+    #connects to the DB, passes in a city name and queries the containers table for containers in that city.
     def getCityContainers(self, city):
         conn = databaseActions.createConnection(self)
         cur = conn.cursor()
@@ -71,27 +79,27 @@ class containerActions(object):
         else:
             return containers
 
+#Function for loading an object with database credentials from a yaml file.
 class databaseActions(object):
     def __init__(self):
         self.counter = 0
-
+    #Function for loading an object with database credentials from a yaml file.
     def createConnection(self):
             dbConfig = loadDBConfig('dbConfig.yaml')
-            print('DB CONFIG', dbConfig)
             try:
                 conn=psycopg2.connect(
-                    host = dbConfig.containerDB.host,
-                    port = dbConfig.containerDB.port,
-                    dbname = dbConfig.containerDB.dbname,
-                    user = dbConfig.containerDB.user,
-                    password = dbConfig.containerDB.password
+                    host = dbConfig['containerDB']['host'],
+                    port = dbConfig['containerDB']['port'],
+                    dbname = dbConfig['containerDB']['dbname'],
+                    user = dbConfig['containerDB']['user'],
+                    password = dbConfig['containerDB']['password']
                 )
                 print ("Connected to the database")
                 return conn
             except:
                 print ("Unable to connect to the database")
                 return "ERROR"
-
+#Function for loading an object with database credentials from a yaml file.
 cActions = containerActions()
 @ns.route('/')
 class containerList(Resource):
@@ -101,7 +109,7 @@ class containerList(Resource):
         '''Lists Containers'''
         return cActions.getAllContainers()
 
-@ns.route('/<int:id>')
+#Function for loading an object with database credentials from a yaml file.@ns.route('/<int:id>')
 @ns.response(404, 'Container not found')
 @ns.param('id', 'Container ID')
 class Container(Resource):
