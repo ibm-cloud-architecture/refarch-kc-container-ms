@@ -92,7 +92,20 @@ So the implementation is not focuing on [Spring Kafka](https://spring.io/project
 
 As we want to receive container events we need to define a [a Spring Kafka container](https://docs.spring.io/spring-kafka/docs/2.2.4.RELEASE/reference/#receiving-messages).
 
+
+## Issues
+
+The level of abstraction in Spring is nice when doing basic things but can become a nightmare when doing application including different libraries. Also migrating or using the last version 2.xx, bring changes to existing code and tests. Below is a list of iisues we spent time on:
+
+* When JPA started, it creates / updates database schema, and for example enforced to have an Id as int while it was as string. As a bypass we create the table before in postsgresql using psql tool.
+* Testing endpoint /health did not work on Spring 2.1.4. Thisi s due that there is the new Actuator capabilities (`spring-boot-starter-actuator`) that adds endpoints to manage a webapp in production. This is a nice feature. So remove any hold Health api class and modify the url to `/actuator/health`. Be sure to read [this note](https://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-endpoints.html) on actuator.
+
+
+https://vkuzel.com/spring-boot-jpa-hibernate-atomikos-postgresql-exception
+
 ## References
 
 * [Spring Code generator](https://start.spring.io/)
 * [Spring Kafka](https://spring.io/projects/spring-kafka)
+* [sptring Data and JPA](https://docs.spring.io/spring-data/jpa/docs/current/reference/html/)
+* [SSL and postgresql]()

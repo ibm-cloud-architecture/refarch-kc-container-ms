@@ -16,7 +16,7 @@ ns = api.namespace('container', description='Operations to get container data.')
 nsg = api.namespace('general', description='General application checks')
 
 container = api.model('container', {
-	'ID': fields.Integer(readOnly = True, description = 'The task unique identifier'),
+	'ID': fields.String(readOnly = True, description = 'The task unique identifier'),
 	'Temperature': fields.String(required = True, description = 'The task details'),
 	'Amp': fields.String(required = True, description = 'The task details'),
 	'CumlativePowerConsumption': fields.String(required = True, description = 'The task details'),
