@@ -79,7 +79,7 @@ class containerActions(object):
         else:
             return containers
 
-#Function for loading an object with database credentials from a yaml file.
+#Class for actions related to the database.
 class databaseActions(object):
     def __init__(self):
         self.counter = 0
@@ -99,8 +99,10 @@ class databaseActions(object):
             except:
                 print ("Unable to connect to the database")
                 return "ERROR"
-#Function for loading an object with database credentials from a yaml file.
+
 cActions = containerActions()
+
+#GET endpoint for getting all of the containers.
 @ns.route('/')
 class containerList(Resource):
     '''Shows a list of all the containers in the system.'''
@@ -109,7 +111,8 @@ class containerList(Resource):
         '''Lists Containers'''
         return cActions.getAllContainers()
 
-#Function for loading an object with database credentials from a yaml file.@ns.route('/<int:id>')
+#GET endpoint for getting a container based on it's ID.
+@ns.route('/<int:id>')
 @ns.response(404, 'Container not found')
 @ns.param('id', 'Container ID')
 class Container(Resource):
@@ -119,6 +122,7 @@ class Container(Resource):
         '''Returns data about a specified container.'''
         return  cActions.getContainerByID(id)
 
+#GET endpoint for getting containers based on the city they are located.
 @ns.route('/<string:city>')
 @ns.response(404, 'City not found')
 @ns.param('city', 'Container ID')
@@ -129,6 +133,7 @@ class Container(Resource):
         '''Returns containers in the city specified.'''
         return cActions.getCityContainers(city)
 
+#Endpoint for checking the health of the application.
 @nsg.route('/healthcheck')
 class generalChecks(Resource):
     '''Basic Application Checks'''
@@ -137,5 +142,6 @@ class generalChecks(Resource):
         '''Runs a basic health check'''
         return {'status': 'UP'}, 200
 
+#main function
 if __name__ == '__main__':
     app.run(debug=True)
