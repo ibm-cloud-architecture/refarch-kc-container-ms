@@ -24,19 +24,6 @@ def traceResponse(msg):
                 .format(msg.topic(), msg.partition(), msg.offset(), str(msg.key()), containerMetrics ))
     return containerMetrics
 
-# def pollNextMetric():
-#     gotIt = False
-#     containerMetricsEvent = {}
-#     while True:
-#         msg = orderConsumer.poll(timeout=10.0)
-#         if msg is None:
-#             continue
-#         if msg.error():
-#             print("Consumer error: {}".format(msg.error()))
-#             continue
-#         containerMetrics = traceResponse(msg)
-#         containerMetricsEvent = json.loads(containerMetricsEvent)
-#     return containerMetricsEvent
 
 try:
     while True:
@@ -44,13 +31,21 @@ try:
         if msg is None:
             continue
         if msg.error():
+	    print "This message is incorrect"
             raise KafkaException(msg.error())
         else:
             # Proper message
             sys.stderr.write('%% %s [%d] at offset %d with key %s:\n' %
                                 (msg.topic(), msg.partition(), msg.offset(),
                                 str(msg.key())))
-            print(msg.value())
+            x=msg.value()
+            print "nsg is: ", x
+            #subprocess.Popen(["python", "../../predictiveModel/predictMaintainence.py", msg.value()])
+            a,b,c = x.split(" ")
+            command = "python ../../predictiveModel/PredictiveMaintainence_Bayes.py " +c
+            print "Hello ", c
+            os.system(command)
+        
 
 except KeyboardInterrupt:
     sys.stderr.write('%% Aborted by user\n')
@@ -58,3 +53,4 @@ except KeyboardInterrupt:
 finally:
     # Close down consumer to commit final offsets.
     orderConsumer.close()
+
