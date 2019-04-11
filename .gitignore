@@ -1,5 +1,8 @@
 site/
 kstreams/target/
 kstreams/bin/
+SpringContainerMS/target
+MP-SpringContainerMS/target
 /.vscode
 kstreams/.settings/
+**/setenv.sh

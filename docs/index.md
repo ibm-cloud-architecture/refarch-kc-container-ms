@@ -58,3 +58,7 @@ root@2f049cb7b4f2:/ python ProduceContainerCreatedEvent.py
 The implementation will search the list of containers closed to the source location. We simplify the implementation by assuming mapping container (longitude, latitude) position to be in an area closed to the harbor close to the pickup location. We do not manage the time when the container will be there. We assume containers is at location at the time of the order is processed, is the same as the time of the pickup. We may fine tune that if we can make it simple.
 
 The output of this assignment processing is an event to the `orders` topic.
+
+
+## Compendium
+
