@@ -5,7 +5,7 @@ echo 'Start Data Generation \n'
 dataDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd ../../data && pwd )
 dataFile="$dataDIR/container_matrix_door_open1.csv"
 toolsDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd ../../tools && pwd )
-#python $toolsDIR/generateData_door_open.py $dataFile
+python $toolsDIR/generateData_door_open.py $dataFile
 echo '\n Done Generating \n'
 
 #Publish to Kafka 
@@ -27,5 +27,6 @@ modelDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd ../../predictiveModel &&
 testFile="$dataDIR/container_matrix_test.csv"
 testFile="$modelDIR/model.pkl"
 #jupyter nbconvert --to python $modelDIR/predictMaintainence.ipynb
-python $modelDIR/predictMaintainence.py $testFile $modelFile
+#jupyter nbconvert --to python $modelDIR/PredictiveMaintainence_Bayes.ipynb
+#python $modelDIR/predictMaintainence.py $testFile $modelFile
 echo 'Model Tested'

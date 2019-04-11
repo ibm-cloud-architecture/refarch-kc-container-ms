@@ -20,14 +20,15 @@ with open(sys.argv[1], mode='w') as container_file:
 #with open('../data/container_matrix_door_open.csv', mode='w') as container_file:
     container_writer = csv.writer(container_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL, lineterminator='\n')
 
-    container_writer.writerow(['Timestamp', 'ID', 'Temperature(celsius)', 'Target_Temperature(celsius)', 'Amp', 'CumulativePowerConsumption', 'ContentType', 'Humidity', 'CO2', 'Door_Open', 
-    'Maintainence_Required', 'Defrost_Cycle'])
+    # container_writer.writerow(['Timestamp', 'ID', 'Temperature(celsius)', 'Target_Temperature(celsius)', 'Amp', 'CumulativePowerConsumption', 'ContentType', 'Humidity', 'CO2', 'Door_Open', 
+    # 'Maintainence_Required', 'Defrost_Cycle'])
 
     #door open sensor data
     id = random.randint(1001,2000)
     Today= datetime.datetime.today()
     date_list = [Today + datetime.timedelta(minutes=15*x) for x in range(0, 1000)]
-    range_list=np.linspace(1,5,1000)
+    #range_list=np.linspace(1,5,1000) //commented for demo
+    range_list=np.linspace(1,5,10)
     index=0
     for i in  range_list:
 
