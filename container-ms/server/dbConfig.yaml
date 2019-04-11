@@ -1,0 +1,7 @@
+#Credentials for the containers DB connection
+containerDB:
+  host: "HOST"
+  port: "PORT"
+  dbname: "DBNAME"
+  user: "USER"
+  password: "PASSWORD"

@@ -6,3 +6,4 @@ MP-SpringContainerMS/target
 /.vscode
 kstreams/.settings/
 **/setenv.sh
+container-ms/server/dbConfig.yaml
