@@ -3,7 +3,12 @@ echo "##########################################"
 echo " Build Spring boot based Container microservice war and docker image  "
 echo "##########################################"
 
-
+log=$(ibmcloud target | grep "Not logged in")
+if [[ -n "$log" ]]
+then
+  echo "You must login to IBMCLOUD before building"
+  exit
+fi
 root_folder=$(cd $(dirname $0); cd ..; pwd)
 
 if [[ $# -eq 0 ]];then
@@ -14,6 +19,7 @@ fi
 
 . ./scripts/setenv.sh
 
+   
 ev=$(ibmcloud cdb deployables-show 2>&1 | grep "not a registered command")
 if [[ -z "$ev" ]]
 then

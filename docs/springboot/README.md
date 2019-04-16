@@ -1,6 +1,6 @@
 # Springboot - Kafka container microservice
 
-This chapter presents how to develop the container manager using Spring boot, Kafka template and PostgreSQL, Hubernate JPA using Spring data. This is another way to implement the same specifications and helps us to assess the different technologies to develop event-driven cloud native microservice.
+This chapter presents how to develop the Reefer container manager using Spring boot, Kafka template and PostgreSQL, Hibernate JPA using Spring data. This is another way to implement the same specifications and helps us to assess the different technologies to develop event-driven cloud native microservice. The user stories to support are described in [this section](../index.md).
 
 ![](spr-components.png)
 
@@ -71,9 +71,9 @@ We encourage you to go over the different tutorials from spring.io. We followed 
 * [Spring Boot, PostgreSQL, JPA, Hibernate RESTful CRUD API Example from Callicoder](https://www.callicoder.com/spring-boot-jpa-hibernate-postgresql-restful-crud-api-example/)
 * [Spring Kafka](https://spring.io/projects/spring-kafka)
 
-## Add the get all containers
+## Add the get /containers  API
 
-We want to add the get containers in the test and implement a simple container controller bean and CRUD operations. Spring takes into account the package names to manage its dependencies and settings. The test looks like:
+We want to start by the get reefer containers test and then implement a simple container controller bean with CRUD operations. Spring takes into account the package names to manage its dependencies and settings. The test looks like:
 
 ```java
  String endpoint = "http://localhost:" + port + "/containers";
@@ -95,7 +95,7 @@ public class ContainerController {
     }
 ``` 
 
-The ContainerEntity is a class with JPA annotation to control the mapping to tables. So here is a simple extract:
+The ContainerEntity is a class with JPA annotations, used to control the mapping object to table. Below is a [simple entity definition]():
 
 ```java
 @Entity
@@ -109,14 +109,15 @@ public class ContainerEntity implements java.io.Serializable {
 	protected String brand;
 }
 ```
-The next major step is to add a repository and configure the application to use Postgress dialect so JPA can generate compatible DDL. The repository is scrary easy, it just extends a base JpaRepository and specify the ID will be a String and the record a ContainerEntity.
+
+Once we have entity and how it is mapped to a table, the next major step is to add a repository class and configure the application to use Postgress dialect so JPA can generate compatible DDLs. The repository is scrary easy, it just extends a base JpaRepository and specifies the primary key used as ID and the type of record as ContainerEntity.
 
 ```java
 @Repository
 public interface ContainerRepository extends JpaRepository<ContainerEntity,String>{}
 ```
 
-Spring makes it magic to add save, findById, findAll... operations. So now we can @Autowrite the repository and add the tests and the connection between the rest api and the repo. The test is in the Junit test class: [PostgreSqlTest](src/test/java/ibm/labs/kc/containermgr/PostgreSqlTest.java). 
+Spring makes it magic to add save, findById, findAll... operations transparently. So now we can @Autowrite the repository and add the tests and the connection between the rest api and the repo. The test is in the Junit test class: [PostgreSqlTest](src/test/java/ibm/labs/kc/containermgr/PostgreSqlTest.java). In fact for test reason and being able to inject Mockup class in unit test, we inject via contructor.
 
 ```java
 @Test
@@ -146,7 +147,7 @@ Finally the controller is integrating the repository:
 
 ```
 
-After the tests run successfule with a valid connection to IBM cloud, launching the spring boot app location and going to http://localhost:8080/containers/c1 will give you the data for the Container "c1".   
+After the tests run successfully with a valid connection to IBM cloud, launching the spring boot app location and going to http://localhost:8080/containers/c1 will give you the data for the Container "c1".   
 
 
 ## Listening to container events

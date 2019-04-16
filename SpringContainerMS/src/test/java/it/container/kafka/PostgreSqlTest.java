@@ -1,4 +1,4 @@
-package ibm.labs.kc.containermgr;
+package it.container.kafka;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
