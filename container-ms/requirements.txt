@@ -1,0 +1,6 @@
+confluent_kafka
+request
+flask
+PyYAML
+psycopg2-binary
+flask-restplus
