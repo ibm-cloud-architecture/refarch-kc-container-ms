@@ -95,7 +95,7 @@ public class ContainerController {
     }
 ``` 
 
-The ContainerEntity is a class with JPA annotations, used to control the mapping object to table. Below is a [simple entity definition]():
+The ContainerEntity is a class with JPA annotations, used to control the mapping object to table. Below is a [simple entity definition](https://github.com/ibm-cloud-architecture/refarch-kc-container-ms/blob/14cc515787a7aeeebf38c703473ab32622c56b93/SpringContainerMS/src/main/java/ibm/labs/kc/containermgr/model/ContainerEntity.java#L21-L47):
 
 ```java
 @Entity
@@ -110,7 +110,7 @@ public class ContainerEntity implements java.io.Serializable {
 }
 ```
 
-Once we have entity and how it is mapped to a table, the next major step is to add a repository class and configure the application to use Postgress dialect so JPA can generate compatible DDLs. The repository is scrary easy, it just extends a base JpaRepository and specifies the primary key used as ID and the type of record as ContainerEntity.
+Once we have entity and how it is mapped to a table, the next major step is to add a repository class: [ContainerRepository.java](https://github.com/ibm-cloud-architecture/refarch-kc-container-ms/blob/master/SpringContainerMS/src/main/java/ibm/labs/kc/containermgr/dao/ContainerRepository.java) and configure the application to use Postgress dialect so JPA can generate compatible DDLs. The repository is scrary easy, it just extends a base JpaRepository and specifies the primary key used as ID and the type of record as ContainerEntity.
 
 ```java
 @Repository
@@ -146,9 +146,18 @@ Finally the controller is integrating the repository:
     }
 
 ```
+The test fails as it is missing the configuration to the remote postsgresql service. As we do not want to hardcode the password and URL end point or share secret in public github we define the configuration using environment variables. See the [application.properties](https://github.com/ibm-cloud-architecture/refarch-kc-container-ms/blob/master/SpringContainerMS/src/main/resources/application.properties) file. The Postgresql we are using is the IBM Cloud deployment. To export the different environment variables we have a `setenv.sh` script (which we have defined a template) with different argument (LOCAL, IBMCLOUD, ICP). 
+
+```shell
+$ source ./scripts/setenv.sh IBMCLOUD
+$ mvn test
+```
 
 After the tests run successfully with a valid connection to IBM cloud, launching the spring boot app location and going to http://localhost:8080/containers/c1 will give you the data for the Container "c1".   
 
+## Build with docker
+
+To support flexible CI/CD deployment and run locally we propose to use Docker [multistage build](https://docs.docker.com/develop/develop-images/multistage-build/). 
 
 ## Listening to container events
 
@@ -206,17 +215,21 @@ If you follow those steps the application is deployed but is not working due to 
 ## Security
 
 To communicate with IBM Cloud PostgresSQl service the client needs to use SSL and the certificates... 
-First to avoid sharing userid and password in github, we use environment variables for postgressql url, user and password. There is a `setenv.sh` in the `scripts` folder to use with your own settings. Also to run unit test in eclipse you need to set those environment variables in the run configuration as illustrated in the figure below:
+First to avoid sharing userid and password in github, we use environment variables for postgressql url, user and password. There is a `setenv.tmpl.sh` in the `scripts` folder to use with your own settings. Rename it `setenv.sh`. This file is ignored by git.  Also to run unit test in eclipse you need to set those environment variables in the run configuration as illustrated in the figure below:
 
 ![](./eclipse-envvar.png)
 
-Those variables are using the Spring boot `application.configuration` file.
+Those variables are used the Spring boot `application.configuration` file, for example for the postgresql URL:
 
 ```
 spring.datasource.url=${POSTGRESQL_URL}
 ```
 
-To create the SSL connection you will need to make the server certificate available to Java, the first step is to convert it to a form Java understands.
+When the Spring repository class establishes a TLS or SSL communication to the Postgresql service in IBM Cloud (or ICP), both client and server negotiate a stateful connection by using a handshaking procedure. During this procedure, the server usually sends back its identification in the form of a digital certificate.
+
+Java programs store certificates in a repository called Java KeyStore (JKS). 
+
+To create the SSL connection you will need to make the server public certificate available to your Java client JVM. The certificate is persisted in a Trustore. So get the server public certificate: `postgresql.crt`, then convert it to a form Java understands.
 To download a text version of the base64 certificate as defined in the connection credentials of the IBM Cloud postgressql service use the following command:
 
 ```shell
@@ -230,13 +243,15 @@ Save the certificate to a file (e.g. postgressql.crt). Then transform it to a Ja
 # transform
 $ openssl x509 -in postgressql.crt -out postgressql.crt.der -outform der
 # save in keystore
-$ keytool -keystore mykeystore -alias postgresql -import -file postgressql.crt.der
+$ keytool -keystore clienttruststore -alias postgresql -import -file postgressql.crt.der -storepass changeit 
 ```
 
 Then adding the following setting will let the Java program accesses the certificate from the keystore.
 ```
-java -jar -Djavax.net.ssl.trustStore=mykeystore -Djavax.net.ssl.trustStorePassword=changeit ${root_folder}/target/SpringContainerMS-1.0-SNAPSHOT.jar application.SBApplication
+java -jar -Djavax.net.ssl.trustStore=clienttruststore -Djavax.net.ssl.trustStorePassword=changeit ${root_folder}/target/SpringContainerMS-1.0-SNAPSHOT.jar application.SBApplication
 ```
+
+We recommend reading [this section](https://jdbc.postgresql.org/documentation/91/ssl-client.html) of Postgresql product documentation.
 
 Now to make all this available in docker container we propose to let the previous two commands run within the Dockerfile during the build process.
 

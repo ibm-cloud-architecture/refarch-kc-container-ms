@@ -17,28 +17,26 @@ else
   kcenv=$1
 fi
 
-. ./scripts/setenv.sh
+. ./scripts/setenv.sh $kcenv
 
    
 ev=$(ibmcloud cdb deployables-show 2>&1 | grep "not a registered command")
-if [[ -z "$ev" ]]
+if [[ -n "$ev" ]]
 then
    ibmcloud plugin install cloud-databases   
 fi
 ibmcloud cdb deployment-cacert $ic_postgres_serv > postgresql.crt
 
 find target -iname "*SNAPSHOT*" -print | xargs rm -rf
-# rm -rf target/liberty/wlp/usr/servers/defaultServer/apps/expanded
-tools=$(docker images | grep javatools)
-if [[ -z "$tools" ]]
-then
-   mvn clean install -DskipITs
-else
-   docker run -v $(pwd):/home -ti ibmcase/javatools bash -c "cd /home &&  mvn clean install -DskipITs"
-fi
 
+docker build --build-arg POSTGRESQL_URL=${POSTGRESQL_URL}  \
+             --build-arg KAFKA_BROKERS=${KAFKA_BROKERS} \
+             --build-arg KAFKA_APIKEY=${KAFKA_APIKEY} \
+             --build-arg POSTGRESQL_USER=${POSTGRESQL_USER} \
+             --build-arg POSTGRESQL_PWD=${POSTGRESQL_PWD} \
+             --build-arg KAFKA_ENV="IBM_CLOUD" \
+             --build-arg ES_CA_PEM="${ES_CA_PEM}"  -t ibmcase/$kname .
 
-docker build  -t ibmcase/$kname .
 if [[ $kcenv == "IBMCLOUD" ]]
 then
    # image for private registry in IBM Cloud

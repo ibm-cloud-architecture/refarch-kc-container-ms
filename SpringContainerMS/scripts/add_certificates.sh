@@ -5,19 +5,25 @@ function report_error() {
 }
 
 function add_certificate_to_keystore(){
-    keytool -importcert -noprompt -alias $1 -keystore \
-      $JAVA_HOME/lib/security/cacerts -storepass changeit -file $CERT_PATH
+  openssl x509 -in ${IN_PEM} -inform pem -out ${CERT_PATH} -outform der
+  keytool -importcert -noprompt -alias $1 -keystore \
+      $JAVA_HOME/lib/security/cacerts -storepass changeit -file ${CERT_PATH}
+  keytool -list -keystore $JAVA_HOME/lib/security/cacerts -storepass changeit | grep $1
 }
 
 
 function process_certificates(){
-	CERT_PATH="/etc/ssl/certs/certificates.crt"
-	if [ -n "$ES_CA_CERTIFICATE" ] 
-	then
+	CERT_PATH="certificates.der"
+  IN_PEM="ca.pem"
+	if [[ -n "$ES_CA_PEM" ]];then
+
 		echo "Getting certificate from ES_CA_CERTIFICATE"
-        echo $ES_CA_CERTIFICATE >> ${CERT_PATH}
-        add_certificate_to_keystore event_stream
-     else 
-     	report_error()
-     fi
+    echo "$ES_CA_PEM" >> ${IN_PEM}
+    add_certificate_to_keystore postgresql
+  else 
+     	report_error
+  fi
+  rm $IN_PEM
 }
+
+process_certificates

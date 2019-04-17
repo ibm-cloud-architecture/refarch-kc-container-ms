@@ -37,6 +37,7 @@ public class PostgreSqlTest {
 		String url = env.get("POSTGRESQL_URL");
 		Properties props = new Properties();
 		props.setProperty("user",env.get("POSTGRESQL_USER"));
+		// following property allows SSL connections to be made without validating the server's certificate.
 		props.setProperty("sslfactory", "org.postgresql.ssl.NonValidatingFactory");
 		props.setProperty("password",env.get("POSTGRESQL_PWD"));
 		props.setProperty("ssl","true");
