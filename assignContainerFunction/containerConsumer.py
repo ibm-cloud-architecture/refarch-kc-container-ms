@@ -23,7 +23,7 @@ try:
         if msg is None:
             continue
         if msg.error():
-            raise KafkaException(msg.error())
+            continue
         else:
             # Proper message
             sys.stderr.write('%% %s [%d] at offset %d with key %s:\n' %
