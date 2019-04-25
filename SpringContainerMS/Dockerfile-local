@@ -16,7 +16,7 @@ ENV JAVA_OPTS=""
 
 # Install Extra Packages
 RUN apt-get update \
- && apt-get install -y jq bash bc ca-certificates curl \
+ && apt-get install -y jq bash bc ca-certificates curl vim \
  && update-ca-certificates \
  && mkdir -p $APP_HOME/scripts
 

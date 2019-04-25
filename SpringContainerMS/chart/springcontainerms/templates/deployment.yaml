@@ -41,4 +41,9 @@ spec:
             valueFrom: 
               secretKeyRef:
                 name: eventstreams-apikey
+                key: binding
+          - name: POSTGRESQL_URL
+            valueFrom: 
+              secretKeyRef:
+                name: eventstreams-apikey
                 key: binding 

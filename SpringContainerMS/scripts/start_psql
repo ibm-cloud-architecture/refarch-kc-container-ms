@@ -1,0 +1,2 @@
+
+echo $POSTGRESQL_PWD | psql --host=bd2d0216-0b7d-4575-8c0b-d2e934843e41.6131b73286f34215871dfad7254b4f7d.databases.appdomain.cloud --port=31384 --username="${POSTGRESQL_USER}" -d ibmclouddb

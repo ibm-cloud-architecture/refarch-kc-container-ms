@@ -204,40 +204,7 @@ We have added an end to end integration test to create container events and see 
 
 ## Listening to Order Event
 
-The approach is the same as above and the supporting class is: 
-
-## Manually deploy to IKS
-
-The steps are the same as other project and we are providing the same type of tools:
-
-```shell
-# login to IBM Cloud
-$ ibmcloud login -a https://api.us-east.bluemix.net
-# connect to the IKS cluster
-$ ibmcloud ks region-set us-east   
-$ ibmcloud ks cluster-config fabio-wdc-07
-$ export KUBECONFIG= ~/.bluemix/plugins/container-service/clusters/fabio-wdc-07/kube-config-wdc07-fabio-wdc-07.yml
-# login to the private registry
-$ ibmcloud cr login
-# build the jar and docker image
-$ ./script/buildDocker.sh IBMCLOUD
-# Push the image
-$ docker push  us.icr.io/ibmcaseeda/kc-springcontainerms
-# Deploy the Helm release
-$ ./scripts/deployHelm
-```
-
-If for any reason you get a "image can't be pulled" error. Verify the image is in the registry with the command: `docker cr image-list`. Then if so, verify there is a secret defined to keep the security key to access the registry in the same namespace as you are deploying your app, and this secret is referenced in the yml file:
-
-```
-"imagePullSecrets": [
-          {
-            "name": "browncompute-registry-secret"
-          }
-        ],
-```
-
-If you follow those steps the application is deployed but is not working due to SSL certifications issues. So let deal with security now!.
+The approach is the same as above and the supporting class is: [ibm.labs.kc.containermgr.kafka.OrderConsumer](https://github.com/ibm-cloud-architecture/refarch-kc-container-ms/blob/master/SpringContainerMS/src/main/java/ibm/labs/kc/containermgr/kafka/OrderConsumer.java).
 
 ## Security
 
@@ -273,14 +240,47 @@ $ openssl x509 -in postgressql.crt -out postgressql.crt.der -outform der
 $ keytool -keystore clienttruststore -alias postgresql -import -file postgressql.crt.der -storepass changeit 
 ```
 
-Then adding the following setting will let the Java program accesses the certificate from the keystore.
+Then adding the following setting will let the Java program accesses the certificates from the keystore.
+
 ```
-java -jar -Djavax.net.ssl.trustStore=clienttruststore -Djavax.net.ssl.trustStorePassword=changeit ${root_folder}/target/SpringContainerMS-1.0-SNAPSHOT.jar application.SBApplication
+java -jar -Djavax.net.ssl.trustStore=clienttruststore -Djavax.net.ssl.trustStorePassword=changeit ./target/SpringContainerMS-1.0-SNAPSHOT.jar application.SBApplication
 ```
 
 We recommend reading [this section](https://jdbc.postgresql.org/documentation/91/ssl-client.html) of Postgresql product documentation, and [this article from Baeldung](https://www.baeldung.com/java-ssl-handshake-failures) on SSL handshake in Java.
 
 Now to make all this available in docker container we propose to let the previous two commands run within the Dockerfile during the build process.
+
+## Manually deploy to IKS
+
+The steps are the same as other project and we are providing the same type of tools:
+
+```shell
+# login to IBM Cloud
+$ ibmcloud login -a https://api.us-east.bluemix.net
+# connect to the IKS cluster
+$ ibmcloud ks region-set us-east   
+$ ibmcloud ks cluster-config fabio-wdc-07
+$ export KUBECONFIG= ~/.bluemix/plugins/container-service/clusters/fabio-wdc-07/kube-config-wdc07-fabio-wdc-07.yml
+# login to the private registry
+$ ibmcloud cr login
+# build the jar and docker image
+$ ./script/buildDocker.sh IBMCLOUD
+# Push the image
+$ docker push  us.icr.io/ibmcaseeda/kc-springcontainerms
+# Deploy the Helm release
+$ ./scripts/deployHelm
+```
+
+If for any reason you get a "image can't be pulled" error. Verify the image is in the registry with the command: `docker cr image-list`. Then if so, verify there is a secret defined to keep the security key to access the registry in the same namespace as you are deploying your app, and this secret is referenced in the yml file:
+
+```
+"imagePullSecrets": [
+          {
+            "name": "browncompute-registry-secret"
+          }
+        ],
+```
+
 
 ## Issues
 

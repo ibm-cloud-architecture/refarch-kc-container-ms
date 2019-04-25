@@ -11,10 +11,11 @@ function add_certificate_to_keystore(){
     export JAVA_HOME=$JAVA_HOME/jre
   fi
   echo $JAVA_HOME
+  # $JAVA_HOME/lib/security/cacerts
   openssl x509 -in ${IN_PEM} -inform pem -out ${CERT_PATH} -outform der
-  keytool -importcert -noprompt -alias $1 -keystore \
-      $JAVA_HOME/lib/security/cacerts -storepass changeit -file ${CERT_PATH}
-  keytool -list -keystore $JAVA_HOME/lib/security/cacerts -storepass changeit | grep $1
+  keytool -importcert -noprompt -alias $1 -keystore clienttruststore \
+       -storepass changeit -file ${CERT_PATH}
+  keytool -list -keystore clienttruststore -storepass changeit | grep $1
 }
 
 
