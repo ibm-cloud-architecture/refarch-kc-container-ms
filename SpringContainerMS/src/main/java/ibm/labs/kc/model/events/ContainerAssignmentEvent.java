@@ -3,26 +3,28 @@ package ibm.labs.kc.model.events;
 import ibm.labs.kc.model.container.ContainerOrder;
 
 /*
- * This represents the payload for an OrderEvent and ContainerEvent
+ * Represent the payload for ContainerEvent when a container is assigned successfully to an order
  */
 public class ContainerAssignmentEvent extends ContainerEvent<ContainerOrder> {
 	 
 	 
 	 public ContainerAssignmentEvent(String oid, String cid) {
-		 super();
+		 super(cid,ContainerEvent.CONTAINER_ORDER_ASSIGNED);
 		 this.payload = new ContainerOrder(cid,oid);
-		 this.containerID = cid;
-		 this.type = ContainerEvent.CONTAINER_ORDER_ASSIGNED;
 	 }
 	 
 	 public ContainerAssignmentEvent(String oid, String cid, String type) {
-		 super();	 
-		 this.containerID = cid;
-		 this.type = type;
+		 super(cid,type);
+		 this.payload = new ContainerOrder(cid,oid);
+	 }
+	 
+	 public ContainerAssignmentEvent(ContainerOrder co) {
+		 super(co.getContainerID(),ContainerEvent.CONTAINER_ORDER_ASSIGNED);
+		 this.payload = co;
 	 }
 	 
 	 public String toString() {
-		 return getOrderID() + " " + getContainerID();
+		 return "ContainerAssignmentEvent " + getTimestamp() + " " +  getOrderID() + " " + getContainerID();
 	 }
 
 	public String getOrderID() {

@@ -1,5 +1,6 @@
 package ibm.labs.kc.containermgr.kafka;
 
+import java.util.List;
 import java.util.Map;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -15,38 +16,38 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 
-import ibm.labs.kc.containermgr.dao.ContainerDAO;
-import ibm.labs.kc.containermgr.model.ContainerEntity;
-import ibm.labs.kc.model.container.Container;
+import ibm.labs.kc.containermgr.ContainerService;
+import ibm.labs.kc.model.Order;
+import ibm.labs.kc.model.container.ContainerOrder;
 import ibm.labs.kc.model.events.ContainerEvent;
+import ibm.labs.kc.model.events.OrderEvent;
 /*
- * Consume events from 'containers' topic. Started when the spring application context
+ * Consume events from 'orders' topic. Started when the spring application context
  * is initialized. 
  */
 @Component
-public class ContainerConsumer {
-	@Value("${kafka.containers.consumer.groupid}")
+public class OrderConsumer {
+	@Value("${kafka.orders.consumer.groupid}")
 	public String CONSUMER_GROUPID;
-	@Value("${kcsolution.containers}")
-    public String CONTAINERS_TOPIC;
+	@Value("${kcsolution.orders}")
+    public String ORDERS_TOPIC;
 	private Gson parser = new Gson();
 	
 	@Autowired
-	private ContainerDAO containerDAO;
+	private ContainerService containerService;
 	
 	@EventListener
     public void onApplicationEvent(ContextRefreshedEvent event) {
-		ContainerProperties containerProps = new ContainerProperties(CONTAINERS_TOPIC);
+		ContainerProperties containerProps = new ContainerProperties(ORDERS_TOPIC);
 		containerProps.setMessageListener(new MessageListener<Integer, String>() {
 		        @Override
 		        public void onMessage(ConsumerRecord<Integer, String> message) {
 		        	System.out.println(message.value());
 		        	if (message.value().contains(ContainerEvent.CONTAINER_ADDED)) {
-		        		ContainerEvent<Container> ce = parser.fromJson(message.value(), ContainerEvent.class);
-		        		ContainerEntity cce = new ContainerEntity(ce.getPayload());
-		        		containerDAO.save(cce);
+		        		OrderEvent<Order> oe = parser.fromJson(message.value(), OrderEvent.class);
+		        		Order o = oe.getPayload();
+						containerService.assignContainerToOrder(o);
 		        	}
-		        	
 		        }
 		    });
 		KafkaMessageListenerContainer<Integer, String> kafkaEventListener = createSpringKafkaListener(containerProps);

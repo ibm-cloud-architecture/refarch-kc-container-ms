@@ -2,17 +2,23 @@ package ibm.labs.kc.containermgr.dao;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+import ibm.labs.kc.containermgr.model.ContainerEntity;
 import ibm.labs.kc.model.City;
-import ibm.labs.kc.model.container.Container;
 
 public interface ContainerDAO {
 
-	Container getById(String containerId);
+	public ContainerEntity getById(String containerId);
 
-	void start();
-
-	List<Container> getAllContainers(City city);
+	public List<ContainerEntity> getAllContainers(City city);
 	
-	List<Container> getAllContainers(String city);
+	public List<ContainerEntity> getAllContainers(String city);
 
+	public Page<ContainerEntity> getAllContainers(Pageable pageable);
+	
+	public ContainerEntity save(ContainerEntity e);
+	
+	public ContainerEntity update(String containerId, ContainerEntity container);
 }

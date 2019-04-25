@@ -276,8 +276,9 @@ mvn install
 To start the liberty server use the script: `./script/startLocalLiberty` or `mvn liberty:run-server`
 
 
-## How streams flow are resilient?
+## How streams flows are resilient?
 
 
 ## How to scale?
+
 

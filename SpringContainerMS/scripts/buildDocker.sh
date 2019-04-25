@@ -29,13 +29,14 @@ ibmcloud cdb deployment-cacert $ic_postgres_serv > postgresql.crt
 
 find target -iname "*SNAPSHOT*" -print | xargs rm -rf
 
-docker build --build-arg POSTGRESQL_URL=${POSTGRESQL_URL}  \
+docker build --network docker_default --build-arg POSTGRESQL_URL=${POSTGRESQL_URL}  \
              --build-arg KAFKA_BROKERS=${KAFKA_BROKERS} \
              --build-arg KAFKA_APIKEY=${KAFKA_APIKEY} \
              --build-arg POSTGRESQL_USER=${POSTGRESQL_USER} \
              --build-arg POSTGRESQL_PWD=${POSTGRESQL_PWD} \
-             --build-arg KAFKA_ENV="IBM_CLOUD" \
-             --build-arg ES_CA_PEM="${ES_CA_PEM}"  -t ibmcase/$kname .
+             --build-arg KAFKA_ENV=$kcenv \
+             --build-arg ES_CA_PEM="${ES_CA_PEM}" \
+             --build-arg POSTGRESQL_CA_PEM="${POSTGRESQL_CA_PEM}"  -t ibmcase/$kname .
 
 if [[ $kcenv == "IBMCLOUD" ]]
 then

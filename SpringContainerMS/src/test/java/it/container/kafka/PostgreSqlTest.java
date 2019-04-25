@@ -18,6 +18,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import ibm.labs.kc.containermgr.dao.ContainerRepository;
 import ibm.labs.kc.containermgr.model.ContainerEntity;
+import ibm.labs.kc.containermgr.model.ContainerStatus;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -48,7 +49,7 @@ public class PostgreSqlTest {
 	public void testAccessToRemoteDBSpringDatasource() {
 		Optional<ContainerEntity> cOut = containerRepo.findById("c1");
 		if (!cOut.isPresent()) {
-			ContainerEntity c = new ContainerEntity("c1","Brand","Reefer",100,0,0);
+			ContainerEntity c = new ContainerEntity("c1","Brand","Reefer",100,0,0,"Oakland");
 			c.setCreatedAt(new Date());
 			c.setUpdatedAt(c.getCreatedAt());
 			containerRepo.save(c);
@@ -63,7 +64,7 @@ public class PostgreSqlTest {
 	public void testUpdateContainer() {
 		Optional<ContainerEntity> cOut = containerRepo.findById("c2");
 		if (!cOut.isPresent()) {
-			ContainerEntity c = new ContainerEntity("c2","Brand","Reefer",100,0,0);
+			ContainerEntity c = new ContainerEntity("c2","Brand","Reefer",100,0,0,"RedwoodCity");
 			c.setCreatedAt(new Date());
 			c.setUpdatedAt(c.getCreatedAt());
 			containerRepo.save(c);
@@ -71,8 +72,8 @@ public class PostgreSqlTest {
 			Assert.assertNotNull(cOut);
 			Assert.assertNotNull(cOut.get());
 			cOut.get().setCurrentCity("Oakland");
-			cOut.get().setStatus("OnDock");
-			
+			cOut.get().setStatus(ContainerStatus.Empty);
+			containerRepo.save(cOut.get());	
 		}
 	}
 

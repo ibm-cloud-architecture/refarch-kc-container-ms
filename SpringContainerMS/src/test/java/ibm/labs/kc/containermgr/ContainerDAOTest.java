@@ -8,7 +8,7 @@ import org.junit.Test;
 
 import ibm.labs.kc.containermgr.dao.ContainerDAO;
 import ibm.labs.kc.containermgr.dao.ContainerMapDAO;
-import ibm.labs.kc.model.container.Container;
+import ibm.labs.kc.containermgr.model.ContainerEntity;
 
 public class ContainerDAOTest {
 
@@ -19,15 +19,23 @@ public class ContainerDAOTest {
 	@Test
 	public void testGetAllContainers() {
 		ContainerDAO dao = new ContainerMapDAO();
-		List<Container> l =dao.getAllContainers("Oakland");
+		List<ContainerEntity> l =dao.getAllContainers("Oakland");
 		Assert.assertNotNull(l);
 		Assert.assertTrue(l.size() >= 2 );
+	}
+	
+	@Test
+	public void testGetNoContainer() {
+		ContainerDAO dao = new ContainerMapDAO();
+		List<ContainerEntity> l =dao.getAllContainers("LosAlamos");
+		Assert.assertNotNull(l);
+		Assert.assertTrue(l.size() == 0 );
 	}
 
 	@Test
 	public void testGetAllContainerById() {
 		ContainerDAO dao = new ContainerMapDAO();
-		Container c =dao.getById("c1");
+		ContainerEntity c =dao.getById("c1");
 		Assert.assertNotNull(c);
 	}
 }

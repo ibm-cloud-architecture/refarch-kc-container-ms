@@ -8,3 +8,4 @@ export CLUSTER_NAME=streamer.icp
 export POSTGRESQL_URL="jdbc:postgresql://<alotofcharshere>.databases.appdomain.cloud:<>/ibmclouddb?sslmode=verify-full&sslfactory=org.postgresql.ssl.NonValidatingFactory"
 export POSTGRESQL_USER="ibm_cloud_<alotofcharshere>"
 export POSTGRESQL_PWD="<alotofcharshere>"
+export POSTGRESQL_CA_PEM="crtfile-path"

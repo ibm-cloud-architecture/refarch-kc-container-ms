@@ -4,7 +4,7 @@ import java.util.Date;
 
 public class ContainerEvent<T> extends AbstractEvent {
 
-	// those are the list of event type
+	// those are the list of event types
 	public static final String CONTAINER_ADDED = "ContainerAdded";
 	public static final String CONTAINER_REMOVED = "ContainerRemoved";
 	public static final String CONTAINER_AT_LOCATION = "ContainerAtLocation";
@@ -26,7 +26,13 @@ public class ContainerEvent<T> extends AbstractEvent {
 		this.timestamp = (new Date()).getTime();
 	}
 	
-	public ContainerEvent(String type) {
+	public ContainerEvent(String cid) {
+		this.timestamp = (new Date()).getTime();
+		this.containerID = cid;
+	}
+	
+	public ContainerEvent(String cid,String type) {
+		this.containerID = cid;
 		this.type = type;
 		this.timestamp = (new Date()).getTime();
 	}

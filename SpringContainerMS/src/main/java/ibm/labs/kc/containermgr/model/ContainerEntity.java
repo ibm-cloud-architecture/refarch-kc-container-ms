@@ -33,7 +33,7 @@ public class ContainerEntity implements java.io.Serializable {
 	protected double latitude;
 	protected double longitude;
 	protected String type;
-	protected String status;
+	protected ContainerStatus status;
 	protected String brand;
 	protected String currentCity;
 	protected int capacity;
@@ -46,15 +46,19 @@ public class ContainerEntity implements java.io.Serializable {
     @LastModifiedDate
     private Date updatedAt;
 	
-    public ContainerEntity() {}
+    public ContainerEntity() {
+    	this.status = ContainerStatus.Empty;
+    }
     
-	public ContainerEntity(String cid, String brand, String type, int capacity, double lat, double lo) {
+	public ContainerEntity(String cid, String brand, String type, int capacity, double lat, double lo,String city) {
 		this.id = cid;
 		this.type = type;
 		this.latitude = lat;
 		this.brand = brand;
 		this.capacity = capacity;
 		this.longitude = lo;
+		this.currentCity = city;
+		this.status = ContainerStatus.Empty;
 	}
 
 	public ContainerEntity(Container container) {
@@ -64,7 +68,11 @@ public class ContainerEntity implements java.io.Serializable {
 		this.brand = container.getBrand();
 		this.capacity = container.getCapacity();
 		this.longitude = container.getLongitude();
-		this.status = container.getStatus();
+		try {
+			this.status = ContainerStatus.valueOf(container.getStatus());
+		} catch (Exception e) {
+			this.status = ContainerStatus.Empty;
+		}
 	}
 
 	public String getId() {
@@ -91,11 +99,11 @@ public class ContainerEntity implements java.io.Serializable {
 		this.type = type;
 	}
 
-	public String getStatus() {
+	public ContainerStatus getStatus() {
 		return status;
 	}
 
-	public void setStatus(String status) {
+	public void setStatus(ContainerStatus status) {
 		this.status = status;
 	}
 

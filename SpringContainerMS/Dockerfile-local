@@ -1,0 +1,30 @@
+# Use jre small foot print image. See https://hub.docker.com/_/ibmjava/
+FROM ibmjava:8-sfj
+ENV APP_HOME=/app
+COPY ./target/SpringContainerMS-1.0-SNAPSHOT.jar $APP_HOME/app.jar
+LABEL maintainer="IBM Java Engineering at IBM Cloud"
+
+ENV POSTGRESQL_URL=""
+ENV POSTGRESQL_USER=""
+ENV POSTGRESQL_PWD=""
+ENV KAFKA_BROKERS=""
+ENV KAFKA_APIKEY=""
+ENV KAFKA_ENV=""
+ENV ES_CA_PEM=""
+ENV POSTGRESQL_CA_PEM=""
+ENV JAVA_OPTS="" 
+
+# Install Extra Packages
+RUN apt-get update \
+ && apt-get install -y jq bash bc ca-certificates curl \
+ && update-ca-certificates \
+ && mkdir -p $APP_HOME/scripts
+
+WORKDIR $APP_HOME
+
+COPY scripts/startup.sh startup.sh
+COPY scripts/add_certificates.sh scripts/
+
+EXPOSE 8080:8080
+# ENTRYPOINT ["./startup.sh"]
+

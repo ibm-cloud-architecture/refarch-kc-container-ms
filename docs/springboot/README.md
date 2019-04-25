@@ -1,10 +1,28 @@
 # Springboot - Kafka container microservice
 
-This chapter presents how to develop the Reefer container manager using Spring boot, Kafka template and PostgreSQL, Hibernate JPA using Spring data. This is another way to implement the same specifications and helps us to assess the different technologies to develop event-driven cloud native microservice. The user stories to support are described in [this section](../index.md).
+This chapter presents how to develop the Reefer container manager using Spring boot, Kafka template and PostgreSQL, Hibernate JPA and Spring data. This is another way to implement the same specifications and helps us to assess the different technologies to develop event-driven cloud native microservice. The user stories to support are described in [this section](../index.md).
 
 ![](spr-components.png)
 
-## Start from Spring initializer
+The application is built around the following components:
+
+* A Postgresql repository to support CRUD operations for Reefer containers
+* A kafka consumer for container events, to get the container data and call the repository to save new container or update existing one.
+* A new Order consumer to get order created event, and then search matching container(s) taking into account the product type, the quantity and the pickup address. It uses the postgresql repository to find the list of Reefer candidates.
+* An order producer to send containerId - Order ID assignment event to the orders topic using order ID as key
+* A container producer to send containerId - Order ID assignment event to the container topic, using container ID as key.
+* Expose RESTful APIs to be a reusable service too.
+
+We are addressing one of the characteristics of microservice 'reversibility' with this project: the programming style and deployment to different cloud platform. We try to answer the following questions:
+
+* How to deploy to IBM Cloud kubernetes service and in one command, taking the same code version and deploying it to IBM Cloud Private behind the firewall with all the related components available on that plaform?
+* How to adopt control the dependencies and the configuration factors (See [The 12 factors app](https://12factor.net/)) to facilitate reversibility?
+
+## Starting code
+
+We have found it is necessary to combine different starter code as the basic spring boot generated code is not useful.
+
+### Start from Spring initializer
 
 Using the [Spring Code generator](https://start.spring.io/) we created the base project. 
 
@@ -20,11 +38,11 @@ Once logged to IBM Cloud, create a resource and select `Starter kit` in the Cata
 
 ![](spr-ic-start.png)
 
-The application is created, you can download the code or create a toolchain so we use a continuous integration and deployment to an existing IBM Kubernetes Service.
+The application is created, we can download the code or create a toolchain so we can use a continuous integration and deployment to an existing IBM Kubernetes Service.
 
 ![](spr-ic-app.png)
 
-So now the repository has Dockerfile, helm chart, CLI configuration, scripts and other manifests... We can build existing code and run it with the following commands:
+Now the code repository has Dockerfile, helm chart, CLI configuration, scripts and other manifests... We can build existing code and run it with the following commands:
 
 ```shell
 $ mvn clean package
@@ -33,17 +51,17 @@ $ java -jar target/SpringContainerMS-1.0-SNAPSHOT.jar application.SBApplication
 
 Pointing to http://localhost:8080/ will bring the first page. It works! So let break it.
 
-If you did not try it before, and if you are using [Eclipse](https://www.eclipse.org/) last release, you can install Spring IDE plugin: open Marketplace and search for Spring IDE, download release 4.x:
+If you did not try it before, and if you are using [Eclipse](https://www.eclipse.org/) last release, you can install Eclipse Spring IDE plugin: open Eclipse Marketplace and search for Spring IDE, and then download release 4.x:
 
 ![](eclipse-spr-ide.png)
 
-To verify the installation, importing the project as a 'maven' project will let you see the different options like spring boot starters election...
+To verify the installation, importing our project as a 'maven' project will let you see the different options like spring boot starters election, etc...
 
-The tools is also available to our second IDE visual studio code. See [this note](https://spring.io/tools) for Spring toools. 
+The tool is also available for IDE visual studio code. See [this note](https://spring.io/tools) for Spring toools. 
 
 ### New pom    
 
-The generated dependencies include Spring boot starter web code, hystrix for circuit breaker and retries, and testing. We need to add kafka and postgreSQL and run `mvn install`.
+The generated dependencies include Spring boot starter web code, hystrix for circuit breaker and retries, and testing. We need to add kafka and postgreSQL dependencies and re-run `mvn install`.
 ```
 <dependency>
     <groupId>org.springframework.kafka</groupId>
@@ -157,13 +175,19 @@ After the tests run successfully with a valid connection to IBM cloud, launching
 
 ## Build with docker
 
-To support flexible CI/CD deployment and run locally we propose to use Docker [multistage build](https://docs.docker.com/develop/develop-images/multistage-build/). 
+To support flexible CI/CD deployment and run locally we propose to use Docker [multi-stage build](https://docs.docker.com/develop/develop-images/multistage-build/). 
+
+As part of the CI/CD design, there is an important subject to address is how to support integration tests. Unit tests focus on validating the business logic, while integration tests validate the end to end integration of the microservices with its dependants services and products. We separated the unit tests and integration tests in their own Java packages. Later it will be more appropriate to have a separate code repository for integration tests. 
+
+Integration tests in this project access remote postegresql server. When the server is in IBM Cloud as part of the postgresql service, a SSL Certificate is defined as part of the service credentials. When building with Docker multi-stage this means the build stage has to get certificate in Java TrustStore so tests are successful. We burnt time on this one. We recommend reading the [security section](#security) below to see what commands to run to get certificate in good format and create truststore. Those commands have to be done in the dockerfile too and certificate, URL, user, password has to be injected using Dockerfile arguments and then environment variables. 
+
+See the `scripts/buildDocker.sh` to assess the docker build parameters used. And then how to manage the certificate creation into the Java TrustStore using scripts like `add_certificates.sh`. This script needs to be executed before the maven build so any integration tests that need to access the remote Postgresql server will not fail with SSL handcheck process. And it needs to be done in the docker final image as part of the startup of the spring boot app (see `startup.sh`). 
 
 ## Listening to container events
 
-The use story is to get the container event from the kafka `containers` topics and add new container to the inventory, or update existing ones. So we need to add consumer and publisher using [Spring Kafka](https://spring.io/projects/spring-kafka). Spring Kafka template is based on the pure java kafka-clients jar but provide the same encapsulation as JMS template. Here is the [product documentation](https://docs.spring.io/spring-kafka/docs/2.2.4.RELEASE/reference/).  
+The use story is to get the container event from the kafka `containers` topics and add new Reefer container data to the inventory, or update existing container. So we need to add consumer and publisher using [Spring Kafka](https://spring.io/projects/spring-kafka). Spring Kafka template is based on the pure java kafka-clients jar but provides the same encapsulation as Spring JMS template. Here is the [product documentation](https://docs.spring.io/spring-kafka/docs/2.2.4.RELEASE/reference/).  
 
-First we need to start a kafka consumer when the application starts. We want one unique instance, so a singleton. As presented in [this article](https://www.baeldung.com/running-setup-logic-on-startup-in-spring), we select to add a Component that is an application listener so when the spring context is running, we can start consuming message from Kafka.  
+First we need to start a kafka consumer when the application starts. We want one unique instance, so a singleton. As presented in [this article](https://www.baeldung.com/running-setup-logic-on-startup-in-spring), we select to add a Component that is an application listener (Annotation @EventListener) so when the spring context is running, we can start consuming message from Kafka.  
 
 ```java
 @Component
@@ -174,10 +198,13 @@ public class ContainerConsumer {
 }
 ```
 
-The code is in the class: `ibm.labs.kc.containermgr.kafka.ContainerConsumer.java`. Spring Kafka container](https://docs.spring.io/spring-kafka/docs/2.2.4.RELEASE/reference/#receiving-messages) is not bringing that much value on top of Kafka Java API, and we tend to prefer learning a unique API and keep programming with the Kafka Java API. 
+The code is in the class: `ibm.labs.kc.containermgr.kafka.ContainerConsumer.java`. Spring Kafka container](https://docs.spring.io/spring-kafka/docs/2.2.4.RELEASE/reference/#receiving-messages) is not bringing that much value on top of Kafka Java API, and we prefer learning a unique API and keep programming with the Kafka Java API. 
 
 We have added an end to end integration test to create container events and see the payload persisted in Postgresql.  When running the server locally, you may want to leverage our [docker compose](https://github.com/ibm-cloud-architecture/refarch-kc/blob/master/docker/backbone-compose.yml) file to start a local kafka broker. 
 
+## Listening to Order Event
+
+The approach is the same as above and the supporting class is: 
 
 ## Manually deploy to IKS
 
@@ -214,8 +241,8 @@ If you follow those steps the application is deployed but is not working due to 
 
 ## Security
 
-To communicate with IBM Cloud PostgresSQl service the client needs to use SSL and the certificates... 
-First to avoid sharing userid and password in github, we use environment variables for postgressql url, user and password. There is a `setenv.tmpl.sh` in the `scripts` folder to use with your own settings. Rename it `setenv.sh`. This file is ignored by git.  Also to run unit test in eclipse you need to set those environment variables in the run configuration as illustrated in the figure below:
+To communicate with IBM Cloud PostgresSQl service the client needs to use SSL certificates... 
+First to avoid sharing userid and password in github, we use environment variables for postgressql url, user and password. There is a `setenv.tmpl.sh` in the `scripts` folder to use with your own settings. Rename it `setenv.sh`. This file is ignored by git. The values are coming from the IBM Cloud postgresql service. Also to run unit test in eclipse you need to set those environment variables in the run configuration as illustrated in the figure below:
 
 ![](./eclipse-envvar.png)
 

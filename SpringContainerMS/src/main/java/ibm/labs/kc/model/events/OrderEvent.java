@@ -1,8 +1,8 @@
 package ibm.labs.kc.model.events;
 
-import ibm.labs.kc.model.Order;
+import java.util.Date;
 
-public class OrderEvent extends AbstractEvent {
+public class OrderEvent<T> extends AbstractEvent {
 
     public static final String TYPE_CREATED = "OrderCreated";
     public static final String TYPE_UPDATED = "OrderUpdated";
@@ -19,23 +19,33 @@ public class OrderEvent extends AbstractEvent {
     public static final String TYPE_CONTAINER_OFF_SHIP = "ContainerOffShip";
     public static final String TYPE_CONTAINER_DELIVERED = "ContainerDelivered";
      
-    private Order payload;
+    protected String orderID;
+    protected T payload;
 
-    public OrderEvent(long timestampMillis, String type, String version, Order o) {
+    public OrderEvent(long timestampMillis, String type, String version,T o) {
         super(timestampMillis, type, version);
         this.payload = o;
     }
 
     public OrderEvent() {}
 
-
-    @Override
-	public Order getPayload() {
-		return payload;
+	public OrderEvent(String orderID,String type) {
+		this.orderID = orderID;
+		this.type = type;
+		this.timestamp = (new Date()).getTime();
+	}
+	
+	@Override
+	public T getPayload() {
+		return this.payload;
 	}
 
-	public void setPayload(Order payload) {
-		this.payload = payload;
+	public String getOrderID() {
+		return orderID;
+	}
+
+	public void setOrderID(String orderID) {
+		this.orderID = orderID;
 	}
 
 }

@@ -3,6 +3,8 @@ package ibm.labs.kc.containermgr.dao;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.springframework.stereotype.Component;
+
 import ibm.labs.kc.model.City;
 
 /**
@@ -11,6 +13,7 @@ import ibm.labs.kc.model.City;
  * @author jeromeboyer
  *
  */
+@Component
 public class CityDAO {
 	private Map<String,City> cities;
 	
