@@ -1,10 +1,10 @@
 # Container management microservice
 
-This project is part of the container shipment implementation solution you can read detail [here.](https://ibm-cloud-architecture.github.io/refarch-kc/).
+This project is part of the container shipment implementation solution, you can read about it [here.](https://ibm-cloud-architecture.github.io/refarch-kc/)
 
 The goal of this Container management service is to support the reefer containers inventory management and to process all the events related to the container entity. 
 
-We are documenting the best practices related to the different implementations we are delivering in this repository in [book format.](https://ibm-cloud-architecture.github.io/refarch-kc-container-ms). 
+We are documenting the best practices related to the different implementations we are delivering in this repository in [book format](https://ibm-cloud-architecture.github.io/refarch-kc-container-ms). 
 
 Update 04/25/2019.
 

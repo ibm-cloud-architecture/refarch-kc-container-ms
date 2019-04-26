@@ -1,6 +1,7 @@
 package ibm.labs.kc.containermgr.kafka;
 
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +16,10 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 
+import ibm.labs.kc.containermgr.dao.CityDAO;
 import ibm.labs.kc.containermgr.dao.ContainerDAO;
 import ibm.labs.kc.containermgr.model.ContainerEntity;
-import ibm.labs.kc.model.container.Container;
+import ibm.labs.kc.model.events.ContainerCreationEvent;
 import ibm.labs.kc.model.events.ContainerEvent;
 /*
  * Consume events from 'containers' topic. Started when the spring application context
@@ -25,6 +27,7 @@ import ibm.labs.kc.model.events.ContainerEvent;
  */
 @Component
 public class ContainerConsumer {
+	private static final Logger LOG = Logger.getLogger(ContainerConsumer.class.toString());
 	@Value("${kafka.containers.consumer.groupid}")
 	public String CONSUMER_GROUPID;
 	@Value("${kcsolution.containers}")
@@ -34,16 +37,21 @@ public class ContainerConsumer {
 	@Autowired
 	private ContainerDAO containerDAO;
 	
+	@Autowired
+	private CityDAO cityDAO;
+	
 	@EventListener
     public void onApplicationEvent(ContextRefreshedEvent event) {
 		ContainerProperties containerProps = new ContainerProperties(CONTAINERS_TOPIC);
+		LOG.info(" Topic:" + CONTAINERS_TOPIC + " " + CONSUMER_GROUPID);
 		containerProps.setMessageListener(new MessageListener<Integer, String>() {
 		        @Override
 		        public void onMessage(ConsumerRecord<Integer, String> message) {
-		        	System.out.println(message.value());
+		        	LOG.info("Received container event: " + message.value());
 		        	if (message.value().contains(ContainerEvent.CONTAINER_ADDED)) {
-		        		ContainerEvent<Container> ce = parser.fromJson(message.value(), ContainerEvent.class);
+		        		ContainerCreationEvent ce = parser.fromJson(message.value(), ContainerCreationEvent.class);
 		        		ContainerEntity cce = new ContainerEntity(ce.getPayload());
+		        		cce.setCurrentCity(cityDAO.getCityName(cce.getLatitude(),cce.getLongitude()));
 		        		containerDAO.save(cce);
 		        	}
 		        	

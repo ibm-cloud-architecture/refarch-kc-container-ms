@@ -3,7 +3,7 @@ p=$(pwd)
 if [[ $p = */scripts ]]; then
  cd ..
 fi
-. ./scripts/setenv.sh
+. ../scripts/setenv.sh
 
 echo "Deploy helm chart for $chart project to $ns"
 

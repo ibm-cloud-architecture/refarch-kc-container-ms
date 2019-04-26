@@ -16,12 +16,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import ibm.labs.kc.containermgr.SBApplication;
 import ibm.labs.kc.containermgr.dao.ContainerRepository;
 import ibm.labs.kc.containermgr.model.ContainerEntity;
 import ibm.labs.kc.containermgr.model.ContainerStatus;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest(classes=SBApplication.class)
 public class PostgreSqlTest {
 
 	@BeforeClass
@@ -38,10 +39,14 @@ public class PostgreSqlTest {
 		String url = env.get("POSTGRESQL_URL");
 		Properties props = new Properties();
 		props.setProperty("user",env.get("POSTGRESQL_USER"));
+		if ( env.get("KAFKA_ENV") != null && ! "LOCAL".equals(env.get("KAFKA_ENV"))) {
+			props.setProperty("ssl","true");
+			props.setProperty("sslfactory", "org.postgresql.ssl.NonValidatingFactory");
+		}
 		// following property allows SSL connections to be made without validating the server's certificate.
-		props.setProperty("sslfactory", "org.postgresql.ssl.NonValidatingFactory");
+	
 		props.setProperty("password",env.get("POSTGRESQL_PWD"));
-		props.setProperty("ssl","true");
+	
 		Connection conn = DriverManager.getConnection(url, props);
 	}
 	

@@ -63,6 +63,8 @@ public class ContainerDAOImpl implements ContainerDAO {
 		return  containerRepository.findById(containerId)
 				.map( container -> {
 					  container.setBrand(containerRequest.getBrand());
+					  container.setLatitude(containerRequest.getLatitude());
+					  container.setLongitude(containerRequest.getLongitude());
 					  container.setType(containerRequest.getType());
 					  container.setCapacity(containerRequest.getCapacity());
 					  container.setCurrentCity(containerRequest.getCurrentCity());

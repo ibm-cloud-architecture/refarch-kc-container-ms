@@ -5,9 +5,12 @@ import java.util.Map;
 
 import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.config.SaslConfigs;
 import org.apache.kafka.common.config.SslConfigs;
+import org.apache.kafka.common.serialization.IntegerSerializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.kafka.common.serialization.StringSerializer;
 
 public class KCKafkaConfiguration {
 
@@ -25,6 +28,24 @@ public class KCKafkaConfiguration {
     	return props;
     }
     
+    
+    public static Map<String, Object> getPublisherProperties(String clientID) {
+	    Map<String, Object> props = buildCommonProperties();
+	    props.put(ProducerConfig.RETRIES_CONFIG, 0);
+	    props.put(ProducerConfig.CLIENT_ID_CONFIG,clientID);
+	    /*
+	    props.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true);
+	    props.put(ProducerConfig.ENABLE_IDEMPOTENCE_DOC,true);
+	    props.put(ProducerConfig.TRANSACTIONAL_ID_CONFIG, clientID);
+	   */
+	    props.put(ProducerConfig.BATCH_SIZE_CONFIG, 16384);
+	    props.put(ProducerConfig.LINGER_MS_CONFIG, 1);
+	
+	    props.put(ProducerConfig.BUFFER_MEMORY_CONFIG, 33554432);
+	    props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+	    props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+	    return props;
+	}
     
     private static Map<String, Object> buildCommonProperties() {
     	Map<String, Object> properties = new HashMap<String,Object>();

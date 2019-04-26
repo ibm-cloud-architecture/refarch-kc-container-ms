@@ -42,6 +42,9 @@ The second diagram shows the same service implemented with Apache Kafka KStreams
 
 The implementation description is [here.](./kstreams/README.md)
 
+The last solution is done with Spring boot, postgresql as back end database and kafka. The description for this implementation is in [this chapter](./springboot/README.md).
+
+
 ## Container inventory
 
 We are providing a tool to publish container created events to the Kafka `container` topic. The python code is under the `tools` folder. It can be executed using our Python docker image with the command:
@@ -62,3 +65,6 @@ The output of this assignment processing is an event to the `orders` topic.
 
 ## Compendium
 
+* [Postgresql tutorial](http://postgresguide.com/sql/select.html)
+* [psql commands](https://www.postgresql.org/docs/9.2/app-psql.html)
+* [Spring boot kafka documentation](https://docs.spring.io/spring-kafka/reference/)

@@ -13,10 +13,11 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import ibm.labs.kc.containermgr.SBApplication;
 import ibm.labs.kc.model.container.Container;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes=SBApplication.class,webEnvironment = WebEnvironment.RANDOM_PORT)
 public class ContainerAPITest {
 
     @Autowired

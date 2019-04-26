@@ -5,7 +5,7 @@
 .settings/
 certificates.der 
 clienttruststore
-postgresql.crt
+certs/postgresql.crt
 .DS_Store
 src/main/resources/application-local.properties
 src/main/resources/localdev-config.json

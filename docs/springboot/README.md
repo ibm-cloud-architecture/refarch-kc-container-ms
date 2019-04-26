@@ -91,21 +91,36 @@ We encourage you to go over the different tutorials from spring.io. We followed 
 
 ## Add the get /containers  API
 
-We want to start by the get reefer containers test and then implement a simple container controller bean with CRUD operations. Spring takes into account the package names to manage its dependencies and settings. The test looks like:
+We want to start by the get reefer containers test and then implement a simple container controller bean with the CRUD operations. Spring takes into account the package names to manage its dependencies and settings. The test looks like below:
 
 ```java
- String endpoint = "http://localhost:" + port + "/containers";
-String response = server.getForObject(endpoint, String.class);
-assertTrue("Invalid response from server : " + response, response.startsWith("["));
+@Test
+public void testGetContainers() throws Exception {
+    String endpoint = "http://localhost:" + port + "/containers";
+    String response = server.getForObject(endpoint, String.class);
+    assertTrue("Invalid response from server : " + response, response.startsWith("["));
+}
+```
+Spring Boot provides a @SpringBootTest annotation to build an application context used for the test. Below we specify to use Spring unit test runner, and to load the configuration from the main application class. The server used above is auto injected by the runner.
+
+```java
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes=SBApplication.class,webEnvironment = WebEnvironment.RANDOM_PORT)
+public class ContainerAPITest {
+     @Autowired
+    private TestRestTemplate server;
+
+    @LocalServerPort
+    private int port;
+    
 ```
 
-And the resource class under the package `ibm.labs.kc.containermgr.rest.containers` with naming convention starting from where the `SBApplication` application is (`ibm.labs.kc.containermgr`). 
+The next step is to implement the controller class under the package `ibm.labs.kc.containermgr.rest.containers`. 
 
 ```java
 package ibm.labs.kc.containermgr.rest.containers;
 @RestController
 public class ContainerController {
-
 
     @GetMapping("containers")
     public List<ContainerEntity> getAllContainers() {
@@ -113,7 +128,7 @@ public class ContainerController {
     }
 ``` 
 
-The ContainerEntity is a class with JPA annotations, used to control the mapping object to table. Below is a [simple entity definition](https://github.com/ibm-cloud-architecture/refarch-kc-container-ms/blob/14cc515787a7aeeebf38c703473ab32622c56b93/SpringContainerMS/src/main/java/ibm/labs/kc/containermgr/model/ContainerEntity.java#L21-L47):
+The ContainerEntity is a class with JPA annotations, used to control the object to table mapping. Below is a [simple entity definition](https://github.com/ibm-cloud-architecture/refarch-kc-container-ms/blob/14cc515787a7aeeebf38c703473ab32622c56b93/SpringContainerMS/src/main/java/ibm/labs/kc/containermgr/model/ContainerEntity.java#L21-L47):
 
 ```java
 @Entity
@@ -128,7 +143,7 @@ public class ContainerEntity implements java.io.Serializable {
 }
 ```
 
-Once we have entity and how it is mapped to a table, the next major step is to add a repository class: [ContainerRepository.java](https://github.com/ibm-cloud-architecture/refarch-kc-container-ms/blob/master/SpringContainerMS/src/main/java/ibm/labs/kc/containermgr/dao/ContainerRepository.java) and configure the application to use Postgress dialect so JPA can generate compatible DDLs. The repository is scrary easy, it just extends a base JpaRepository and specifies the primary key used as ID and the type of record as ContainerEntity.
+Once we have defined the entity attributes and how it is mapped to the table column, the next major step is to add a repository class: [ContainerRepository.java](https://github.com/ibm-cloud-architecture/refarch-kc-container-ms/blob/master/SpringContainerMS/src/main/java/ibm/labs/kc/containermgr/dao/ContainerRepository.java) and configure the application to use Postgress dialect so JPA can generate compatible DDLs. The repository is scrary easy, it just extends a base JpaRepository and specifies the primary key used as ID and the type of record as ContainerEntity.
 
 ```java
 @Repository
@@ -164,14 +179,142 @@ Finally the controller is integrating the repository:
     }
 
 ```
-The test fails as it is missing the configuration to the remote postsgresql service. As we do not want to hardcode the password and URL end point or share secret in public github we define the configuration using environment variables. See the [application.properties](https://github.com/ibm-cloud-architecture/refarch-kc-container-ms/blob/master/SpringContainerMS/src/main/resources/application.properties) file. The Postgresql we are using is the IBM Cloud deployment. To export the different environment variables we have a `setenv.sh` script (which we have defined a template) with different argument (LOCAL, IBMCLOUD, ICP). 
+The test fails as it is missing the configuration to the postsgresql service. As we do not want to hardcode the password and URL end point or share secret in public github we define the configuration using environment variables. See the [application.properties](https://github.com/ibm-cloud-architecture/refarch-kc-container-ms/blob/master/SpringContainerMS/src/main/resources/application.properties) file. We have two choices for the Postgresql service: one using IBM Cloud and one running local docker image. 
 
+To export the different environment variables we have a `setenv.sh` script (which we have defined a template for) with different arguments to control Kafka and Postgresql parameters (LOCAL, IBMCLOUD, ICP). 
+
+To execute against the remote postgresql use:
 ```shell
-$ source ./scripts/setenv.sh IBMCLOUD
+# Under the SpringContainerMS folder
+$ source ../scripts/setenv.sh IBMCLOUD
+$ mvn test
+```
+
+To run locally start the backend services (see ) and use:
+```shell
+$ source ../scripts/setenv.sh LOCAL
 $ mvn test
 ```
 
 After the tests run successfully with a valid connection to IBM cloud, launching the spring boot app location and going to http://localhost:8080/containers/c1 will give you the data for the Container "c1".   
+
+## Preparing your test environment
+
+We propose to use the local deployment to do unit tests and integration tests. The integration test for this application is quite complex and we propose to use a diagram to illustrate the components involved and how to start them.
+
+First be sure your back end services run: It will start zookeeper, kafka and postgresql. You need the [refarch-kc main project for that](https://ibm-cloud-architecture.github.io/refarch-kc/) which normally can be in one folder above this current project. To start the backend:
+
+```shell
+$ cd refarch-kc/docker
+$ docker-compose -f backbone-compose.yml up`
+
+Starting docker_zookeeper1_1  ... done
+Creating docker_postgres-db_1 ... done
+Starting docker_kafka1_1      ... done
+```
+> if you need to restart from empty topics, delete the kafka1 and zookeeper1 folders under `refarch-kc/docker`
+
+#### The integration tests 
+
+![](./itg-tests.png)
+
+    
+| ID | Description | Run |
+| --- | --- | --- |
+| 1  | Springboot app which includes kafka consumers and producers, REST API and postgresql DAO | ./scripts/run.sh |
+| 2 | **psql** to access postgresql DB | ../scripts/start_spql |
+| 3 | containers consumer. To trace the *containers* topics. This code is in refarch-kc project in `itg-tests/ContainersPython` folder. | Use a Terminal console: refarch-kc/itg-tests/ContainersPython/ runContainerConsumer.sh LOCAL c01 |
+| 4 | container events producer. To generate events. This code is in refarch-kc project in `itg-tests/ContainersPython` folder. | Use a Terminal console: refarch-kc/itg-tests/ContainersPython/ addContainer.sh LOCAL c01 |
+| 5 | orders consumer. To trace the *orders* topics. This code is in refarch-kc project in `itg-tests/OrdersPython` folder. | Use a Terminal console:refarch-kc/itg-tests/OrdersPython/ runOrderConsumer.sh LOCAL order01 |
+| 6 | orders events producer. To generate order events. This code is in refarch-kc project in `itg-tests/OrdersPython` folder. | Use a Terminal console: refarch-kc/itg-tests/OrdersPython/ addOrder.sh LOCAL order01 |
+
+
+Here is an example of traces after sending 2 container creation events in terminal console (#3):
+
+```
+@@@ pollNextOrder containers partition: [0] at offset 4 with key b'itg-C02':
+	value: {"containerID": "itg-C02", "timestamp": 1556250004, "type": "ContainerAdded", "payload": {"containerID": "itg-C02", "type": "Reefer", "status": "Empty", "latitude": 37.8, "longitude": -122.25, "capacity": 110, "brand": "itg-brand"}}
+@@@ pollNextOrder containers partition: [0] at offset 5 with key b'itg-c03':
+	value: {"containerID": "itg-c03", "timestamp": 1556250673, "type": "ContainerAdded", "payload": {"containerID": "itg-c03", "type": "Reefer", "status": "Empty", "latitude": 37.8, "longitude": -122.25, "capacity": 110, "brand": "itg-brand"}}
+```
+
+Which can be verified in the (#1) trace:
+
+```
+2019-04-25 16:52:11.245  INFO 17734 --- [ingConsumer-C-1] c.l.k.c.kafka.ContainerConsumer          : Received container event: {"containerID": "itg-C02", "timestamp": 1556250004, "type": "ContainerAdded", "payload": {"containerID": "itg-C02", "type": "Reefer", "status": "Empty", "latitude": 37.8, "longitude": -122.25, "capacity": 110, "brand": "itg-brand"}}
+```
+
+And in console for container producer (#4)
+
+```
+Create container
+{'containerID': 'itg-C02', 'timestamp': 1556250004, 'type': 'ContainerAdded', 'payload': {'containerID': 'itg-C02', 'type': 'Reefer', 'status': 'Empty', 'latitude': 37.8, 'longitude': -122.25, 'capacity': 110, 'brand': 'itg-brand'}}
+Message delivered to containers [0]
+
+```
+
+Finally in the psql console:
+
+```
+postgres=# SELECT * FROM containers;
+   id    |   brand   | capacity |       created_at        | current_city | latitude | longitude | status |  type  |       updated_at        
+---------+-----------+----------+-------------------------+--------------+----------+-----------+--------+--------+-------------------------
+
+ itg-C02 | itg-brand |      110 | 2019-04-25 16:28:26.885 | Oakland      |     37.8 |   -122.25 |      1 | Reefer | 2019-04-25 20:40:04.579
+ itg-c03 | itg-brand |      110 | 2019-04-25 20:51:13.424 | Oakland      |     37.8 |   -122.25 |      1 | Reefer | 2019-04-25 20:51:13.424
+```
+
+> The capacity is at maximum and the status = 1 is for empty container.
+
+When an order is created in console #6, a matching container is found and 2 events are created to present the container id and order id in both topics: containers and orders:
+
+#### Console 6: Create order
+
+```shell
+$ ./addOrder.sh LOCAL order02
+
+Create order
+{'orderID': 'order04', 'timestamp': 1556252841, 'type': 'OrderCreated', 'payload': {'orderID': 'order04', 'productID': 'FreshFoodItg', 'customerID': 'Customer007', 'quantity': 180, 'pickupAddress': {'street': 'astreet', 'city': 'Oakland', 'country': 'USA', 'state': 'CA', 'zipcode': '95000'}, 'destinationAddress': {'street': 'bstreet', 'city': 'Beijing', 'country': 'China', 'state': 'NE', 'zipcode': '09000'}, 'pickupDate': '2019-05-25', 'expectedDeliveryDate': '2019-06-25'}}
+Message delivered to orders [0]
+```
+#### Console 5: consumer orders
+
+```
+	value: {"orderID": "order04", "timestamp": 1556252841, "type": "OrderCreated", "payload": {"orderID": "order04", "productID": "FreshFoodItg", "customerID": "Customer007", "quantity": 180, "pickupAddress": {"street": "astreet", "city": "Oakland", "country": "USA", "state": "CA", "zipcode": "95000"}, "destinationAddress": {"street": "bstreet", "city": "Beijing", "country": "China", "state": "NE", "zipcode": "09000"}, "pickupDate": "2019-05-25", "expectedDeliveryDate": "2019-06-25"}}
+@@@ pollNextOrder orders partition: [0] at offset 5 with key b'order04':
+	value: {"orderID":"order04","payload":{"containerID":"itg-c03","orderID":"order04"},"timestamp":1556252842194,"type":"ContainerAllocated"}
+```
+
+#### Console 1: app
+
+```
+2019-04-25 21:27:21.765  INFO 21610 --- [ingConsumer-C-1] c.l.kc.containermgr.kafka.OrderConsumer  : Received order event:{"orderID": "order04", "timestamp": 1556252841, "type": "OrderCreated", "payload": {"orderID": "order04", "productID": "FreshFoodItg", "customerID": "Customer007", "quantity": 180, "pickupAddress": {"street": "astreet", "city": "Oakland", "country": "USA", "state": "CA", "zipcode": "95000"}, "destinationAddress": {"street": "bstreet", "city": "Beijing", "country": "China", "state": "NE", "zipcode": "09000"}, "pickupDate": "2019-05-25", "expectedDeliveryDate": "2019-06-25"}}
+
+
+
+2019-04-25 21:27:22.199  INFO 21610 --- [ingConsumer-C-1] c.l.k.c.kafka.OrderProducerImpl          : Emit order event:{"orderID":"order04","payload":{"containerID":"itg-c03","orderID":"order04"},"timestamp":1556252842194,"type":"ContainerAllocated"}
+
+2019-04-25 21:27:22.273  INFO 21610 --- [ingConsumer-C-1] c.l.k.c.kafka.ContainerProducerImpl      : Emit container event:{"containerID":"itg-c03","payload":{"containerID":"itg-c03","orderID":"order04"},"timestamp":1556252842272,"type":"ContainerAssignedToOrder"}
+
+```
+
+#### Console 3: Containers consumer
+```
+@@@ pollNextOrder containers partition: [0] at offset 6 with key b'itg-c03':
+	value: {"containerID":"itg-c03","payload":{"containerID":"itg-c03","orderID":"order04"},"timestamp":1556252842272,"type":"ContainerAssignedToOrder"}
+```
+
+#### Console 2
+
+The postgresql containers table is also modified as capacity of the container is reduced by the order quantity and the status set to loaded (value 0):
+
+```
+postgres=# SELECT * FROM containers;
+   id    |   brand   | capacity |       created_at        | current_city | latitude | longitude | status |  type  |       updated_at        
+---------+-----------+----------+-------------------------+--------------+----------+-----------+--------+--------+-------------------------
+ itg-C02 | itg-brand |        0 | 2019-04-25 16:28:26.885 | Oakland      |     37.8 |   -122.25 |      0 | Reefer | 2019-04-25 21:24:57.821
+ itg-c03 | itg-brand |        0 | 2019-04-25 20:51:13.424 | Oakland      |     37.8 |   -122.25 |      0 | Reefer | 2019-04-25 21:27:22.159
+```
 
 ## Build with docker
 
@@ -206,6 +349,7 @@ We have added an end to end integration test to create container events and see 
 
 The approach is the same as above and the supporting class is: [ibm.labs.kc.containermgr.kafka.OrderConsumer](https://github.com/ibm-cloud-architecture/refarch-kc-container-ms/blob/master/SpringContainerMS/src/main/java/ibm/labs/kc/containermgr/kafka/OrderConsumer.java).
 
+The difference is in the search for container for the order: 
 ## Security
 
 To communicate with IBM Cloud PostgresSQl service the client needs to use SSL certificates... 

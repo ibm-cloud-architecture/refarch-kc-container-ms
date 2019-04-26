@@ -1,0 +1,2 @@
+
+psql --host=localhost --port=5432 --username=$POSTGRESQL_USER  -d postgres

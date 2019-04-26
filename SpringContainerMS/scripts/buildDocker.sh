@@ -17,7 +17,7 @@ else
   kcenv=$1
 fi
 
-. ./scripts/setenv.sh $kcenv
+. ../scripts/setenv.sh $kcenv
 
    
 ev=$(ibmcloud cdb deployables-show 2>&1 | grep "not a registered command")
