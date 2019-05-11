@@ -150,7 +150,7 @@ Once we have defined the entity attributes and how it is mapped to the table col
 public interface ContainerRepository extends JpaRepository<ContainerEntity,String>{}
 ```
 
-Spring makes it magic to add save, findById, findAll... operations transparently. So now we can @Autowrite the repository and add the tests and the connection between the rest api and the repo. The test is in the Junit test class: [PostgreSqlTest](src/test/java/ibm/labs/kc/containermgr/PostgreSqlTest.java). In fact for test reason and being able to inject Mockup class in unit test, we inject via contructor.
+Spring makes it magic to add save, findById, findAll... operations transparently. So now we can @Autowrite this repository into the controller class and add the integration tests. The test is in the Junit test class: [PostgreSqlTest](src/test/java/it/container/PostgreSqlTest.java). In fact, for test reason we want to inject Mockup class in unit test via the controller contructor.
 
 ```java
 @Test
@@ -190,7 +190,7 @@ $ source ../scripts/setenv.sh IBMCLOUD
 $ mvn test
 ```
 
-To run locally start the backend services (see ) and use:
+To run locally start the backend services (In the refarch-kc project, docker folder and the docker compose file:backbone-compose.yml) and use:
 ```shell
 $ source ../scripts/setenv.sh LOCAL
 $ mvn test
@@ -350,6 +350,7 @@ We have added an end to end integration test to create container events and see 
 The approach is the same as above and the supporting class is: [ibm.labs.kc.containermgr.kafka.OrderConsumer](https://github.com/ibm-cloud-architecture/refarch-kc-container-ms/blob/master/SpringContainerMS/src/main/java/ibm/labs/kc/containermgr/kafka/OrderConsumer.java).
 
 The difference is in the search for container for the order: 
+
 ## Security
 
 To communicate with IBM Cloud PostgresSQl service the client needs to use SSL certificates... 

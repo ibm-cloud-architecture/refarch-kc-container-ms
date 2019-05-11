@@ -1,4 +1,4 @@
-package it.container.kafka;
+package it.container;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
