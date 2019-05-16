@@ -7,3 +7,4 @@ MP-SpringContainerMS/target
 kstreams/.settings/
 **/setenv.sh
 container-ms/server/dbConfig.yaml
+SpringContainerMS/postgresql.crt

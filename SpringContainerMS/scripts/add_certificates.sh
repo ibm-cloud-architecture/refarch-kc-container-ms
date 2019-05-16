@@ -40,4 +40,7 @@ function process_certificates(){
   rm $IN_PEM
 }
 
-process_certificates
+if [[ $KAFKA_ENV == "IBMCLOUD" ]]
+then
+  process_certificates
+fi

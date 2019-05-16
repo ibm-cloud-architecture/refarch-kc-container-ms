@@ -275,7 +275,21 @@ mvn install
 
 To start the liberty server use the script: `./script/startLocalLiberty` or `mvn liberty:run-server`
 
+## docker compose configuration
 
+Replace existing springcontainerms declaration to the following
+
+```yaml
+    containerkstreams:
+        image: ibmcase/kc-containerkstreams:latest
+        hostname: containerkstreams
+        ports:
+            - "12080:9080"
+        environment:
+            KAFKA_ENV: ${KAFKA_ENV}
+            KAFKA_BROKERS: ${KAFKA_BROKERS}
+            KAFKA_APIKEY: ${KAFKA_APIKEY}
+```
 ## How streams flows are resilient?
 
 

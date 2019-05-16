@@ -3,29 +3,37 @@ echo "##########################################"
 echo " Build Spring boot based Container microservice war and docker image  "
 echo "##########################################"
 
-log=$(ibmcloud target | grep "Not logged in")
-if [[ -n "$log" ]]
-then
-  echo "You must login to IBMCLOUD before building"
-  exit
+if [[ $PWD = */scripts ]]; then
+ cd ..
 fi
-root_folder=$(cd $(dirname $0); cd ..; pwd)
-
 if [[ $# -eq 0 ]];then
   kcenv="LOCAL"
 else
   kcenv=$1
 fi
 
-. ../scripts/setenv.sh $kcenv
+msname="springcontainerms"
+ns="greencompute"
+chart=$(ls ./chart/| grep $msname)
+kname="kc-"$chart
+source ../../refarch-kc/scripts/setenv.sh $kcenv
 
-   
-ev=$(ibmcloud cdb deployables-show 2>&1 | grep "not a registered command")
-if [[ -n "$ev" ]]
+if [[ $kcenv == "IBMCLOUD" ]]
 then
-   ibmcloud plugin install cloud-databases   
+  log=$(ibmcloud target | grep "Not logged in")
+  if [[ -n "$log" ]]
+  then
+    echo "You must login to IBMCLOUD before building"
+    exit
+  fi
+  ev=$(ibmcloud cdb deployables-show 2>&1 | grep "not a registered command")
+  if [[ -n "$ev" ]]
+  then
+    ibmcloud plugin install cloud-databases   
+  fi
+  ibmcloud cdb deployment-cacert $ic_postgres_serv > postgresql.crt
 fi
-ibmcloud cdb deployment-cacert $ic_postgres_serv > postgresql.crt
+
 
 find target -iname "*SNAPSHOT*" -print | xargs rm -rf
 
@@ -35,7 +43,6 @@ docker build --network docker_default --build-arg POSTGRESQL_URL=${POSTGRESQL_UR
              --build-arg POSTGRESQL_USER=${POSTGRESQL_USER} \
              --build-arg POSTGRESQL_PWD=${POSTGRESQL_PWD} \
              --build-arg KAFKA_ENV=$kcenv \
-             --build-arg ES_CA_PEM="${ES_CA_PEM}" \
              --build-arg POSTGRESQL_CA_PEM="${POSTGRESQL_CA_PEM}"  -t ibmcase/$kname .
 
 if [[ $kcenv == "IBMCLOUD" ]]
