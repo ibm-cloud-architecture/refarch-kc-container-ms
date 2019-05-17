@@ -222,7 +222,7 @@ Starting docker_kafka1_1      ... done
 | ID | Description | Run |
 | --- | --- | --- |
 | 1  | Springboot app which includes kafka consumers and producers, REST API and postgresql DAO | ./scripts/run.sh |
-| 2 | **psql** to access postgresql DB | ../scripts/start_spql |
+| 2 | **psql** to access postgresql DB | ../scripts/start_psql |
 | 3 | containers consumer. To trace the *containers* topics. This code is in refarch-kc project in `itg-tests/ContainersPython` folder. | Use a Terminal console: refarch-kc/itg-tests/ContainersPython/ runContainerConsumer.sh LOCAL c01 |
 | 4 | container events producer. To generate events. This code is in refarch-kc project in `itg-tests/ContainersPython` folder. | Use a Terminal console: refarch-kc/itg-tests/ContainersPython/ addContainer.sh LOCAL c01 |
 | 5 | orders consumer. To trace the *orders* topics. This code is in refarch-kc project in `itg-tests/OrdersPython` folder. | Use a Terminal console:refarch-kc/itg-tests/OrdersPython/ runOrderConsumer.sh LOCAL order01 |
@@ -320,9 +320,9 @@ postgres=# SELECT * FROM containers;
 
 To support flexible CI/CD deployment and run locally we propose to use Docker [multi-stage build](https://docs.docker.com/develop/develop-images/multistage-build/). 
 
-As part of the CI/CD design, there is an important subject to address is how to support integration tests. Unit tests focus on validating the business logic, while integration tests validate the end to end integration of the microservices with its dependants services and products. We separated the unit tests and integration tests in their own Java packages. Later it will be more appropriate to have a separate code repository for integration tests. 
+As part of the CI/CD design, there is an important subject to address is how to support integration tests. Unit tests focus on validating the business logic, while integration tests validate the end to end integration of the microservice with its dependants services and products. We separated the unit tests and integration tests in their own Java packages. Later it will be more appropriate to have a separate code repository for integration tests (we stated this approach in the `refarch-kc` project under the `itg-tests` folder). 
 
-Integration tests in this project access remote postegresql server. When the server is in IBM Cloud as part of the postgresql service, a SSL Certificate is defined as part of the service credentials. When building with Docker multi-stage this means the build stage has to get certificate in Java TrustStore so tests are successful. We burnt time on this one. We recommend reading the [security section](#security) below to see what commands to run to get certificate in good format and create truststore. Those commands have to be done in the dockerfile too and certificate, URL, user, password has to be injected using Dockerfile arguments and then environment variables. 
+Integration tests in this project access remote postegresql server. When the server is in IBM Cloud as part of the postgresql service, a SSL Certificate is defined as part of the service credentials. When building with Docker multi-stage this means the build stage has to get certificate in the Java TrustStore so tests are successful. We burnt a lot of time on this one to make it working. We recommend reading the [security section](#security) below to see what commands to run to get certificate in good format and create a truststore. Those commands have to be done in the dockerfile too and certificate, URL, user, password has to be injected using Dockerfile arguments and then environment variables. 
 
 See the `scripts/buildDocker.sh` to assess the docker build parameters used. And then how to manage the certificate creation into the Java TrustStore using scripts like `add_certificates.sh`. This script needs to be executed before the maven build so any integration tests that need to access the remote Postgresql server will not fail with SSL handcheck process. And it needs to be done in the docker final image as part of the startup of the spring boot app (see `startup.sh`). 
 
