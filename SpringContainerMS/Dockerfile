@@ -3,7 +3,7 @@ FROM maven:3.3-jdk-8 as builder
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 # this is to reuse local .m2. if not all the dependencies will be always downloaded
-#  it can be removed 
+#  it can be removed
 VOLUME ${HOME}/.m2:/root/.m2
 ADD . /usr/src/app
 
@@ -14,9 +14,11 @@ ARG KAFKA_BROKERS
 ARG KAFKA_APIKEY
 ARG KAFKA_ENV
 # postgresql ssl certicates
-ARG POSTGRESQL_CA_PEM 
+ARG POSTGRESQL_CA_PEM
 # and event streams one
 ARG ES_CA_PEM
+ARG JKS_LOCATION
+ARG TRUSTSTORE_PWD
 RUN bash -c " export POSTGRESQL_URL=${POSTGRESQL_URL} \
 	&&  export POSTGRESQL_USER=${POSTGRESQL_USER}\
 	&& export POSTGRESQL_PWD=${POSTGRESQL_PWD} \
@@ -25,8 +27,10 @@ RUN bash -c " export POSTGRESQL_URL=${POSTGRESQL_URL} \
 	&& export KAFKA_APIKEY=${KAFKA_APIKEY} \
 	&& export ES_CA_PEM=\"${ES_CA_PEM}\" \
 	&& export POSTGRESQL_CA_PEM=\"${POSTGRESQL_CA_PEM}\" \
+	&& export JKS_LOCATION="/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/security/cacerts" \
+	&& export TRUSTSTORE_PWD=${TRUSTSTORE_PWD} \
 	&& ./scripts/add_certificates.sh \
-	&& mvn clean install -DskipITs -Djavax.net.ssl.trustStore=$JAVA_HOME/jre/lib/security/cacerts -Djavax.net.ssl.trustStorePassword=changeit"
+	&& mvn clean install -DskipITs -Djavax.net.ssl.trustStore=$JAVA_HOME/jre/lib/security/cacerts -Djavax.net.ssl.trustStorePassword=changeit -Duser.home=/var/maven"
 
 # Deploy stage
 # Use jre small foot print image. See https://hub.docker.com/_/ibmjava/
@@ -43,6 +47,8 @@ ENV KAFKA_APIKEY=""
 ENV POSTGRESQL_CA_PEM=""
 ENV KAFKA_ENV=""
 ENV ES_CA_PEM=""
+ENV JKS_LOCATION=""
+ENV TRUSTSTORE_PWD=""
 # Install Extra Packages
 RUN apt-get update \
  && apt-get install -y jq bash bc ca-certificates curl \
@@ -54,8 +60,7 @@ WORKDIR $APP_HOME
 COPY scripts/startup.sh startup.sh
 COPY scripts/add_certificates.sh scripts/
 
-ENV JAVA_OPTS="" 
+ENV JAVA_OPTS=""
 
 EXPOSE 8080:8080
 ENTRYPOINT ["./startup.sh"]
-
