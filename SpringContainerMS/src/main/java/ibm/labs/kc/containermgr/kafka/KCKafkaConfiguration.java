@@ -16,7 +16,7 @@ public class KCKafkaConfiguration {
 
     public static final String ICP_ENV = "ICP";
     public static final String IC_ENV = "IBMCLOUD";
-    
+
     public static Map<String, Object> getConsumerProperties(String groupID) {
     	Map<String, Object>  props = buildCommonProperties();
     	props.put(ConsumerConfig.GROUP_ID_CONFIG, groupID);
@@ -27,8 +27,8 @@ public class KCKafkaConfiguration {
  	    props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
     	return props;
     }
-    
-    
+
+
     public static Map<String, Object> getPublisherProperties(String clientID) {
 	    Map<String, Object> props = buildCommonProperties();
 	    props.put(ProducerConfig.RETRIES_CONFIG, 0);
@@ -40,13 +40,13 @@ public class KCKafkaConfiguration {
 	   */
 	    props.put(ProducerConfig.BATCH_SIZE_CONFIG, 16384);
 	    props.put(ProducerConfig.LINGER_MS_CONFIG, 1);
-	
+
 	    props.put(ProducerConfig.BUFFER_MEMORY_CONFIG, 33554432);
 	    props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
 	    props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
 	    return props;
 	}
-    
+
     private static Map<String, Object> buildCommonProperties() {
     	Map<String, Object> properties = new HashMap<String,Object>();
         Map<String, String> env = System.getenv();
@@ -65,14 +65,12 @@ public class KCKafkaConfiguration {
                     "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"token\" password=\""
                             + env.get("KAFKA_APIKEY") + "\";");
             properties.put(SslConfigs.SSL_PROTOCOL_CONFIG, "TLSv1.2");
-            /*
             if (env.get("JKS_LOCATION") != null) {
             	 properties.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, env.get("JKS_LOCATION"));
             }
             if (env.get("TRUSTSTORE_PWD") != null) {
             	properties.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, env.get("TRUSTSTORE_PWD"));
             }
-            */
             properties.put(SslConfigs.SSL_ENABLED_PROTOCOLS_CONFIG, "TLSv1.2");
             properties.put(SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG, "HTTPS");
         } else {
