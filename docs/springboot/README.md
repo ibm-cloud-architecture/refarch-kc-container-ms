@@ -1,6 +1,6 @@
 # Springboot - Kafka container microservice
 
-This chapter presents how to develop the Reefer container manager using Spring boot, Kafka template and PostgreSQL, Hibernate JPA and Spring data. This is another way to implement the same specifications and helps us to assess the different technologies to develop event-driven cloud native microservice. The user stories to support are described in [this section](../index.md).
+This chapter presents how to develop the Reefer container manager service using Spring boot, Kafka template and PostgreSQL, Hibernate JPA and Spring data template. This is another way to implement the same specifications and helps us to assess the different technologies to develop event-driven cloud native microservice. The user stories to support are described in [this section](../index.md).
 
 ![](spr-components.png)
 

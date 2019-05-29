@@ -1,15 +1,18 @@
 # Container management microservice
 
-This project is part of the container shipment implementation solution you can read detail [here.](https://ibm-cloud-architecture.github.io/refarch-kc/).
+This project is part of the container shipment implementation solution, and address the Reefer container management microservice implmentaiton. You can read more about the end to end solution [in this chapter.](https://ibm-cloud-architecture.github.io/refarch-kc/)
 
-The goal of this Container management service is to support the reefer containers inventory management and to process all the events related to the container entity. We are proposing 3 types of implementations:
+The goal of this Container management service is to support the reefer containers inventory management and to process all the events related to the container entity. We are proposing three different implementations:
 
-* Python with Flask and Confluent Kafka API for Python. See [this description](./flask/README.md)
-* Microprofile 2.2 using Kafka Streams. See [this description](./kstreams/README.md)
-* Springboot and spring kafka template and spring postgreSQL. [See this note](./springboot/README.md)
+* Python with Flask and Confluent Kafka API for Python. See [this description.](./flask/README.md)
+* Microprofile 2.2 using Kafka Streams. See [this description.](./kstreams/README.md)
+* Springboot and spring kafka template and spring postgreSQL. [See this note.](./springboot/README.md)
 
+## Analysis
 
-We want to support the following events:
+Applying a domain-driven design and event storming we identified the following events:
+
+![](container-events.png)
 
 * ContainerAddedToInventory, ContainerRemovedFromInventory
 * ContainerAtLocation
@@ -19,22 +22,25 @@ We want to support the following events:
 * ContainerOnShip, ContainerOffShip
 * ContainerOnTruck, ContainerOffTruck
 
-This repository illustrates how to implement this service in different ways: kStreams and Python. The features are:
+The derived boundary context looks like in the following figure:
 
-* As a REST API end point calleable from other services.
-* As a kafka streams consumer of orderCreated event published in the Kafka `orders` topic: the code will look at the pickup location and searchdx in the container inventory the containers close to this location. 
-* As a kafka streams agent consuming container events from the `containers` topic and managing a stateful table to keep container inventory in memory.
+![](container-boundary.png)
 
-Finally an important element of this project is the integration of Kafka topic as datasource to develop a machine learning model for the container predictive maintenance scoring. See details in [this note](./metrics).
+The features to support in each possible implementation are:
+
+* A REST API end point calleable from other services to get inventory content, a container by identifier, and to create a new container.
+* A Kafka consumer to get `orderCreated` event published in the `orders` topic: the code will look at the pickup location and search in the container inventory the containers close to this location. 
+* A kafka consumer to get any container events from the `containers` topic.
+
+Finally, an important element of this project is the integration of Kafka topic as datasource to develop a machine learning model for the container predictive maintenance scoring. See details in [this note](./metrics).
 
 ## Component view
 
-As the service needs to offer some basic APIs and be able to consumer and produce events the code will have at least two main components: a kafka consumer and a HTTP server exposing REST APIs. The following diagram illustrates a python flask implementation packaged in docker container:
+As the service needs to offer some basic APIs and be able to consume and produce events the code will have at least three main components: a kafka consumer, a producer,and a HTTP server exposing REST APIs. The following diagram illustrates a python flask implementation packaged in docker container:
 
 ![](images/flask-container.png)  
 
 and the implementation considerations and best practices are described [here.](./flask/README.md)
-
 
 The second diagram shows the same service implemented with Apache Kafka KStreams API in Java, deployed in Liberty server with JAXRS API:
 
@@ -42,12 +48,11 @@ The second diagram shows the same service implemented with Apache Kafka KStreams
 
 The implementation description is [here.](./kstreams/README.md)
 
-The last solution is done with Spring boot, postgresql as back end database and kafka. The description for this implementation is in [this chapter](./springboot/README.md).
-
+The last solution is done using Spring boot, postgresql as back end database and Kafka. The implementation description is in [this chapter](./springboot/README.md).
 
 ## Container inventory
 
-We are providing a tool to publish container created events to the Kafka `container` topic. The python code is under the `tools` folder. It can be executed using our Python docker image with the command:
+We are providing a tool to publish `container created` events to the Kafka `containers` topic. The python code is under the `tools` folder. It can be executed using our Python docker image with the command:
 
 ```shell
 docker run -e KAFKA_BROKERS=$KAFKA_BROKERS -v $(pwd):/home --network=docker_default -ti ibmcase/python bash

@@ -1,20 +1,26 @@
-# Container management microservice
+# Reefer Container management microservice
 
-This project is part of the container shipment implementation solution, you can read about it [here.](https://ibm-cloud-architecture.github.io/refarch-kc/)
+This project is part of the container shipment implementation solution, and address the Reefer container management microservice implmentaiton. You can read more about the end to end solution [in this chapter.](https://ibm-cloud-architecture.github.io/refarch-kc/)
 
 The goal of this Container management service is to support the reefer containers inventory management and to process all the events related to the container entity. 
 
-We are documenting the best practices related to the different implementations we are delivering in this repository in [book format](https://ibm-cloud-architecture.github.io/refarch-kc-container-ms). 
+We are documenting the best practices related to the different implementations of this service in [a book format](https://ibm-cloud-architecture.github.io/refarch-kc-container-ms) to make the navigation easier. 
 
-Update 04/25/2019.
+Update 05/28/2019.
 
 ## Implementations
 
 We are proposing different implementations for this service:
 
-* [Using kafka streams API within a microprofile app](./docs/kstreams/README.md)
-* [Using Spring boot, Postgresql data templaten and kafka template](./docs/springboot/README.md)
-* [A python implementation](./docs/flask/README.md)
+* [Using kafka streams API within a microprofile web app](./docs/kstreams/README.md)
+* [Using Spring boot app, Postgresql spring data template and kafka spring template](./docs/springboot/README.md)
+* [A python implementation](./docs/flask/README.md).
+
+## Build and run
+
+Each implementation has its own scripts to build and run. Therefore we are detailing in each sub project how to run and build:
+
+* Springboot app build and run see [this note]() for detail.
 
 ### Building this booklet locally
 
