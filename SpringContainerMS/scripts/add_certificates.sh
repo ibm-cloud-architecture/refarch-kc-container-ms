@@ -11,11 +11,13 @@ function add_certificate_to_keystore(){
     export JAVA_HOME=$JAVA_HOME/jre
   fi
   echo $JAVA_HOME
+  echo $JKS_LOCATION
+  echo $TRUSTSTORE_PWD
   # $JAVA_HOME/lib/security/cacerts
   openssl x509 -in ${IN_PEM} -inform pem -out ${CERT_PATH} -outform der
-  keytool -importcert -noprompt -alias $1 -keystore clienttruststore \
-       -storepass changeit -file ${CERT_PATH}
-  keytool -list -keystore clienttruststore -storepass changeit | grep $1
+  keytool -importcert -noprompt -alias $1 -keystore $JKS_LOCATION \
+       -storepass $TRUSTSTORE_PWD -file ${CERT_PATH}
+  keytool -list -keystore $JKS_LOCATION -storepass $TRUSTSTORE_PWD | grep $1
 }
 
 
@@ -43,5 +45,7 @@ function process_certificates(){
 
 if [[ $KAFKA_ENV == "IBMCLOUD" ]]
 then
+  echo " -> Process certificates"
   process_certificates
+  echo " -> Done"
 fi

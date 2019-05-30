@@ -26,10 +26,10 @@ RUN bash -c " export POSTGRESQL_URL=${POSTGRESQL_URL} \
 	&& export KAFKA_APIKEY=${KAFKA_APIKEY} \
 	&& export ES_CA_PEM=\"${ES_CA_PEM}\" \
 	&& export POSTGRESQL_CA_PEM=\"${POSTGRESQL_CA_PEM}\" \
-	&& export JKS_LOCATION=${JAVA_HOME}/lib/security/cacerts \
+	&& export JKS_LOCATION="/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/security/cacerts" \
 	&& export TRUSTSTORE_PWD=${TRUSTSTORE_PWD} \
 	&& ./scripts/add_certificates.sh \
-	&& mvn clean install -DskipITs -Djavax.net.ssl.trustStore=/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/security/cacerts -Djavax.net.ssl.trustStorePassword=$TRUSTSTORE_PWD -Duser.home=/var/maven"
+	&& mvn clean install -DskipITs -Djavax.net.ssl.trustStore=${JAVA_HOME}/jre/lib/security/cacerts -Djavax.net.ssl.trustStorePassword=$TRUSTSTORE_PWD -Duser.home=/var/maven"
 
 # Deploy stage
 # Use jre small foot print image. See https://hub.docker.com/_/ibmjava/
@@ -52,7 +52,7 @@ ENV TRUSTSTORE_PWD=""
 RUN apt-get update \
  && apt-get install -y jq bash bc ca-certificates curl \
  && update-ca-certificates \
- && mkdir -p $APP_HOME/scripts && chmod 755 ${JKS_LOCATION}
+ && mkdir -p $APP_HOME/scripts 
 
 WORKDIR $APP_HOME
 
