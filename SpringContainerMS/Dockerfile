@@ -30,7 +30,7 @@ RUN bash -c " export POSTGRESQL_URL=${POSTGRESQL_URL} \
 	&& export JKS_LOCATION=${JAVA_HOME}/jre/lib/security/cacerts \
 	&& export TRUSTSTORE_PWD=${TRUSTSTORE_PWD} \
 	&& ./scripts/add_certificates.sh \
-	&& mvn clean install -DskipITs -Djavax.net.ssl.trustStore=$JAVA_HOME/jre/lib/security/cacerts -Djavax.net.ssl.trustStorePassword=changeit -Duser.home=/var/maven"
+	&& mvn clean install -DskipITs -Djavax.net.ssl.trustStore=$JKS_LOCATION -Djavax.net.ssl.trustStorePassword=$TRUSTSTORE_PWD -Duser.home=/var/maven"
 
 # Deploy stage
 # Use jre small foot print image. See https://hub.docker.com/_/ibmjava/
