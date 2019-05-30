@@ -31,7 +31,7 @@ then
   then
     ibmcloud plugin install cloud-databases   
   fi
-  ibmcloud cdb deployment-cacert $ic_postgres_serv > postgresql.crt
+  ibmcloud cdb deployment-cacert $IC_POSTGRES_SERV > postgresql.crt
 fi
 
 
@@ -43,6 +43,8 @@ docker build --network docker_default --build-arg POSTGRESQL_URL=${POSTGRESQL_UR
              --build-arg POSTGRESQL_USER=${POSTGRESQL_USER} \
              --build-arg POSTGRESQL_PWD=${POSTGRESQL_PWD} \
              --build-arg KAFKA_ENV=$kcenv \
+             --build-arg JKS_LOCATION=${JKS_LOCATION} \
+             --build-arg TRUSTSTORE_PWD=${TRUSTSTORE_PWD} \
              --build-arg POSTGRESQL_CA_PEM="${POSTGRESQL_CA_PEM}"  -t ibmcase/$kname .
 
 if [[ $kcenv == "IBMCLOUD" ]]

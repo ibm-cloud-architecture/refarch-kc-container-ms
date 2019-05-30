@@ -3,7 +3,18 @@ p=$(pwd)
 if [[ $p = */scripts ]]; then
  cd ..
 fi
-. ../scripts/setenv.sh
+
+if [[ $# -eq 0 ]];then
+  kcenv="LOCAL"
+else
+  kcenv=$1
+fi
+
+msname="springcontainerms"
+ns="browncompute"
+chart=$(ls ./chart/| grep $msname)
+kname="kc-"$chart
+source ../../refarch-kc/scripts/setenv.sh $kcenv
 
 echo "Deploy helm chart for $chart project to $ns"
 

@@ -27,7 +27,7 @@ RUN bash -c " export POSTGRESQL_URL=${POSTGRESQL_URL} \
 	&& export KAFKA_APIKEY=${KAFKA_APIKEY} \
 	&& export ES_CA_PEM=\"${ES_CA_PEM}\" \
 	&& export POSTGRESQL_CA_PEM=\"${POSTGRESQL_CA_PEM}\" \
-	&& export JKS_LOCATION="/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/security/cacerts" \
+	&& export JKS_LOCATION=${JAVA_HOME}"/jre/lib/security/cacerts" \
 	&& export TRUSTSTORE_PWD=${TRUSTSTORE_PWD} \
 	&& ./scripts/add_certificates.sh \
 	&& mvn clean install -DskipITs -Djavax.net.ssl.trustStore=$JAVA_HOME/jre/lib/security/cacerts -Djavax.net.ssl.trustStorePassword=changeit -Duser.home=/var/maven"

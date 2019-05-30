@@ -23,7 +23,7 @@ case "$kcenv" in
         export KAFKA_APIKEY=""
         export KAFKA_ADMIN_URL="https://kafka-admin-prod02.messagehub.services.us-south.bluemix.net:443"
         export KAFKA_ENV="IBMCLOUD"
-        export POSTGRESQL_CA_PEM="$(cat ./certs/postgresql.crt)"
+        export POSTGRESQL_CA_PEM="$(cat ./postgresql.crt)"
         export POSTGRESQL_URL="jdbc:postgresql://<puturlhere:portnumber>/ibmclouddb?sslmode=verify-full&sslfactory=org.postgresql.ssl.NonValidatingFactory"
         export POSTGRESQL_USER="ibm_cloud_c...."
         export POSTGRESQL_PWD="2da3"

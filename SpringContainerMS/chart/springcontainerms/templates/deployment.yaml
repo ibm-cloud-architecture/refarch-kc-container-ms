@@ -45,5 +45,10 @@ spec:
           - name: POSTGRESQL_URL
             valueFrom: 
               secretKeyRef:
-                name: eventstreams-apikey
-                key: binding 
+                name: postgresql-url
+                key: binding
+          - name: POSTGRESQL_CA_PEM 
+            valueFrom: 
+              secretKeyRef:
+                name: postgresql-ca-pem
+                key: binding

@@ -22,6 +22,7 @@ function add_certificate_to_keystore(){
 function process_certificates(){
 	CERT_PATH="certificates.der"
   IN_PEM="ca.pem"
+  touch $IN_PEM
 	if [[ -n "$POSTGRESQL_CA_PEM" ]];then
 
 		echo "Getting certificate from POSTGRESQL_CA_CERTIFICATE"
