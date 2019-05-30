@@ -1,7 +1,5 @@
 #!/bin/bash
 
-
-
 if [[ $PWD = */scripts ]]; then
  cd ..
 fi

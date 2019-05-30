@@ -59,7 +59,7 @@ To verify the installation, importing our project as a 'maven' project will let 
 
 The tool is also available for IDE visual studio code. See [this note](https://spring.io/tools) for Spring toools. 
 
-### New pom    
+### Update pom.xml    
 
 The generated dependencies include Spring boot starter web code, hystrix for circuit breaker and retries, and testing. We need to add kafka and postgreSQL dependencies and re-run `mvn install`.
 ```
@@ -181,16 +181,17 @@ Finally the controller is integrating the repository:
 ```
 The test fails as it is missing the configuration to the postsgresql service. As we do not want to hardcode the password and URL end point or share secret in public github we define the configuration using environment variables. See the [application.properties](https://github.com/ibm-cloud-architecture/refarch-kc-container-ms/blob/master/SpringContainerMS/src/main/resources/application.properties) file. We have two choices for the Postgresql service: one using IBM Cloud and one running local docker image. 
 
-To export the different environment variables we have a `setenv.sh` script (which we have defined a template for) with different arguments to control Kafka and Postgresql parameters (LOCAL, IBMCLOUD, ICP). 
+To export the different environment variables we have a `setenv.sh` script (which we have defined a template for named setenv.sh.tmp in the main repository `refarch-kc`) with one argument used to control the different environment varaibles for Kafka and Postgresql. The script argument should be one of LOCAL (default if no argument is given), IBMCLOUD, or ICP. 
 
-To execute against the remote postgresql use:
+To execute against the remote postgresql and Kafka use:
 ```shell
 # Under the SpringContainerMS folder
 $ source ../scripts/setenv.sh IBMCLOUD
 $ mvn test
 ```
 
-To run locally start the backend services (In the refarch-kc project, docker folder and the docker compose file:backbone-compose.yml) and use:
+To execute against a local kafka - postesgresql docker images, first you need to start the backend services: In the `refarch-kc` project, under the `docker` folder use the docker compose file:backbone-compose.yml (See [this note for detail](https://ibm-cloud-architecture.github.io/refarch-kc/deployments/local/#start-kafka-zookeeper-and-postgresql)):
+
 ```shell
 $ source ../scripts/setenv.sh LOCAL
 $ mvn test
@@ -198,7 +199,7 @@ $ mvn test
 
 After the tests run successfully with a valid connection to IBM cloud, launching the spring boot app location and going to http://localhost:8080/containers/c1 will give you the data for the Container "c1".   
 
-## Preparing your test environment
+## Preparing your local test environment
 
 We propose to use the local deployment to do unit tests and integration tests. The integration test for this application is quite complex and we propose to use a diagram to illustrate the components involved and how to start them.
 
@@ -212,7 +213,7 @@ Starting docker_zookeeper1_1  ... done
 Creating docker_postgres-db_1 ... done
 Starting docker_kafka1_1      ... done
 ```
-> if you need to restart from empty topics, delete the kafka1 and zookeeper1 folders under `refarch-kc/docker`
+> if you need to restart from empty topics, delete the kafka1 and zookeeper1 folders under `refarch-kc/docker` and restart the backend services.
 
 #### The integration tests 
 
