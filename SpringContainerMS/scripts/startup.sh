@@ -9,8 +9,8 @@ echo $POSTGRESQL_URL
 echo $POSTGRESQL_CA_PEM
 echo $KAFKA_BROKERS
 echo $TRUSTSTORE_PWD
-
-export JKS_LOCATION=${JAVA_HOME}"/lib/security/cacerts"
+echo $JKS_LOCATION
+export JKS_LOCATION=${JAVA_HOME}"/jre/lib/security/cacerts"
 
 scripts/add_certificates.sh
 

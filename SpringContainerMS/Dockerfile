@@ -33,7 +33,9 @@ RUN bash -c " export POSTGRESQL_URL=${POSTGRESQL_URL} \
 
 # Deploy stage
 # Use jre small foot print image. See https://hub.docker.com/_/ibmjava/
-FROM ibmjava:8-sfj as runner
+#FROM ibmjava:8-sfj as runner
+
+FROM openjdk:8u181-jdk as runner
 ENV APP_HOME=/app
 COPY --from=builder /usr/src/app/target/SpringContainerMS-1.0-SNAPSHOT.jar $APP_HOME/app.jar
 LABEL maintainer="IBM Java Engineering at IBM Cloud"
