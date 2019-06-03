@@ -32,6 +32,7 @@ then
     ibmcloud plugin install cloud-databases   
   fi
   ibmcloud cdb deployment-cacert $IC_POSTGRES_SERV > postgresql.crt
+  export POSTGRESQL_CA_PEM="$(cat ./postgresql.crt)"
 fi
 
 

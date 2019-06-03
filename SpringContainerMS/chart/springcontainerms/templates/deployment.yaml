@@ -52,3 +52,14 @@ spec:
               secretKeyRef:
                 name: postgresql-ca-pem
                 key: binding
+          - name: POSTGRESQL_USER 
+            valueFrom: 
+              secretKeyRef:
+                name: postgresql-user
+                key: binding
+          - name: POSTGRESQL_PWD 
+            valueFrom: 
+              secretKeyRef:
+                name: postgresql-pwd
+                key: binding
+                
