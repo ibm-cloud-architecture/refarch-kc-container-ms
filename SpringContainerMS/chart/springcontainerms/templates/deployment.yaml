@@ -32,7 +32,9 @@ spec:
           - name: PORT
             value: "{{ .Values.service.servicePort }}"
           - name: APPLICATION_NAME
-            value: "{{ .Release.Name }}"
+            value: "{{ .Chart.Name }}"
+          - name: TRUSTSTORE_PWD
+            value: "{{ .Values.java.truststore.pwd }}"
           - name: KAFKA_ENV
             value: "{{ .Values.eventstreams.env }}"
           - name: KAFKA_BROKERS
@@ -62,4 +64,6 @@ spec:
               secretKeyRef:
                 name: postgresql-pwd
                 key: binding
+
+
                 
