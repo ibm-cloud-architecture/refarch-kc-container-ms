@@ -11,11 +11,11 @@ import ibm.labs.kc.containermgr.kafka.ContainerProducer;
 import ibm.labs.kc.containermgr.kafka.OrderProducer;
 import ibm.labs.kc.containermgr.model.ContainerEntity;
 import ibm.labs.kc.containermgr.model.ContainerStatus;
-import ibm.labs.kc.model.City;
-import ibm.labs.kc.model.Order;
 import ibm.labs.kc.model.container.ContainerOrder;
 import ibm.labs.kc.model.events.ContainerAssignmentEvent;
 import ibm.labs.kc.model.events.OrderContainerAssignmentEvent;
+import ibm.labs.kc.order.model.City;
+import ibm.labs.kc.order.model.Order;
 
 @Component
 public class ContainerService {

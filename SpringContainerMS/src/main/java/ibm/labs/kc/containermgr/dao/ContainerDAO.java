@@ -6,7 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import ibm.labs.kc.containermgr.model.ContainerEntity;
-import ibm.labs.kc.model.City;
+import ibm.labs.kc.order.model.City;
 
 public interface ContainerDAO {
 

@@ -17,9 +17,9 @@ import org.springframework.stereotype.Component;
 import com.google.gson.Gson;
 
 import ibm.labs.kc.containermgr.ContainerService;
-import ibm.labs.kc.model.Order;
 import ibm.labs.kc.model.events.OrderCreationEvent;
 import ibm.labs.kc.model.events.OrderEvent;
+import ibm.labs.kc.order.model.Order;
 /*
  * Consume events from 'orders' topic. Started when the spring application context
  * is initialized. 

@@ -2,53 +2,31 @@
 
 This project is part of the container shipment implementation solution, and address the Reefer container management microservice implmentaiton. You can read more about the end to end solution [in this chapter.](https://ibm-cloud-architecture.github.io/refarch-kc/)
 
+## TL;TR
+
 The goal of this Container management service is to support the reefer containers inventory management and to process all the events related to the container entity. We are proposing three different implementations:
 
-* Python with Flask and Confluent Kafka API for Python. See [this description.](./flask/README.md)
-* Microprofile 2.2 using Kafka Streams. See [this description.](./kstreams/README.md)
 * Springboot and spring kafka template and spring postgreSQL. [See this note.](./springboot/README.md)
+* Python with Flask and Confluent Kafka API for Python. See [this description.](./flask/README.md) - NOT DONE YET
+* Microprofile 2.2 using Kafka Streams. See [this description.](./kstreams/README.md) - NOT DONE YET
+
+We are demonstrating in this project how to transform an event storming analysis to an event-driven microservice implementation and how to address ['reversibility'](https://www.ibm.com/cloud/garage/practices/run/reversibility-in-the-cloud) between the different platform. The service is packaged via dockerfile, and helm release is defined to deploy to kubernetes.
 
 ## Analysis
 
-Applying a domain-driven design and event storming we identified the following events:
-
-![](container-events.png)
-
-* ContainerAddedToInventory, ContainerRemovedFromInventory
-* ContainerAtLocation
-* ContainerOnMaintenance, ContainerOffMaintenance, 
-* ContainerAssignedToOrder, ContainerReleasedFromOrder
-* ContainerGoodLoaded, ContainerGoodUnLoaded
-* ContainerOnShip, ContainerOffShip
-* ContainerOnTruck, ContainerOffTruck
-
-The derived boundary context looks like in the following figure:
-
-![](container-boundary.png)
-
-The features to support in each possible implementation are:
-
-* A REST API end point calleable from other services to get inventory content, a container by identifier, and to create a new container.
-* A Kafka consumer to get `orderCreated` event published in the `orders` topic: the code will look at the pickup location and search in the container inventory the containers close to this location. 
-* A kafka consumer to get any container events from the `containers` topic.
-
-Finally, an important element of this project is the integration of Kafka topic as datasource to develop a machine learning model for the container predictive maintenance scoring. See details in [this note](./metrics).
+We have a dedicated article on how to transform event storming analysis to microservice, [here](ES2DDD2MS). 
 
 ## Component view
 
-As the service needs to offer some basic APIs and be able to consume and produce events the code will have at least three main components: a kafka consumer, a producer,and a HTTP server exposing REST APIs. The following diagram illustrates a python flask implementation packaged in docker container:
+As the service needs to offer some basic APIs while consuming and producing events, the code has at least three main components: a kafka consumer, a kafka producer, and a HTTP server exposing the REST APIs. The following diagram illustrates the componentes involved in this container manager microservice:
 
-![](images/flask-container.png)  
+![](comp-view.png)
 
-and the implementation considerations and best practices are described [here.](./flask/README.md)
-
-The second diagram shows the same service implemented with Apache Kafka KStreams API in Java, deployed in Liberty server with JAXRS API:
-
-![](images/kstreams-container.png)  
-
-The implementation description is [here.](./kstreams/README.md)
-
-The last solution is done using Spring boot, postgresql as back end database and Kafka. The implementation description is in [this chapter](./springboot/README.md).
+* A first component is responsible to define and expose APIs via RESTful protocol. It uses the services to delegate business logic implementation.
+* The service component(s) addresses the business logic implementation and references data access object, and event producer.
+* The event handler is a kafka consumer which runs continuously to get container events from the `container` topic. It invokes the service component.
+* The event producer, produces events of interest to the business function
+* The DAO implement the persistence for the data received as part of the event payload, or API.
 
 ## Container inventory
 
@@ -73,3 +51,5 @@ The output of this assignment processing is an event to the `orders` topic.
 * [Postgresql tutorial](http://postgresguide.com/sql/select.html)
 * [psql commands](https://www.postgresql.org/docs/9.2/app-psql.html)
 * [Spring boot kafka documentation](https://docs.spring.io/spring-kafka/reference/)
+
+

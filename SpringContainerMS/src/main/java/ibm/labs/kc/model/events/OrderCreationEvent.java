@@ -1,6 +1,6 @@
 package ibm.labs.kc.model.events;
 
-import ibm.labs.kc.model.Order;
+import ibm.labs.kc.order.model.Order;
 
 public class OrderCreationEvent extends OrderEvent<Order>{
 

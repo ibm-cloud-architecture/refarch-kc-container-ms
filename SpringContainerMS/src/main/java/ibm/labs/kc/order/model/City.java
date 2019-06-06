@@ -1,4 +1,4 @@
-package ibm.labs.kc.model;
+package ibm.labs.kc.order.model;
 
 import ibm.labs.kc.containermgr.dao.CityDAO.Location;
 

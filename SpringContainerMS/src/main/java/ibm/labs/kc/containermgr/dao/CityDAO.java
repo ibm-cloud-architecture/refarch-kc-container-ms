@@ -5,7 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.stereotype.Component;
 
-import ibm.labs.kc.model.City;
+import ibm.labs.kc.order.model.City;
 
 /**
  * Data access to the cities having harbors and fields to keep containers.

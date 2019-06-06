@@ -8,7 +8,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import ibm.labs.kc.containermgr.dao.CityDAO;
-import ibm.labs.kc.model.City;
+import ibm.labs.kc.order.model.City;
 
 public class CityLocationTest {
 	

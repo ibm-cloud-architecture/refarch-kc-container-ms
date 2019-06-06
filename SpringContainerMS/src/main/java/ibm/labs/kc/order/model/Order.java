@@ -1,4 +1,4 @@
-package ibm.labs.kc.model;
+package ibm.labs.kc.order.model;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;

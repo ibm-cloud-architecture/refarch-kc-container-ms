@@ -13,9 +13,9 @@ import ibm.labs.kc.containermgr.kafka.ContainerProducer;
 import ibm.labs.kc.containermgr.kafka.OrderProducer;
 import ibm.labs.kc.containermgr.model.ContainerEntity;
 import ibm.labs.kc.containermgr.model.ContainerStatus;
-import ibm.labs.kc.model.Address;
-import ibm.labs.kc.model.Order;
 import ibm.labs.kc.model.container.ContainerOrder;
+import ibm.labs.kc.order.model.Address;
+import ibm.labs.kc.order.model.Order;
 
 
 public class AllocateContainerTest {

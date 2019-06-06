@@ -6,7 +6,7 @@ The goal of this Container management service is to support the reefer container
 
 We are documenting the best practices related to the different implementations of this service in [a book format](https://ibm-cloud-architecture.github.io/refarch-kc-container-ms) to make the navigation easier. 
 
-Update 05/28/2019.
+Updated 06/05/2019.
 
 ## Implementations
 
@@ -16,9 +16,13 @@ We are proposing different implementations for this service:
 * [Using Spring boot app, Postgresql spring data template and kafka spring template](./docs/springboot/README.md)
 * [A python implementation](./docs/flask/README.md).
 
+![](docs/comp-view.png)
+
+See [explanations]() of this component view.
+
 ## Build and run
 
-Each implementation has its own scripts to build and run. Therefore we are detailing in each sub project how to run and build:
+Each implementation has its own scripts to build and run. Therefor we are detailing in each sub project how to run and build them:
 
 * Springboot app build and run see [this note]() for detail.
 
@@ -54,5 +58,8 @@ We really value contributions and to maximize the impact of code contributions w
 
 The [contributing guidelines are in this note.](./CONTRIBUTING.md)
 
-## Project Status
-03/19 Starting
+## Contributors
+
+* [Shilpi Bhattacharyya](https://www.linkedin.com/in/shilpibhattacharyya/)
+* [Hemankita Perabathini](https://www.linkedin.com/in/hemankita-perabathini/)
+* [Jerome Boyer](https://www.linkedin.com/in/jeromeboyer/)

@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 
 import ibm.labs.kc.containermgr.model.ContainerEntity;
 import ibm.labs.kc.containermgr.rest.ResourceNotFoundException;
-import ibm.labs.kc.model.City;
+import ibm.labs.kc.order.model.City;
 
 @Component
 public class ContainerDAOImpl implements ContainerDAO {

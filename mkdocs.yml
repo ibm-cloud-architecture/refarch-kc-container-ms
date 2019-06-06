@@ -1,13 +1,14 @@
 site_name: Reefer Container Management Service
 repo_url: https://github.com/ibm-cloud-architecture/refarch-kc-container-ms
 nav:
-  - Analysis and design considerations: index.md
+  - Introduction: index.md
+  - Analysis and design considerations: ES2DDD2MS.md
   - Different implementations:
     - Kafka Streams Implementation: kstreams/README.md
     - Springboot - Kafka and PostgreSQL Implementation: springboot/README.md
     - Python Flask and Kafka Implementation: flask/README.md
   - Build and run:
-    - Locally: springboot/README.md
+    - Run spring boot app locally: springboot/README.md
   - Container Predictive Maintenance: metrics.md
 theme: 
   name: material
