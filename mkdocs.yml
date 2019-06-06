@@ -7,8 +7,11 @@ nav:
     - Kafka Streams Implementation: kstreams/README.md
     - Springboot - Kafka and PostgreSQL Implementation: springboot/README.md
     - Python Flask and Kafka Implementation: flask/README.md
-  - Build and run:
+  - Deployments:
+    - Pre-requisite: deployment.md
     - Run spring boot app locally: springboot/README.md
+    - Continuous delivery: cicd.md
+  - Run integration tests: tests.md
   - Container Predictive Maintenance: metrics.md
 theme: 
   name: material
