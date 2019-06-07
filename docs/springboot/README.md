@@ -400,24 +400,53 @@ Now to make all this available in docker container we propose to let the previou
 
 The steps are the same as other project and we are providing the same type of tools:
 
+* login to IBM Cloud - Adapt to your region.
 ```shell
-# login to IBM Cloud
-$ ibmcloud login -a https://api.us-east.bluemix.net
-# connect to the IKS cluster
-$ ibmcloud ks region-set us-east   
-$ ibmcloud ks cluster-config fabio-wdc-07
-$ export KUBECONFIG= ~/.bluemix/plugins/container-service/clusters/fabio-wdc-07/kube-config-wdc07-fabio-wdc-07.yml
-# login to the private registry
-$ ibmcloud cr login
-# build the jar and docker image
-$ ./script/buildDocker.sh IBMCLOUD
-# Push the image
-$ docker push  us.icr.io/ibmcaseeda/kc-springcontainerms
-# Deploy the Helm release
-$ ./scripts/deployHelm
+ibmcloud login -a https://api.us-east.bluemix.net
 ```
 
-If for any reason you get a "image can't be pulled" error. Verify the image is in the registry with the command: `docker cr image-list`. Then if so, verify there is a secret defined to keep the security key to access the registry in the same namespace as you are deploying your app, and this secret is referenced in the yml file:
+* connect to the IKS cluster
+```
+ibmcloud ks region-set us-east   
+ibmcloud ks cluster-config fabio-wdc-07
+```
+* Define the Kube config variable so all the kubectl and helm commands will contact the good cluster.
+```
+export KUBECONFIG= ~/.bluemix/plugins/container-service/clusters/fabio-wdc-07/kube-config-wdc07-fabio-wdc-07.yml
+```
+
+* login to the private registry
+```
+ibmcloud cr login
+```
+*  build the application jar and docker image using our script
+```
+./script/buildDocker.sh IBMCLOUD
+```
+
+* Push the docker image to the private registry
+```
+docker push  us.icr.io/ibmcaseeda/kc-springcontainerms
+```
+
+* Deploy the Helm release
+```
+./scripts/deployHelm
+```
+
+which is equivalent to the command:
+
+```
+ helm install $chart/ --name $kname --namespace $ns
+```
+
+If for any reason you get a "image can't be pulled" error. Verify the image is in the private registry with the command: 
+
+```
+docker cr image-list
+```
+
+Then if the image exists, verify there is a secret defined to keep the security key to access the registry in the same namespace as you are deploying your app, and this secret is referenced in the yaml file:
 
 ```
 "imagePullSecrets": [
@@ -427,8 +456,39 @@ If for any reason you get a "image can't be pulled" error. Verify the image is i
         ],
 ```
 
+### Perform integration tests from local to remote IBM Cloud deployment
 
-## Issues
+As presented in the [section above](#the-integration-tests), we have a set of tools that can create container, orders and verify the code is running well in its complete deployed environment. The same scripts can be run with the IBMCLOUD argument. 
+
+So below is the list of command to perform on you laptop while the Spring boot app is deployed on IKS, using Event Streams and Postgresql on IBM Cloud:
+
+* Start a container consumer to trace the execution: in the folder `refarch-kc/itg-tests/ContainersPython`. It listens to get a container with id: "ic-c01"
+
+```
+./runContainerConsumer.sh IBMCLOUD ic-c01
+```
+
+* Run a producer of container events to add a new container into the inventory: in the same folder `refarch-kc/itg-tests/ContainersPython`
+
+```
+./addContainer.sh IBMCLOUD ic-c01
+```
+
+* Start an order consumer, to trace the traffic: in the folder `refarch-kc/itg-tests/OrdersPython`
+
+```
+./runOrderConsumer.sh IBMCLOUD order01 
+```
+
+* Create an order from the same folder:  `refarch-kc/itg-tests/OrdersPython`
+
+```
+addOrder.sh LOCAL order01
+```
+
+Going to the web URL of the container service you should see the container added. 
+
+## Encountered issues with some solution
 
 The level of abstraction in Spring is nice when doing basic things but can become a nightmare when doing real bigger application including different libraries. Also migrating or using the last version 2.xx, bring changes to existing code and tests. Below is a list of iisues we spent time on:
 
@@ -438,6 +498,7 @@ The level of abstraction in Spring is nice when doing basic things but can becom
 
 * Deployed in Kubernetes service, the pod has issue on postgress SSL handshake. (org.postgresql.util.PSQLException: SSL error: Received fatal alert: handshake_failure). SSL handshakes are a mechanism by which a client and server establish the trust and logistics required to secure their connection over the network. This problem may be linked to a SSL certificate not found or wrong encryption protocol. We need to be sure a Java Keystore is defined and includes the public certificate coming from the server. See [security section](#security) above.
 
+* When deploying to IKS, we did see an exception about `container topics not visible`. This problem is coming from the fact that we are using Event Stream simplest deployment, which is multi tenants. And even if our code reach the brokers, our api key was wrong so we could get to another instance which did not have our topics. Be sure the api key is well defined in the kubernetes secret. (see [this note to know how to do it](https://ibm-cloud-architecture.github.io/refarch-kc/deployments/iks/#event-stream-api-key))
 
 ## References
 

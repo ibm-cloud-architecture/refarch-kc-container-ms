@@ -80,7 +80,7 @@ public class KCKafkaConfiguration {
                 properties.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, env.get("KAFKA_BROKERS"));
             }
         }
-
+        
         return properties;
     }
 
