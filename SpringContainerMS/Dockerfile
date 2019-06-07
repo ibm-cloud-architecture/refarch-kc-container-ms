@@ -33,7 +33,7 @@ RUN bash -c " export POSTGRESQL_URL=${POSTGRESQL_URL} \
 
 # Deploy stage
 # Use jre small foot print image. See https://hub.docker.com/_/ibmjava/
-#FROM ibmjava:8-sfj as runner
+# FROM ibmjava:8-sfj as runner
 
 FROM openjdk:8u181-jdk as runner
 ENV APP_HOME=/app
@@ -54,7 +54,7 @@ ENV TRUSTSTORE_PWD=""
 RUN apt-get update \
  && apt-get install -y jq bash bc ca-certificates curl \
  && update-ca-certificates \
- && mkdir -p $APP_HOME/scripts 
+ && mkdir -p $APP_HOME/scripts
 
 WORKDIR $APP_HOME
 
