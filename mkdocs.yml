@@ -8,10 +8,11 @@ nav:
     - Springboot - Kafka and PostgreSQL Implementation: springboot/README.md
     - Python Flask and Kafka Implementation: flask/README.md
   - Deployments:
-    - Pre-requisite: deployment.md
+    - Pre-requisites: deployment.md
     - Run spring boot app locally: springboot/README.md
     - Continuous delivery: cicd.md
-  - Run integration tests: tests.md
+  - Security: springboot/#security
+  - Run integration tests: springboot/#the-integration-tests
   - Container Predictive Maintenance: metrics.md
 theme: 
   name: material

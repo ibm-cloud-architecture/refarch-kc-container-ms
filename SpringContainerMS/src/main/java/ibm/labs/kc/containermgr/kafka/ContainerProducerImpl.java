@@ -5,7 +5,9 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Logger;
 
+import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.config.SaslConfigs;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -49,6 +51,9 @@ public class ContainerProducerImpl implements ContainerProducer {
 
 	private KafkaTemplate<String, String> createTemplate() {
 	    Map<String, Object> senderProps = KCKafkaConfiguration.getPublisherProperties(CLIENT_ID + UUID.randomUUID().toString());
+	    LOG.info("@@@@ brokers url:"+senderProps.get(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG));
+	    LOG.info("@@@@ brokers apikey:"+senderProps.get(SaslConfigs.SASL_JAAS_CONFIG));
+		 
 	    ProducerFactory<String, String> pf =
 	              new DefaultKafkaProducerFactory<String, String>(senderProps);
 	    KafkaTemplate<String, String> template = new KafkaTemplate<>(pf);
