@@ -35,35 +35,36 @@ spec:
             value: "{{ .Chart.Name }}"
           - name: TRUSTSTORE_PWD
             value: "{{ .Values.java.truststore.pwd }}"
+          - name: JKS_LOCATION
+            value: "$JAVA_HOME/jre/lib/security/cacerts"
           - name: KAFKA_ENV
             value: "{{ .Values.eventstreams.env }}"
           - name: KAFKA_BROKERS
             value: "{{ .Values.eventstreams.brokers }}"
+          {{if or (eq .Values.eventstreams.env "IBMCLOUD") (eq .Values.eventstreams.env "ICP")}}
           - name: KAFKA_APIKEY
-            valueFrom: 
+            valueFrom:
               secretKeyRef:
                 name: eventstreams-apikey
                 key: binding
-          - name: POSTGRESQL_URL
-            valueFrom: 
-              secretKeyRef:
-                name: postgresql-url
-                key: binding
-          - name: POSTGRESQL_CA_PEM 
-            valueFrom: 
+          - name: POSTGRESQL_CA_PEM
+            valueFrom:
               secretKeyRef:
                 name: postgresql-ca-pem
                 key: binding
-          - name: POSTGRESQL_USER 
-            valueFrom: 
+          {{end}}
+          - name: POSTGRESQL_URL
+            valueFrom:
+              secretKeyRef:
+                name: postgresql-url
+                key: binding
+          - name: POSTGRESQL_USER
+            valueFrom:
               secretKeyRef:
                 name: postgresql-user
                 key: binding
-          - name: POSTGRESQL_PWD 
-            valueFrom: 
+          - name: POSTGRESQL_PWD
+            valueFrom:
               secretKeyRef:
                 name: postgresql-pwd
                 key: binding
-
-
-                
