@@ -1,5 +1,11 @@
 # Reefer Container Metric as IoT
 
+In this section, we discuss possible machine learning models we can train with the help of historical data to predict whether maintenance is required for the reefer container at a certain point in time.
+
+You will learn how to simulate date for reefer, develop the predictive maintenance model, and integrate the model into an application.
+
+## Introduction
+
 A reefer container is a refrigerated shipping container used to store or transport frozen or cold goods perishable items or goods that require temperature control. 
 
 ![Reefer](images/reefer.png)
@@ -13,8 +19,6 @@ Throughout this chain the risk of failure is ever-present, meaning there is alwa
 When cargo with such as any of those items listed above are exposed to temperatures outside of prescribed limits it can be damaged. In some cases this is evident, such as with bananas, but in other situations, like the transport of vaccines, it may not be apparent that damage has occurred and the vaccine becomes ineffective. For some products, going over temperature, even only briefly, can reduce shelf life dramatically, incurring substantial costs when it cannot be sold. 
 
 Organizations contracting to ship perishable products often specify the permissible temperature range. However, even if it is possible to show that product was exposed to conditions outside of those contracted, proving where it happened, and thus responsibility, can be much harder.
-
-In this section, we discuss possible machine learning models we can train with the help of historical data to predict whether maintainence is required for the reefer container at a certain point in time.
 
 ## Predictive maintenance problem statement
 
@@ -38,9 +42,9 @@ From a methodology point of view the Data Scientist needs to address the followi
 * What are the business impact to do not predict the failure? and predicting false negative failure?
 * What is the expected accuracy?  
 
-### Reefer problem types:
+### Reefer problem types
 
-There are multiple different potential issues that could happen to a refrigerator container. We are choosing to model the "Sensor Malfunctions" issue: Sensors in the refrigeration unit need to be calibrated and be continuously operational. An example of failure may come from the air sensor making inaccurate readings of temperatures, which lead to sploiled content. A potential reason may come from a faulty calibration, which can go unnoticed for a good time period. It may be diffiult to know if there is an issue. 
+There are multiple different potential issues that could happen to a refrigerator container. We are choosing to model the "Sensor Malfunctions" issue: Sensors in the refrigeration unit need to be calibrated and be continuously operational. An example of failure may come from the air sensor making inaccurate readings of temperatures, which leads to sploiled content. A potential reason may come from a faulty calibration, which can go unnoticed for a good time period. It may be difficult to know if there is an issue or not. 
 
 The other common potential issues are:
 
