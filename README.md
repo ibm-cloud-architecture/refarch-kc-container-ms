@@ -18,13 +18,12 @@ We are proposing different implementations for this service:
 
 ![](docs/comp-view.png)
 
-See [explanations]() of this component view.
 
 ## Build and run
 
 Each implementation has its own scripts to build and run. Therefor we are detailing in each sub project how to run and build them:
 
-* Springboot app build and run see [this note]() for detail.
+* Springboot app build and run see [this note](https://ibm-cloud-architecture.github.io/refarch-kc-container-ms/springboot/) for detail.
 
 ### Building this booklet locally
 

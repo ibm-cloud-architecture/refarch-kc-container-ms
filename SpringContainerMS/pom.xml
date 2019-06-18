@@ -112,6 +112,13 @@
                                 <exclude>**/it/**</exclude>
                             </excludes>
                             <reportsDirectory>${project.build.directory}/test-reports/unit</reportsDirectory>
+                            <environmentVariables>
+                                <KAFKA_ENV>MINIKUBE</KAFKA_ENV>
+                                <KAFKA_BROKERS>localhost:9092</KAFKA_BROKERS>
+                                <POSTGRESQL_URL>jdbc:postgresql://localhost:5432/postgres</POSTGRESQL_URL>
+                                <POSTGRESQL_USER>postgres</POSTGRESQL_USER>
+                                <POSTGRESQL_PWD>supersecret</POSTGRESQL_PWD>
+                            </environmentVariables>
                         </configuration>
                     </execution>
                 </executions>

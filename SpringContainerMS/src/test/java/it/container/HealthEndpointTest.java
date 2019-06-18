@@ -1,4 +1,4 @@
-package ibm.labs.kc.containermgr;
+package it.container;
 
 import static org.junit.Assert.assertTrue;
 

@@ -38,7 +38,7 @@ fi
 
 find target -iname "*SNAPSHOT*" -print | xargs rm -rf
 
-docker build --network docker_default \
+docker build --network host \
             --build-arg KAFKA_ENV=$kcenv \
             --build-arg KAFKA_BROKERS=${KAFKA_BROKERS} \
             --build-arg KAFKA_APIKEY=${KAFKA_APIKEY} \
