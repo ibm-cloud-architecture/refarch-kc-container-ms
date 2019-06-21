@@ -4,7 +4,7 @@
 
 ### Prepare minikube or docker edge / kubernetes
 
- - To Be Done
+ - The solution can run on minikube, and once you have a minikube or docker community edition with kubernetes enabled, you can follow the instructions from [this note](https://ibm-cloud-architecture.github.io/refarch-kc/deployments/minikube/).
 
 ### Or use docker compose
 
