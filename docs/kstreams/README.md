@@ -6,9 +6,11 @@ In this chapter we are presenting how to sue the Kafka Streams API combined with
 
 The container topics includes all the event about container life cycle. The application is java based and deployed in Liberty packaged into a docker image deployable on kubernetes. The service exposes some RESTful APIs to get a container by ID. No CUD operations as all is done via events. The Streams implementation keeps data in table.
 
+As a java based microservice we have two approaches to implement the service: springboot and microprofile. Knowing we will deploy on kubernetes cluster with Istio we will have a lot of the resiliency and scalability addressed for us. But Istio does not support implementing retries logic according to the business logic. Microprofile add a lot of nice capabilities like SSL, open API, JAXRS... Microprofile is supported by Open Liberty as well as many servers.
+
 The [Apache Kafka Streams API](https://kafka.apache.org/documentation/streams/) is a client library for building applications and microservices, where the input and output data are stored in Kafka clusters. It simplifies the implementation of the stateless or stateful event processing to transform and enrich data. It supports time windowing processing.
 
-We encourage to do [this KStream tutorial](https://kafka.apache.org/21/documentation/streams/tutorial). 
+We encourage to do [this Streams tutorial](https://kafka.apache.org/21/documentation/streams/tutorial). 
 
 The features we want to illustrate in this implementation, using KStreams are:
 
@@ -19,7 +21,7 @@ The features we want to illustrate in this implementation, using KStreams are:
 
 ## Start with maven
 
-Kafka stream delivers a Maven archetype to create a squeleton project. The following command can be used to create the base code.
+Kafka streams delivers a Maven archetype to create a squeleton project. The following command can be used to create the base code.
 ```sh
 mvn archetype:generate -DarchetypeGroupId=org.apache.kafka -DarchetypeArtifactId=streams-quickstart-java     -DarchetypeVersion=2.1.0     -DgroupId=kc-container     -DartifactId=kc-container-streams    -Dversion=0.1     -Dpackage=containerManager
 ```
@@ -49,7 +51,55 @@ To access to serializer and testing framework we added the following dependencie
 		</dependency>
 ```
 
-In fact at the end of our development the pom was enhanced to support, liberty, integration tests and javametrics.
+Using this approach as the service runs in OpenLiberty and integrate JAXRS, microprofile, Open API,... we have to add a lot of depencies into the pom.xml file. Another approach is to use IBM Cloud starter kit.
+
+## Start with IBM Cloud microprofile starter kit
+
+Use the `Create resource` option and select the "Java microservice with microprofile and Java EE" starter kit as shown below:
+
+![](mp-starter.png)
+
+Then enter an application name (e.g. MP-ContainerMS) with a resource group and may be some tags. 
+
+![](mp-app-details.png)
+
+The next step is to select a kubernetes cluster instance:
+
+![](mp-select-iks.png)
+
+Configure the toolchain, and verify the application is created in the console:
+
+![](mp-app-listed.png)
+
+The application is accessible from github, a toolchain is ready to process the app and deploy it.
+
+![](default-toolchain.png)
+
+At the time of writting, and most likely in the future too, the steps and the documentations are not aligned. Code is release on a weekly basis and the documentation is often behind. We can download the source code from the github. The address was https://git.ng.bluemix.net/boyerje/MP-ContainerMS. We have to unprotect the master branch so we can push our update. 
+
+We also have to modify the deployment configuration to change the target namespace. 
+
+The generated code includes helm chart, Dockerfiles, and base JAXRS code. The code generated is very similar to the one created using the `ibmcloud dev` CLI. But we need to modify this generated project with some specific microprofile content.
+
+Eclipse microprofile is now on version 2.2, so we also use the following code generator from [the Microprofile starter site](https://start.microprofile.io/) so we can get updated code with new capability like SSL, openAPI and JWT supports.
+
+![](mp-eclipse-starter.png)
+
+So now we need to integrate both code and then add Kafka streams. Here are some of the main updates we did:
+* Add in the cli-config.yml the registry address and cluster name
+* Change pom dependencies for microprofile 2.2, and change the image in Dockerfile to access websphere liberty 19.0.0.3 compatible with 2.2. (FROM websphere-liberty:19.0.0.3-microProfile2)
+* Use the health class from the microprofile 2.2 generated code, as it uses microprofile annotation. Add also the configuration injection with properties file. Add new package names.
+* Remove unnecessary files
+* Modify the Values.yaml to reflect the target registry and add secret reference:
+```
+  repository: us.icr.io/ibmcaseeda/mpcontainerms
+  tag: latest
+  pullPolicy: Always
+  pullSecret: browncompute-registry-secret
+```
+
+Some of those steps are pushed to the development kubernetes cluster using the command:
+
 
 ## Some useful Kafka streams APIs
 
@@ -225,9 +275,24 @@ mvn install
 
 To start the liberty server use the script: `./script/startLocalLiberty` or `mvn liberty:run-server`
 
+## docker compose configuration
 
-## How streams flow are resilient?
+Replace existing springcontainerms declaration to the following
+
+```yaml
+    containerkstreams:
+        image: ibmcase/kc-containerkstreams:latest
+        hostname: containerkstreams
+        ports:
+            - "12080:9080"
+        environment:
+            KAFKA_ENV: ${KAFKA_ENV}
+            KAFKA_BROKERS: ${KAFKA_BROKERS}
+            KAFKA_APIKEY: ${KAFKA_APIKEY}
+```
+## How streams flows are resilient?
 
 
 ## How to scale?
+
 

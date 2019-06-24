@@ -1,0 +1,40 @@
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+replicaCount: 1
+revisionHistoryLimit: 1
+image:
+  repository: streamer.icp:8500/greencompute/kc-containerkstreams
+  tag: latest
+  pullPolicy: Always
+  resources:
+    requests:
+      cpu: 200m
+      memory: 400Mi
+service:
+  name: Node
+  type: NodePort
+  servicePort: 9080
+  servicePortHttps: 9443
+  nodePort: 31001
+hpa:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 2
+  metrics:
+    cpu:
+      targetAverageUtilization: 70
+    memory:
+      targetAverageUtilization: 70
+base:
+  enabled: false
+  replicaCount: 1
+  image:
+    tag : v0.9.9
+  weight: 100
+istio:
+  enabled: false
+  weight: 100
+eventstreams:
+  brokers: rolling-streams-ibm-es-kafka-broker-svc-0.streams.svc.cluster.local:9092,rolling-streams-ibm-es-kafka-broker-svc-1.streams.svc.cluster.local:9092,rolling-streams-ibm-es-kafka-broker-svc-2.streams.svc.cluster.local:9092
+  env: ICP
+  jks_location: /opt/ibm/wlp/usr/servers/defaultServer/resources/security/es-cert.jks

@@ -16,7 +16,7 @@ public class HealthEndpoint {
          * if (!healthy) { return
          * Response.status(503).entity("{\"status\":\"DOWN\"}").build(); }
          */
-        return Response.ok("{\"status\":\"UP\"}").build();
+        return Response.ok("{\"status\":\"UP V0.0.2\"}").build();
     }
 
 }

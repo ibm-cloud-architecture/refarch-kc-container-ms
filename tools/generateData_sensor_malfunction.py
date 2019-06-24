@@ -7,8 +7,8 @@ import numpy as np
 import sys
 import pandas as pd
 
-df = pd.DataFrame(columns=['Timestamp', 'ID', 'Temperature(celsius)', 'Target_Temperature(celsius)', 'Amp', 'CumulativePowerConsumption', 'ContentType', 'Humidity', 'CO2', 'Time_Door_Open', 
-'Maintainence_Required', 'Defrost_Cycle'])
+df = pd.DataFrame(columns=['Timestamp', 'ID', 'Temperature(celsius)', 'Target_Temperature(celsius)', 'Amp', 'PowerConsumption', 'ContentType', 'O2', 'CO2', 'Time_Door_Open', 
+'Maintenance_Required', 'Defrost_Cycle'])
 
 def buildJSON():
     
@@ -19,7 +19,6 @@ def buildJSON():
     range_list=np.linspace(1,2,1000)
     index=0
     for i in range_list:
-
         timestamp = date_list[index].strftime('%Y-%m-%d T%H:%M Z')
         df.loc[i] = [timestamp, id, gauss(5.0, 2.0), 4.4, gauss(2.5,1.0), gauss(10.0,2.0), random.randint(1,5),gauss(10.5, 5.5), gauss(10.5, 5.0), gauss(8.0, 2.0), 1, 6]
         index=index+1

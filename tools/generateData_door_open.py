@@ -6,6 +6,9 @@ import datetime
 import numpy as np
 import sys
 
+'''
+Generate events for door opening sensor
+'''
 containerData = []
 def buildJSON(csvfile):
     with open(csvfile) as csvfile:

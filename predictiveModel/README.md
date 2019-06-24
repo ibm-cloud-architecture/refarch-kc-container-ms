@@ -1,22 +1,13 @@
-# Predictive maintainence for reefer containers
-A reefer container is a refrigerated shipping container used to store or transport frozen or cold goods perishable items or goods that require temperature control. Reefers make an excellent, portable solution to short or long term storage and can be used to ship or truck goods over long distances as they can be plugged into the power station on ships or have clip on generators attached.
+# Predictive maintenance for reefer containers
 
-Perishable products must be kept at a controlled temperature, from point of origin to delivery to retailer or pharmacy. The logistics industry refers to this as the “cold chain” and it encompasses both “reefers” (refrigerated containers) as well as warehouses, distribution centers and the final storage or holding areas. 
-
-Throughout this chain the risk of failure is ever-present, meaning there is always a possibility of cargo exceeding permissible or safe temperature levels, even if only briefly. For example, a truck might be stopped without power in desert heat, allowing temperatures in the reefer to rise. Then power is restored and the temperature in the container comes back down, but the product is damaged.
-
-When cargo such as any of those items listed above are exposed to temperatures outside of prescribed limits it can be damaged. In some cases this is evident, such as with bananas, but in other situations, like the transport of vaccines, it may not be apparent that damage has occurred and the vaccine becomes ineffective. For some products, going over temperature, even only briefly, can reduce shelf life dramatically, incurring substantial costs when it cannot be sold. 
-
-Organizations contracting to ship perishable products often specify the permissible temperature range. However, even if it is possible to show that product was exposed to conditions outside of those contracted, proving where it happened, and thus responsibility, can be much harder.
-
-In this section, we discuss possible machine learning models we can train with the help of historical data to predict whether maintainence is required for the reefer container at a certain point in time.
 
 ## Getting Started
 
 The model uses the generated data from three scenarios: 1) when the container's door is open for a longer time - this gives a false positive that maintainence is required 2) when sensors are malfunctioning, it records arbitrary readings, 3) when the readings are normal. We have currently trained our model on 3000 datapoints from the three scenarios above. 
 
 ### Code execution
-The simulator continuosly generates container metrics, publishes it to Kafka and run the predictMaintainence.ipynb to predict if maintainence is sought at this point in time. 
+
+The simulator continuously generates container metrics, publishes them to Kafka `containers` topics and run the predictMaintainence.ipynb to predict if maintainence is sought at this point in time. 
 
 ## Dataset
 
@@ -52,9 +43,6 @@ Root Mean Squared Error (RMSE) is the square root of the mean of the squared err
 
 Classification does better here as the scenarion is more of a classification problem.
 
-
-## Todos
-
 ## References
 
 http://www.sfb637.uni-bremen.de/pubdb/repository/SFB637-B6-10-011-IC.pdf
@@ -62,6 +50,3 @@ https://www.omega.com/technical-learning/temperature-monitoring-during-transport
 https://cargostore.com/blog/what-are-reefer-containers/
 https://towardsdatascience.com/machine-learning-classifiers-a5cc4e1b0623
 
-### Author
-
-Shilpi Bhattacharyya

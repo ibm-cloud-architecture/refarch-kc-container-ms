@@ -67,8 +67,8 @@ public class ContainerOrderAssignment {
 
     public synchronized void start() {
         if ( streams == null ) {
-            Properties props = KafkaStreamConfig.getStreamsProperties("order-streams-" + UUID.randomUUID().toString());
-		    props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
+            Properties props = KafkaStreamConfig.getStreamsProperties("containerToOrder-streams");
+		    props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
 		    streams = new KafkaStreams(buildProcessFlow(), props);
 			try {
 	        	streams.cleanUp(); 
@@ -125,13 +125,13 @@ public class ContainerOrderAssignment {
 	        	orderEvent.getPayload().setStatus(Order.ONHOLD_STATUS);
 	        	orderEvent.setType(OrderEvent.TYPE_REJECTED);
 	        	return orderEvent;
-	        }).through(KafkaStreamConfig.ORDERS_TOPIC);
+	        }).through(KafkaStreamConfig.REJECTED_ORDERS_TOPIC);
 	        
 	        branches[1].mapValues(orderEvent -> {
 	        	orderEvent.getPayload().setStatus(Order.CONTAINER_ALLOCATED_STATUS);
 	        	orderEvent.setType(OrderEvent.TYPE_CONTAINER_ALLOCATED);
 	        	return orderEvent;
-	        }).through(KafkaStreamConfig.ORDERS_TOPIC)
+	        }).through(KafkaStreamConfig.ALLOCATED_ORDERS_TOPIC)
 	        .mapValues(orderEvent -> {
 	        		Container c = new Container();
 	        		c.setContainerID(orderEvent.getPayload().getContainerID());
