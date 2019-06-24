@@ -19,10 +19,10 @@ See [this note on how to deploy a IKS cluster](https://ibm-cloud-architecture.gi
 
 Define a docker image private registry using [this note.](https://ibm-cloud-architecture.github.io/refarch-kc/deployments/iks/#define-an-image-private-repository)
 
-Define a namespace to deploy your solution. We used `browncompute` as namespace but can be anything.
+Define a namespace to deploy your solution. We used `greencompute` as namespace but can be anything.
 
 ```
-kubectl create namespace browncompute
+kubectl create namespace greencompute
 ```
 
 ### Prepare Event Stream service on IBM Cloud
