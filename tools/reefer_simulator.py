@@ -25,7 +25,8 @@ df = pd.DataFrame(columns=['Timestamp', 'ID', 'Temperature(celsius)', 'Target_Te
 'Maintenance_Required', 'Defrost_Cycle'])
 
 def saveFile():
-    print("Save to file ", fname)    
+    print("Save to file ", fname)  
+    df.to_csv(fname, sep=',')  
 
 def generatePowerOff():
     global nb_records,id, tgood
