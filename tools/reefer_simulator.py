@@ -17,7 +17,7 @@ NB_RECORDS_IMPACTED = 7
 
 Today= datetime.datetime.today()
 nb_records = 1000
-fname = "testdata"
+fname = "../testdata"
 tgood = 4.4
 id = 101
 
