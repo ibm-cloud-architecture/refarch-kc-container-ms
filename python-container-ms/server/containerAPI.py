@@ -4,20 +4,18 @@ from werkzeug.contrib.fixers import ProxyFix
 from confluent_kafka import KafkaError, Producer, Consumer
 import psycopg2, yaml
 
-#Function for loading an object with database credentials from a yaml file.
+
 app = Flask(__name__)
-blueprint = Blueprint('api', __name__, url_prefix='/container')
+blueprint = Blueprint('api', __name__, url_prefix='/containers')
 app.wsgi_app = ProxyFix(app.wsgi_app)
 api = Api(blueprint, version='1.0', title='Container MS API',
     description='API for checking container data', doc='/api/'
 )
 app.register_blueprint(blueprint)
 
-#Function for loading an object with database credentials from a yaml file.
 ns = api.namespace('container', description='Operations to get container data.')
 nsg = api.namespace('general', description='General application checks')
 
-#Function for loading an object with database credentials from a yaml file.
 container = api.model('container', {
 	'ID': fields.String(required = True, description = 'Container ID'),
 	'Latitude': fields.Integer(required = True,description = 'Container current latitude'),

@@ -79,6 +79,10 @@ The output of this assignment processing is an event to the `orders` topic.
 
 See [implementation details in this note](./springboot/#add-the-get-containers-api).
 
+## Machine learning to predict container maintenance
+
+Finally, an important element of this project is the integration of Kafka topic as datasource to develop a machine learning model for the container predictive maintenance scoring. See details in [this note](./metrics).
+
 ## Compendium
 
 * [Postgresql tutorial](http://postgresguide.com/sql/select.html)
