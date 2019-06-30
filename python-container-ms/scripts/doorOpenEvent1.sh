@@ -1,5 +1,6 @@
 #!/bin/sh
-
+#bin/zookeeper-server-start.sh config/zookeeper.properties
+#bin/kafka-server-start.sh config/server.properties
 #Generate Data
 echo 'Start Data Generation \n'
 dataDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd ../../data && pwd )
@@ -12,6 +13,7 @@ echo '\n Done Generating \n'
 echo 'Publish Kafka \n'
 python containerProducer.py $dataFile
 echo 'Kafka Done \n'
+
 
 #Consume
 python containerConsumer.py

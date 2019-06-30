@@ -25,6 +25,11 @@ public class Solution{
         int arr[]=new int[]{1,2,3,4};
         int out[]=new int[4];
         out=sortArray(arr);
+        for( j = i ; j < len ; j ++ ){
+            if( max > arr[j] ){
+               max = arr[j];
+               location = j;
+            }
         System.out.println(out);
     }
       }
