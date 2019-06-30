@@ -46,4 +46,3 @@ The features to support in each possible implementation are:
 * A Kafka consumer to get `orderCreated` event published in the `orders` topic: the code will look at the pickup location and search in the container inventory the containers close to this location. 
 * A kafka consumer to get any container events from the `containers` topic.
 
-Finally, an important element of this project is the integration of Kafka topic as datasource to develop a machine learning model for the container predictive maintenance scoring. See details in [this note](./metrics).

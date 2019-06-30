@@ -150,7 +150,7 @@ Once we have defined the entity attributes and how it is mapped to the table col
 public interface ContainerRepository extends JpaRepository<ContainerEntity,String>{}
 ```
 
-Spring makes it magic to add save, findById, findAll... operations transparently. So now we can @Autowrite this repository into the controller class and add the integration tests. The test is in the Junit test class: [PostgreSqlTest](src/test/java/it/container/PostgreSqlTest.java). In fact, for test reason we want to inject Mockup class in unit test via the controller contructor.
+Spring makes it magic to add save, findById, findAll... operations transparently. So now we can @Autowrite this repository into the controller class and add the integration tests. The test is in the Junit test class: [PostgreSqlTest](https://github.com/ibm-cloud-architecture/refarch-kc-container-ms/blob/master/SpringContainerMS/src/test/java/it/container/PostgreSqlTest.java). In fact, for test reason we want to inject Mockup class in unit test via the controller contructor.
 
 ```java
 @Test
