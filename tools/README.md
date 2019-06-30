@@ -5,11 +5,12 @@
 
 We are generating data for two use cases now:
 
-1. Poweroff: When the reefer containers lose power at some instance, the temperature within the container starts rising. To generate data for this scenario, use the following command;
+### 1. Poweroff: When the reefer containers lose power at some instance, the temperature within the container starts rising. To generate data for this scenario, use the following command;
 
-a) Enter into the docker container by executing the script - startPythonEnv.sh
+ Enter into the docker container by executing the script - startPythonEnv.sh
 
  ./startPythonEnv 
+
 root@03721594782f:/refarch-kc-container-ms/tools# python reefer_simulator.py 
 Need to have at least 3 arguments: 
 	the simulation type one of (poweroff, co2sensor)
@@ -41,7 +42,7 @@ Generating  1000  poweroff metrics
 1.016016  2019-06-30 T15:43 Z  101              5.477895                           4  16.259322          8.728972           1   9   2        8.082536                    1             6
 
 
-2. Co2 sensor malfunction: In the same way as above the simualtor can generate data for Co2 sensor malfunction as well using the below command,
+### 2. Co2 sensor malfunction: In the same way as above the simualtor can generate data for Co2 sensor malfunction as well using the below command,
 
 python reefer_simulator.py co2sensor 1000 4 testdata
 
