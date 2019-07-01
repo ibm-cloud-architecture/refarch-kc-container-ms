@@ -2,6 +2,7 @@ import csv, sys, json, datetime
 import random
 import numpy as np
 import pandas as pd
+import os
 
 '''
 Simulate the metrics for a Reefer container.
@@ -15,6 +16,7 @@ NITROGEN_LEVEL = 0.78 # in %
 POWER_LEVEL= 7.2 # in kW
 NB_RECORDS_IMPACTED = 7
 
+
 Today= datetime.datetime.today()
 nb_records = 1000
 fname = "../testdata"
@@ -26,7 +28,13 @@ df = pd.DataFrame(columns=['Timestamp', 'ID', 'Temperature(celsius)', 'Target_Te
 
 def saveFile():
     print("Save to file ", fname)  
-    df.to_csv(fname, sep=',')  
+    #df.to_csv(fname, sep=',')  
+    if not os.path.isfile(fname):
+        df.to_csv(fname, sep=',')
+    else: # else it exists so append without writing the header
+        df.to_csv(fname, sep=',', mode='a', header=False)
+    #df.to_csv(fname, sep=',',mode='a', header=None)
+    
 
 def generatePowerOff():
     global nb_records,id, tgood
@@ -34,7 +42,7 @@ def generatePowerOff():
     ctype=random.randint(1,5)   # ContentType
     print("Generating ",nb_records, " poweroff metrics")
     count_pwr = 0  # generate n records with power off
-    maintenance_flag = 0
+    
     temp = random.gauss(tgood, 2.0)
     for i in range_list:
         adate = Today + datetime.timedelta(minutes=10*i)
@@ -43,6 +51,7 @@ def generatePowerOff():
         temp =  random.gauss(tgood, 2.0)
         pwr =  random.gauss(POWER_LEVEL,8)   # Power at this time - 
         # as soon as one amp record < 0 then poweroff for n records
+        maintenance_flag = 0
         if  pwr < 0.0:
             pwr = 0
             count_pwr = count_pwr + 1
@@ -54,6 +63,7 @@ def generatePowerOff():
             temp = oldtemp + 0.8 * count_pwr
         if count_pwr == NB_RECORDS_IMPACTED:
             maintenance_flag = 1
+            count_pwr = 0
         df.loc[i] = [timestamp, 
                     id,
                     temp, # Temperature(celsius)
@@ -66,6 +76,7 @@ def generatePowerOff():
                     random.gauss(8.0, 2.0), # Time_Door_Open
                     maintenance_flag,    # maintenance required
                     6]    # defrost cycle
+        
     print(df)    
         
  
@@ -75,15 +86,14 @@ def generateCo2():
     range_list=np.linspace(1,2,nb_records)
     ctype=random.randint(1,5)   # ContentType
     print("Generating ",nb_records, " Co2 metrics")
-    maintenance_flag = 0
     temp = random.gauss(tgood, 3.0)
     for i in range_list:
+        maintenance_flag = 0
         adate = Today + datetime.timedelta(minutes=10*i)
         timestamp =  adate.strftime('%Y-%m-%d T%H:%M Z')
         pwr =  random.gauss(POWER_LEVEL,8)
-        co2=random.gauss(2.5, 3.0)
-        tmp=random.randrange(CO2_LEVEL) 
-        if co2>tmp:
+        co2 = random.gauss(3.5, 3.0)
+        if co2>CO2_LEVEL or co2<0:
             maintenance_flag = 1
         df.loc[i] = [timestamp, 
                      id, # Container ID
@@ -97,20 +107,20 @@ def generateCo2():
                      random.gauss(8.0, 2.0), # Time_Door_Open
                      maintenance_flag, # maintenance required
                      6] # defrost cycle
-
     print(df) 
 
 
 
 def parseArguments():
     global simulation_type, nb_records, tgood
-    if len(sys.argv) != 6:
+    if len(sys.argv) != 7:
         print("Need to have at least 4 arguments: ")
         print("\tthe simulation type one of (poweroff, co2sensor)")
         print("\tthe ID of the container")
         print("\tthe number of records to generate")
         print("\texpected temperature for the goods")
         print("\tthe filename to create (without .csv)")
+        print("\tAre you creating new dataset?")
         exit(1)
     else:
         simulation_type = sys.argv[1]
@@ -118,17 +128,22 @@ def parseArguments():
         nb_records = sys.argv[3]
         tgood = int(sys.argv[4])
         fname = sys.argv[5]
+        flag = sys.argv[6]
 
 
 
 if __name__ == "__main__":
     parseArguments()
     if simulation_type == "poweroff":
+        print(sys.argv[6])
         generatePowerOff()
         saveFile()
+        
     elif  simulation_type == "co2sensor":
+        print(sys.argv[6])
         generateCo2()
         saveFile()
+    
     else:
         print("Not a valid simulation")
     
