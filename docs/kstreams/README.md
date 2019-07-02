@@ -149,7 +149,7 @@ We want the container event to keep a timestamp, a version, a type, and a payloa
 
 Using a TDD approach we will start by the tests to implement the solution.
 
-For more information on the Streams DSL API [keeep this page slose to you](https://kafka.apache.org/21/documentation/streams/developer-guide/dsl-api.html). 
+For more information on the Streams DSL API, [keep this page close to you](https://kafka.apache.org/21/documentation/streams/developer-guide/dsl-api.html). 
 
 ## Test Driven Development
 
@@ -290,9 +290,12 @@ Replace existing springcontainerms declaration to the following
             KAFKA_BROKERS: ${KAFKA_BROKERS}
             KAFKA_APIKEY: ${KAFKA_APIKEY}
 ```
+
 ## How streams flows are resilient?
 
+Specifying the replicas factor at the topic level, with a cluster of kafka brokers, combine with transactional event produce, ensure to do not lose messages. The producer client code has the list of all the brokers to contact in case of failure and will try to connect to any broker in the list. 
 
 ## How to scale?
+
 
 

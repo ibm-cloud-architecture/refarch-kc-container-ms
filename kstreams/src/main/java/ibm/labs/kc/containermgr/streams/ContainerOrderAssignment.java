@@ -19,7 +19,6 @@ package ibm.labs.kc.containermgr.streams;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-import java.util.UUID;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.Deserializer;
@@ -113,6 +112,7 @@ public class ContainerOrderAssignment {
 	        		})
 	        		.mapValues((key,orderEvent) -> {
 	        			 Order orderOut=assignContainerToOrder(orderEvent.getPayload());
+	        			 orderEvent.setPayload(orderOut);
 	        			 return orderEvent;
 	        		})
 	        		.branch((key,orderEvent) -> {
