@@ -8,6 +8,7 @@ fi
 if [[ $# -ne 5 ]];then
    echo "Usage: deployhelm env repository tag namespace brokers"
    echo "example: deployhelm MINIKUBE ibmcase/kc-springcontainerms latest greencompute kafkabitmani:9092"
+   echo "other example:  deployhelm IBMCLOUD us.icr.io/ibmcaseeda/kc-springcontainerms latest greencompute  kafka03-prod02.messagehub.services.us-south.bluemix.net:9093,kafka01-prod02.messagehub.services.us-south.bluemix.net:9093,kafka02-prod02.messagehub.services.us-south.bluemix.net:9093,kafka04-prod02.messagehub.services.us-south.bluemix.net:9093,kafka05-prod02.messagehub.services.us-south.bluemix.net:9093"
    exit
 fi
 
@@ -19,6 +20,12 @@ brokers=$5
 
 msname=$(echo $repo |  cut -f2 -d'/' | cut -f2 -d'-')
 rname=$(echo $repo |  cut -f2 -d'/')
+pullPolicy="Never"
+
+if [[ $kcenv != "MINIKUBE" ]]
+then
+  pullPolicy=Always
+fi
 
 echo "Deploy helm chart on $kcenv for $msname project to $ns with release named: $rname"
 
@@ -32,11 +39,11 @@ if [[ -z "$oq" ]]
 then
   echo "$rname release not deployed... which is expected so deploy it"
   echo "helm install chart/$msname/ --name $rname --set image.repository=$repo \
-    --set image.tag=$kctag --set image.pullSecret= --set image.pullPolicy=Never \
+    --set image.tag=$kctag --set image.pullSecret= --set image.pullPolicy=$pullPolicy \
     --set eventstreams.brokers=$brokers --set eventstreams.env=$kcenv --namespace $ns"
 
   helm install chart/$msname/ --name $rname --set image.repository=$repo \
-    --set image.tag=$kctag --set image.pullSecret= --set image.pullPolicy=Never \
+    --set image.tag=$kctag --set image.pullSecret= --set image.pullPolicy=$pullPolicy \
     --set eventstreams.brokers=$brokers --set eventstreams.env=$kcenv --namespace $ns
   sleep 4
 else
