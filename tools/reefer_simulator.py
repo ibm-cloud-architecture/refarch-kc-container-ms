@@ -8,6 +8,10 @@ import os
 Simulate the metrics for a Reefer container.
 '''
 # Define constants for average
+POWEROFF_SIMUL="poweroff"
+CO2_SIMUL="co2sensor"
+AT_SEA_SIMUL="atsea"
+
 simulation_type = "nopower"
 
 CO2_LEVEL = 4 # in %
@@ -18,26 +22,27 @@ NB_RECORDS_IMPACTED = 7
 
 
 Today= datetime.datetime.today()
-nb_records = 1000
-fname = "../testdata"
-tgood = 4.4
-id = 101
+MAX_RECORDS = 1000
+FILENAME = "../testdata"
 
-df = pd.DataFrame(columns=['Timestamp', 'ID', 'Temperature(celsius)', 'Target_Temperature(celsius)', 'Power', 'PowerConsumption', 'ContentType', 'O2', 'CO2', 'Time_Door_Open', 
-'Maintenance_Required', 'Defrost_Cycle'])
-
-def saveFile():
+def saveFile(df,fname = FILENAME,flag = "yes"):
     print("Save to file ", fname)  
     #df.to_csv(fname, sep=',')  
     if not os.path.isfile(fname):
+        df.to_csv(fname, sep=',')
+    elif flag == "no" or flag == "n":
         df.to_csv(fname, sep=',')
     else: # else it exists so append without writing the header
         df.to_csv(fname, sep=',', mode='a', header=False)
     #df.to_csv(fname, sep=',',mode='a', header=None)
     
 
-def generatePowerOff():
-    global nb_records,id, tgood
+def defineDataFrame():
+    return pd.DataFrame(columns=['Timestamp', 'ID', 'Temperature(celsius)', 'Target_Temperature(celsius)', 'Power', 'PowerConsumption', 'ContentType', 'O2', 'CO2', 'Time_Door_Open', 
+'Maintenance_Required', 'Defrost_Cycle'])
+
+def generatePowerOff(cid="101",nb_records = MAX_RECORDS, tgood=4.4):
+    df = defineDataFrame()
     range_list=np.linspace(1,2,nb_records)
     ctype=random.randint(1,5)   # ContentType
     print("Generating ",nb_records, " poweroff metrics")
@@ -65,7 +70,7 @@ def generatePowerOff():
             maintenance_flag = 1
             count_pwr = 0
         df.loc[i] = [timestamp, 
-                    id,
+                    cid,
                     temp, # Temperature(celsius)
                     tgood,             # Target_Temperature(celsius)
                     pwr,    
@@ -76,13 +81,13 @@ def generatePowerOff():
                     random.gauss(8.0, 2.0), # Time_Door_Open
                     maintenance_flag,    # maintenance required
                     6]    # defrost cycle
-        
-    print(df)    
+
+    return df    
         
  
  # Generate data if co2 sensor malfunctions
-def generateCo2():
-    global nb_records,id, tgood
+def generateCo2(cid="101", nb_records= MAX_RECORDS, tgood=4.4):
+    df = defineDataFrame()
     range_list=np.linspace(1,2,nb_records)
     ctype=random.randint(1,5)   # ContentType
     print("Generating ",nb_records, " Co2 metrics")
@@ -96,7 +101,7 @@ def generateCo2():
         if co2>CO2_LEVEL or co2<0:
             maintenance_flag = 1
         df.loc[i] = [timestamp, 
-                     id, # Container ID
+                     cid, # Container ID
                      temp, # Temperature(celsius)
                      tgood, # Target_Temperature(celsius)
                      pwr,
@@ -107,43 +112,60 @@ def generateCo2():
                      random.gauss(8.0, 2.0), # Time_Door_Open
                      maintenance_flag, # maintenance required
                      6] # defrost cycle
-    print(df) 
+    return df
 
 
+def produceMetricEvents(cid="101", nb_records= MAX_RECORDS, tgood=4.4):
+    print("Producing metrics events")
+    print ("Done!")
+    
 
 def parseArguments():
-    global simulation_type, nb_records, tgood
-    if len(sys.argv) != 7:
-        print("Need to have at least 4 arguments: ")
-        print("\tthe simulation type one of (poweroff, co2sensor)")
-        print("\tthe ID of the container")
-        print("\tthe number of records to generate")
-        print("\texpected temperature for the goods")
-        print("\tthe filename to create (without .csv)")
-        print("\tAre you creating new dataset?")
+    simulation_type = POWEROFF_SIMUL
+    nb_records = 1000
+    tgood = 4.4
+    fname = "testdata"
+    flag = "yes"
+    cid = 101
+    if len(sys.argv) == 1:
+        print("Usage reefer_simulator --stype [poweroff | co2sensor | atsea]")
+        print("\t --cid <container ID>")
+        print("\t --records <the number of records to generate>")
+        print("\t --temp <expected temperature for the goods>")
+        print("\t --file <the filename to create (without .csv)>")
+        print("\t --append [yes | no]")
         exit(1)
     else:
-        simulation_type = sys.argv[1]
-        id = sys.argv[2]
-        nb_records = sys.argv[3]
-        tgood = int(sys.argv[4])
-        fname = sys.argv[5]
-        flag = sys.argv[6]
+        for idx in range(1, len(sys.argv)):
+            arg=sys.argv[idx]
+            if arg == "--stype":
+                simulation_type = sys.argv[idx + 1]
+            elif arg == "--cid":
+                cid = sys.argv[idx + 1]
+            elif arg == "--records":
+                nb_records = sys.argv[idx + 1]
+            elif arg == "--temp":
+                tgood = int(sys.argv[idx + 1])
+            elif arg == "--file":
+                fname = sys.argv[idx + 1]
+            elif arg == "--append":
+                flag = sys.argv[idx + 1]
+    return (cid, simulation_type, nb_records, tgood, fname,flag)
+
 
 
 
 if __name__ == "__main__":
-    parseArguments()
-    if simulation_type == "poweroff":
-        print(sys.argv[6])
-        generatePowerOff()
-        saveFile()
-        
-    elif  simulation_type == "co2sensor":
-        print(sys.argv[6])
-        generateCo2()
-        saveFile()
-    
+    (cid, simulation_type, nb_records, tgood, fname,flag) = parseArguments()
+    print(cid, simulation_type, nb_records, tgood, fname,flag)
+    if simulation_type == POWEROFF_SIMUL:
+        df=generatePowerOff(cid,nb_records,tgood)
+    elif  simulation_type == CO2_SIMUL:
+        df=generateCo2(cid,nb_records,tgood)
+    elif simulation_type == AT_SEA_SIMUL:
+        produceMetricEvents(cid,nb_records,tgood)
+        exit
     else:
         print("Not a valid simulation")
-    
+        exit 
+    saveFile(df,fname,flag)

@@ -6,7 +6,7 @@ The goal of this Container management service is to support the reefer container
 
 We are documenting the best practices related to the different implementations of this service in [a book format](https://ibm-cloud-architecture.github.io/refarch-kc-container-ms) to make the navigation easier. 
 
-Updated 06/05/2019.
+Updated 07/18/2019.
 
 ## Implementations
 
