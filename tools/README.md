@@ -1,6 +1,6 @@
 # Tools
 
-See explanation for the predictive maintainence in [this note](http://https://ibm-cloud-architecture.github.io/refarch-kc-container-ms/metrics/#data-set)
+See explanation for the predictive maintenance in [this note](http://https://ibm-cloud-architecture.github.io/refarch-kc-container-ms/metrics/#data-set)
 
 ## Generate data as file with the simulator
 
@@ -30,4 +30,4 @@ In the same way as above the simualtor can generate data for Co2 sensor malfunct
 python reefer_simulator.py co2sensor 101 1000 4 testdata no
 ```
 
-## To publish containerCreated event. 
+
