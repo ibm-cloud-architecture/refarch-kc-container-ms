@@ -80,6 +80,26 @@ The generated dependencies include Spring boot starter web code, hystrix for cir
 </dependency>
 ```
 
+## Build 
+
+### Build with maven
+
+```
+cd SpringContainerMS
+mvn package
+```
+
+### Build with docker
+
+To support flexible CI/CD deployment and run locally we propose to use Docker [multi-stage build](https://docs.docker.com/develop/develop-images/multistage-build/). 
+
+As part of the CI/CD design, there is an important subject to address: how to support integration tests? Unit tests focus on validating the business logic, while integration tests validate the end to end integration of the microservice with its dependants services and products. We separated the unit tests and integration tests in their own Java packages. Later it will be more appropriate to have a separate code repository for integration tests (we stated this approach in the `refarch-kc` project under the `itg-tests` folder). 
+
+Integration tests in this project access remote postegresql server. When the server is in IBM Cloud as part of the postgresql service, a SSL Certificate is defined as part of the service credentials. When building with Docker multi-stage this means the build stage has to get certificate in the Java TrustStore so tests are successful. We burnt a lot of time to make it working. We recommend reading the [security section](#security) below to see what commands to run to get certificate in good format and create a truststore. Those commands have to be done in the dockerfile too and certificate, URL, user, password has to be injected using Dockerfile arguments and then environment variables. 
+
+See the `scripts/buildDocker.sh` to assess the docker build parameters used. And then how to manage the certificate creation into the Java TrustStore using scripts like `add_certificates.sh`. This script needs to be executed before the maven build so any integration tests that need to access the remote Postgresql server will not fail with SSL handcheck process. And it needs to be done in the docker final image as part of the startup of the spring boot app (see `startup.sh`). 
+
+
 ## Some Spring boot basis 
 
 We encourage you to go over the different tutorials from spring.io. We followed the following ones to be sure we have some good understanding of the basic components:
@@ -89,7 +109,9 @@ We encourage you to go over the different tutorials from spring.io. We followed 
 * [Spring Boot, PostgreSQL, JPA, Hibernate RESTful CRUD API Example from Callicoder](https://www.callicoder.com/spring-boot-jpa-hibernate-postgresql-restful-crud-api-example/)
 * [Spring Kafka](https://spring.io/projects/spring-kafka)
 
-## Add the get /containers  API
+## Code implementation
+
+### Add the get "/containers"  API
 
 We want to start by the get reefer containers test and then implement a simple container controller bean with the CRUD operations. Spring takes into account the package names to manage its dependencies and settings. The test looks like below:
 
@@ -167,6 +189,7 @@ Spring makes it magic to add save, findById, findAll... operations transparently
 ```
 
 Finally the controller is integrating the repository:
+
 ```java
     @Autowired
 	private ContainerRepository containerRepository;
@@ -179,21 +202,24 @@ Finally the controller is integrating the repository:
     }
 
 ```
+
 The test fails as it is missing the configuration to the postsgresql service. As we do not want to hardcode the password and URL end point or share secret in public github we define the configuration using environment variables. See the [application.properties](https://github.com/ibm-cloud-architecture/refarch-kc-container-ms/blob/master/SpringContainerMS/src/main/resources/application.properties) file. We have two choices for the Postgresql service: one using IBM Cloud and one running local docker image. 
 
-To export the different environment variables we have a `setenv.sh` script (which we have defined a template for named setenv.sh.tmp in the main repository `refarch-kc`) with one argument used to control the different environment varaibles for Kafka and Postgresql. The script argument should be one of LOCAL (default if no argument is given), IBMCLOUD, or ICP. 
+To export the different environment variables we have a `setenv.sh` script (which we have defined a template for, named setenv.sh.tmpl in the main repository `refarch-kc`) with one argument used to control the different environment varaibles for Kafka and Postgresql. The script argument should be one of LOCAL (default if no argument is given), MINIKUBE, IBMCLOUD, or ICP. 
 
-To execute against the remote postgresql and Kafka use:
+To execute against the remote postgresql and Kafka brokers use:
 ```shell
 # Under the SpringContainerMS folder
-$ source ../scripts/setenv.sh IBMCLOUD
+$ source ../../refarch-kc/scripts/setenv.sh IBMCLOUD
 $ mvn test
 ```
 
 To execute against a local kafka - postesgresql docker images, first you need to start the backend services: In the `refarch-kc` project, under the `docker` folder use the docker compose file:backbone-compose.yml (See [this note for detail](https://ibm-cloud-architecture.github.io/refarch-kc/deployments/local/#start-kafka-zookeeper-and-postgresql)):
 
+and then 
 ```shell
-$ source ../scripts/setenv.sh LOCAL
+# Under the SpringContainerMS folder
+$ source ../../refarch-kc/scripts/setenv.sh LOCAL
 $ mvn test
 ```
 
@@ -206,8 +232,8 @@ We propose to use the local deployment to do unit tests and integration tests. T
 First be sure your back end services run: It will start zookeeper, kafka and postgresql. You need the [refarch-kc main project for that](https://ibm-cloud-architecture.github.io/refarch-kc/) which normally can be in one folder above this current project. To start the backend:
 
 ```shell
-$ cd refarch-kc/docker
-$ docker-compose -f backbone-compose.yml up`
+$ cd refarch-kc
+$ ./scripts/local/launch.sh BACKEND
 
 Starting docker_zookeeper1_1  ... done
 Creating docker_postgres-db_1 ... done
@@ -215,18 +241,19 @@ Starting docker_kafka1_1      ... done
 ```
 > if you need to restart from empty topics, delete the kafka1 and zookeeper1 folders under `refarch-kc/docker` and restart the backend services.
 
-#### The integration tests 
+## The integration tests 
 
 ![](./itg-tests.png)
 
+To perform the integration test step by step do the following:
     
 | ID | Description | Run |
 | --- | --- | --- |
 | 1  | Springboot app which includes kafka consumers and producers, REST API and postgresql DAO | ./scripts/run.sh |
-| 2 | **psql** to access postgresql DB | ../scripts/start_psql |
-| 3 | containers consumer. To trace the *containers* topics. This code is in refarch-kc project in `itg-tests/ContainersPython` folder. | Use a Terminal console: refarch-kc/itg-tests/ContainersPython/ runContainerConsumer.sh LOCAL c01 |
+| 2 | **psql** to access postgresql DB | From the refarch-kc-container-ms folder do ./scripts/start_psql |
+| 3 | **containers** consumer. To trace the *containers* topics. This code is in refarch-kc project in `itg-tests/ContainersPython` folder. | Use a Terminal console: refarch-kc/itg-tests/ContainersPython/ runContainerConsumer.sh LOCAL c01 |
 | 4 | container events producer. To generate events. This code is in refarch-kc project in `itg-tests/ContainersPython` folder. | Use a Terminal console: refarch-kc/itg-tests/ContainersPython/ addContainer.sh LOCAL c01 |
-| 5 | orders consumer. To trace the *orders* topics. This code is in refarch-kc project in `itg-tests/OrdersPython` folder. | Use a Terminal console:refarch-kc/itg-tests/OrdersPython/ runOrderConsumer.sh LOCAL order01 |
+| 5 | orders consumer. To trace the *orders* topics. This code is in refarch-kc project in `itg-tests/OrdersPython` folder. | Use a Terminal console: refarch-kc/itg-tests/OrdersPython/ runOrderConsumer.sh LOCAL order01 |
 | 6 | orders events producer. To generate order events. This code is in refarch-kc project in `itg-tests/OrdersPython` folder. | Use a Terminal console: refarch-kc/itg-tests/OrdersPython/ addOrder.sh LOCAL order01 |
 
 
@@ -316,16 +343,6 @@ postgres=# SELECT * FROM containers;
  itg-C02 | itg-brand |        0 | 2019-04-25 16:28:26.885 | Oakland      |     37.8 |   -122.25 |      0 | Reefer | 2019-04-25 21:24:57.821
  itg-c03 | itg-brand |        0 | 2019-04-25 20:51:13.424 | Oakland      |     37.8 |   -122.25 |      0 | Reefer | 2019-04-25 21:27:22.159
 ```
-
-## Build with docker
-
-To support flexible CI/CD deployment and run locally we propose to use Docker [multi-stage build](https://docs.docker.com/develop/develop-images/multistage-build/). 
-
-As part of the CI/CD design, there is an important subject to address is how to support integration tests. Unit tests focus on validating the business logic, while integration tests validate the end to end integration of the microservice with its dependants services and products. We separated the unit tests and integration tests in their own Java packages. Later it will be more appropriate to have a separate code repository for integration tests (we stated this approach in the `refarch-kc` project under the `itg-tests` folder). 
-
-Integration tests in this project access remote postegresql server. When the server is in IBM Cloud as part of the postgresql service, a SSL Certificate is defined as part of the service credentials. When building with Docker multi-stage this means the build stage has to get certificate in the Java TrustStore so tests are successful. We burnt a lot of time on this one to make it working. We recommend reading the [security section](#security) below to see what commands to run to get certificate in good format and create a truststore. Those commands have to be done in the dockerfile too and certificate, URL, user, password has to be injected using Dockerfile arguments and then environment variables. 
-
-See the `scripts/buildDocker.sh` to assess the docker build parameters used. And then how to manage the certificate creation into the Java TrustStore using scripts like `add_certificates.sh`. This script needs to be executed before the maven build so any integration tests that need to access the remote Postgresql server will not fail with SSL handcheck process. And it needs to be done in the docker final image as part of the startup of the spring boot app (see `startup.sh`). 
 
 ## Listening to container events
 

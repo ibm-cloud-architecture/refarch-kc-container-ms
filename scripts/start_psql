@@ -1,3 +1,14 @@
 
 
-psql --host=localhost --port=5432 --username=$POSTGRESQL_USER  -d postgres
+if [[ $PWD = */scripts ]]; then
+ cd ..
+fi
+
+if [[ $# -eq 0 ]];then
+  kcenv="LOCAL"
+else
+  kcenv=$1
+fi
+
+source ../refarch-kc/scripts/setenv.sh $kcenv
+PGPASSWORD=$POSTGRESQL_PWD psql --host=localhost --port=5432 --username=$POSTGRESQL_USER  -d postgres

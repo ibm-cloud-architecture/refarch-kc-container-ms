@@ -11,8 +11,8 @@ nav:
     - Pre-requisites: deployment.md
     - Run spring boot app locally: springboot/README.md
     - Continuous delivery: cicd.md
-  - Security: https://ibm-cloud-architecture.github.io/refarch-kc-container-ms/springboot/#security
-  - Run integration tests: https://ibm-cloud-architecture.github.io/refarch-kc-container-ms/springboot/#the-integration-tests
+  - Security: springboot/#security
+  - Run integration tests: springboot/#the-integration-tests
   - Container Predictive Maintenance: metrics.md
 theme: 
   name: material

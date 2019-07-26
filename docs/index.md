@@ -19,7 +19,7 @@ We have a dedicated article on how to transform event storming analysis to micro
 
 ## Component view
 
-As the service needs to offer some basic APIs while consuming and producing events, the code has at least three main components: a kafka consumer, a kafka producer, and a HTTP server exposing the REST APIs. The following diagram illustrates the componentes involved in this container manager microservice:
+As the service needs to offer some basic APIs while consuming and producing events, the code has at least three main components: a kafka consumer, a kafka producer, and a HTTP server exposing the REST APIs. The following diagram illustrates the components involved in this container manager microservice:
 
 ![](comp-view.png)
 
@@ -38,11 +38,17 @@ When Kafka runs on IBM Cloud use:
 ./addContainer.sh IBMCLOUD
 ```
 
-If you want to run using a kafka running on your computer:
+If you want to run using a kafka running on your computer with docker-compose:
 
 ```
-./addContainer.sh
+./addContainer.sh LOCAL 
 ```
+
+```
+./addContainer.sh MINIKUBE
+```
+
+or with minikube:
 
 And for ICP
 
