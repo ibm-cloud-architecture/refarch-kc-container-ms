@@ -348,7 +348,7 @@ postgres=# SELECT * FROM containers;
 
 The use story is to get the container event from the kafka `containers` topics and add new Reefer container data to the inventory, or update existing container. So we need to add consumer and publisher using [Spring Kafka](https://spring.io/projects/spring-kafka). Spring Kafka template is based on the pure java kafka-clients jar but provides the same encapsulation as Spring JMS template. Here is the [product documentation](https://docs.spring.io/spring-kafka/docs/2.2.4.RELEASE/reference/).  
 
-First we need to start a kafka consumer when the application starts. We want one unique instance, so a singleton. As presented in [this article](https://www.baeldung.com/running-setup-logic-on-startup-in-spring), we select to add a Component that is an application listener (Annotation @EventListener) so when the spring context is running, we can start consuming message from Kafka.  
+First we need to start a kafka consumer when the application starts. We want one unique instance, so a singleton. As presented in [this article](https://www.baeldung.com/running-setup-logic-on-startup-in-spring), we select to add a Component that is an application listener (Annotation @EventListener) so when the spring context is running, we can start consuming messages from Kafka.  
 
 ```java
 @Component
@@ -367,7 +367,6 @@ We have added an end to end integration test to create container events and see 
 
 The approach is the same as above and the supporting class is: [ibm.labs.kc.containermgr.kafka.OrderConsumer](https://github.com/ibm-cloud-architecture/refarch-kc-container-ms/blob/master/SpringContainerMS/src/main/java/ibm/labs/kc/containermgr/kafka/OrderConsumer.java).
 
-The difference is in the search for container for the order: 
 
 ## Security
 
@@ -500,7 +499,7 @@ So below is the list of command to perform on you laptop while the Spring boot a
 * Create an order from the same folder:  `refarch-kc/itg-tests/OrdersPython`
 
 ```
-addOrder.sh LOCAL order01
+addOrder.sh IBMCLOUD order01
 ```
 
 Going to the web URL of the container service you should see the container added. 
@@ -510,8 +509,9 @@ Going to the web URL of the container service you should see the container added
 The level of abstraction in Spring is nice when doing basic things but can become a nightmare when doing real bigger application including different libraries. Also migrating or using the last version 2.xx, bring changes to existing code and tests. Below is a list of iisues we spent time on:
 
 * When JPA started, it creates / updates database schema, and for example enforced to have an Id as int while it was as string. As a bypass we create the table before in postsgresql using psql tool.
-* When starting the spring data, JPA will try to connect to the PostgresSQL and execute a set of validation, one of them could generate the following exception: `Method org.postgresql.jdbc.PgConnection.createClob() is not yet implemented`. The explanation for the solution is [here](https://vkuzel.com/spring-boot-jpa-hibernate-atomikos-postgresql-exception)
-* Testing endpoint /health did not work on Spring 2.1.4. Thisi s due that there is the new Actuator capabilities (`spring-boot-starter-actuator`) that adds endpoints to manage a webapp in production. This is a nice feature. So remove any hold Health api class and modify the url to `/actuator/health`. Be sure to read [this note](https://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-endpoints.html) on actuator.
+* When starting the spring data, JPA will try to connect to the PostgresSQL and execute a set of validation, one of them could generate the following exception: `Method org.postgresql.jdbc.PgConnection.createClob() is not yet implemented`. The explanation for the solution is [here.](https://vkuzel.com/spring-boot-jpa-hibernate-atomikos-postgresql-exception)
+* When running the SpringContainer inside docker-compose the following exception may occur `org.postgresql.util.PSQLException: Connection to postgres:5432 refused. Check that the hostname and port are correct and that the postmaster is accepting TCP/IP connections` while running the same code with maven using the same local backend works. 
+* Testing endpoint /health did not work on Spring 2.1.4. This is due a new Actuator capabilities (`spring-boot-starter-actuator`) that adds endpoints to manage a webapp in production. This is a nice feature. So remove any hold Health api class and modify the url to `/actuator/health`. Be sure to read [this note](https://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-endpoints.html) on actuator.
 
 * Deployed in Kubernetes service, the pod has issue on postgress SSL handshake. (org.postgresql.util.PSQLException: SSL error: Received fatal alert: handshake_failure). SSL handshakes are a mechanism by which a client and server establish the trust and logistics required to secure their connection over the network. This problem may be linked to a SSL certificate not found or wrong encryption protocol. We need to be sure a Java Keystore is defined and includes the public certificate coming from the server. See [security section](#security) above.
 
