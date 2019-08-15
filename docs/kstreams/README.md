@@ -1,12 +1,16 @@
 # Kafka Streams implementation of the container inventory management
 
-In this chapter we are presenting how to sue the Kafka Streams API combined with Kafkat event sourcing to implement the container inventory management. The component can be represented in the figure below:
+In this chapter we are presenting how to sue the Kafka Streams API combined with Kafka event sourcing to implement the container inventory management. 
+
+The component can be represented in the figure below:
 
 ![](../images/kstreams-container.png)
 
-The container topics includes all the event about container life cycle. The application is java based and deployed in Liberty packaged into a docker image deployable on kubernetes. The service exposes some RESTful APIs to get a container by ID. No CUD operations as all is done via events. The Streams implementation keeps data in table.
+For getting started with Kafka Streams API read [this tutorial](https://kafka.apache.org/documentation/streams/).
 
-As a java based microservice we have two approaches to implement the service: springboot and microprofile. Knowing we will deploy on kubernetes cluster with Istio we will have a lot of the resiliency and scalability addressed for us. But Istio does not support implementing retries logic according to the business logic. Microprofile add a lot of nice capabilities like SSL, open API, JAXRS... Microprofile is supported by Open Liberty as well as many servers.
+The container topics includes all the event about container life cycle. The application is Java based and deployed in Liberty packaged into a docker image deployable on Kubernetes. The service exposes some RESTful APIs to get a container by ID. No CUD operations as all is done via events. The Streams implementation keeps data in Ktable.
+
+As a java based microservice we have two approaches to implement the service: springboot and microprofile. Knowing we will deploy on kubernetes cluster with Istio we will have a lot of the resiliency and scalability addressed for us. [Microprofile](https://microprofile.io/) add a lot of nice capabilities like SSL, open API, JAXRS... Microprofile is supported by Open Liberty as well as many servers.
 
 The [Apache Kafka Streams API](https://kafka.apache.org/documentation/streams/) is a client library for building applications and microservices, where the input and output data are stored in Kafka clusters. It simplifies the implementation of the stateless or stateful event processing to transform and enrich data. It supports time windowing processing.
 
