@@ -4,8 +4,14 @@ We recommend to read how we build this service explanations in [this book view](
 
 ## Build
 
+Build with maven
 ```
 mvn package
+```
+
+Compile, tests and build container
+```
+./scripts/buildDocker.sh LOCAL | IBMCLOUD | ICP
 ```
 
 ## Run
