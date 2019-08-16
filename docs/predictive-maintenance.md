@@ -58,16 +58,27 @@ The other common potential issues are:
 
 So the question we want to answer is: does the Reefer keep accurate temperature overtime between what is set versus what is measured?
 
+## Architecture
+
+The target production architecture is based on the data and AI reference architecture, adapted for real time analytics. It is very close to what [Open Data Hub](https://opendatahub.io/) architecture looks like.
+
+![](images/RT-analytics.png)
+
+The Reefer container,a as IoT device emits container metrics avery minutes via the MQTT protocol. The first component receiving those messages is Apache Nifi to transform the message to a kafka events. Kafka is used as the event backbone and event sourcin so microservices, deployed on openshift, can consume and publish messages. 
+
+For persistence reason, we may leverage big data type of storage like Cassandra to persist the container metrics over a longer time period. This datasource is used for the Data Scientists to do its data preparation and build training and test sets. 
+
+Data scientists can run Jupyter lab on OpenShift and build a model to be deployed as python microservice, consumer of kafka events. The action will be to trigger an email for the Reefer container to be put in maintenance.
 
 ## Data set
 
-Well we do not have data. But we may be able to simulate them. As this is not production work, we should be able to get the end to end story still working from a solution point of view.
+Well we do not have real Reefer data. But we may be able to simulate them. As this is not production work, we should be able to get the end to end story still working from a solution point of view.
 
 The historical data need to represent failure, and represent the characteristics of a Reefer container. We can imagine it includes a lot of sensors to get interesting correlated or independant features.
 
-We have implemented a simulator to create those metrics to be used to build the model inside Jupiter notebook and with sklearn library. 
+We have implemented a simulator to create those metrics to be used to build the model inside Jupiter notebook and with sklearn or tensorflow library. 
 
-The simulator will be also used as an event producer to send real time events to kafka, as if the reefer container was loaded with fresh goods and travel oversea. A consumer code can call the predictive model to assess if maintenance is required.
+The simulator will be also used as an event producer to send real time events to kafka, as if the Reefer container was loaded with fresh goods and is travelling oversea. A consumer code can call the predictive model to assess if maintenance is required and post new event on a containermaintance topic.
 
 Here is a diagram for the data scientist environment:
 

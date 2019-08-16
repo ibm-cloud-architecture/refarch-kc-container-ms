@@ -13,7 +13,7 @@ nav:
     - Continuous delivery: cicd.md
   - Security: springboot/#security
   - Run integration tests: springboot/#the-integration-tests
-  - Container Predictive Maintenance: metrics.md
+  - Container Predictive Maintenance: predictive-maintenance.md
 theme: 
   name: material
 extra_css: ["extra.css"]
