@@ -13,7 +13,7 @@ nav:
     - Continuous delivery: cicd.md
   - Security: springboot/#security
   - Run integration tests: springboot/#the-integration-tests
-  - Reefer Container Predictive Maintenance: https://github.com/jbcodeforce/refarch-reefer-ml
+  - Reefer Container Predictive Maintenance:  https://ibm-cloud-architecture.github.io/refarch-reefer-ml/ 
 theme: 
   name: material
 extra_css: ["extra.css"]
