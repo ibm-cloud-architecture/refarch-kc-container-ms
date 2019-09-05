@@ -1,5 +1,16 @@
 # Environment pre-requisites
 
+## Deployment prerequisites
+
+Regardless of specific deployment targets (OCP, IKS, k8s), the following prerequisite Kubernetes artifacts need to be created to support the deployments of application components.  These artifacts need to be created once per unique deployment of the entire application and can be shared between application components in the same overall application deployment.
+
+1. Create `kafka-brokers` ConfigMap
+  - Command: `kubectl create configmap kafka-brokers --from-literal=brokers='<replace with comma-separated list of brokers>' -n <namespace>`
+  - Example: `kubectl create configmap kafka-brokers --from-literal=brokers='broker-3-j7fxtxtp5fs84205.kafka.svc01.us-south.eventstreams.cloud.ibm.com:9093,broker-2-j7fxtxtp5fs84205.kafka.svc01.us-south.eventstreams.cloud.ibm.com:9093,broker-1-j7fxtxtp5fs84205.kafka.svc01.us-south.eventstreams.cloud.ibm.com:9093,broker-5-j7fxtxtp5fs84205.kafka.svc01.us-south.eventstreams.cloud.ibm.com:9093,broker-0-j7fxtxtp5fs84205.kafka.svc01.us-south.eventstreams.cloud.ibm.com:9093,broker-4-j7fxtxtp5fs84205.kafka.svc01.us-south.eventstreams.cloud.ibm.com:9093' -n eda-refarch`
+2. Create optional `eventstreams-apikey` Secret, if you are using Event Streams as your Kafka broker provider
+  - Command: `kubectl create secret generic eventstreams-apikey --from-literal=binding='<replace with api key>' -n <namespace>`
+  - Example: `kubectl create secret generic eventstreams-apikey --from-literal=binding='z...12345...notanactualkey...67890...a' -n eda-refarch`
+
 ## Local deployment
 
 ### Prepare minikube or docker edge / kubernetes
@@ -58,12 +69,12 @@ For [ IBM Cloud Private deployments go to this article.](https://ibm-cloud-archi
 
 **Perform the following for the `SpringContainerMS` microservice:**
 1. Build and push Docker image
-  1. Create a Jenkins project, pointing to the remote GitHub repository for the Order Microservices, creating the necessary parameters:
+  1. Create a Jenkins project, pointing to the remote GitHub repository for the Order Microservices, creating the necessary parameters.  Refer to the individual microservice's `Jenkinsfile.NoKubernetesPlugin` for appropriate parameter values.
     - Create a String parameter named `REGISTRY` to determine a remote registry that is accessible from your cluster.
     - Create a String parameter named `REGISTRY_NAMESPACE` to describe the registry namespace to push image into.
-    - Create a String parameter named `IMAGE_NAME` which should be self-expalantory.  Default values should be correct.
-    - Create a String parameter named `CONTEXT_DIR` to determine the correct working directory to work from inside the source code, with respect to the root of the repository.  Default values should be correct.
-    - Create a String parameter named `DOCKERFILE` to determine the desired Dockerfile to use to build the Docker image.  This is determined with respect to the `CONTEXT_DIR` parameter.  Default values should be correct.
+    - Create a String parameter named `IMAGE_NAME` which should be self-expalantory.
+    - Create a String parameter named `CONTEXT_DIR` to determine the correct working directory to work from inside the source code, with respect to the root of the repository.
+    - Create a String parameter named `DOCKERFILE` to determine the desired Dockerfile to use to build the Docker image.  This is determined with respect to the `CONTEXT_DIR` parameter.
     - Create a Credentials parameter named `REGISTRY_CREDENTIALS` and assign the necessary credentials to allow Jenkins to push the image to the remote repository.
   2. Manually build the Docker image and push it to a registry that is accessible from your cluster (Docker Hub, IBM Cloud Container Registry, manually deployed Quay instance):
     - `docker build -t <private-registry>/<image-namespace>/kc-spring-container-ms:latest order-command-ms/`
