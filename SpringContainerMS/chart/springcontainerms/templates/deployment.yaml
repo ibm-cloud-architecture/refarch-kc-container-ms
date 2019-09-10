@@ -48,26 +48,26 @@ spec:
           - name: KAFKA_APIKEY
             valueFrom:
               secretKeyRef:
-                name: eventstreams-apikey
+                name: "{{ .Values.eventstreams.apikeyConfigMap }}"
                 key: binding
           - name: POSTGRESQL_CA_PEM
             valueFrom:
               secretKeyRef:
-                name: postgresql-ca-pem
+                name: "{{ .Values.postgresql.capemSecret }}"
                 key: binding
           {{end}}
           - name: POSTGRESQL_URL
             valueFrom:
               secretKeyRef:
-                name: postgresql-url
+                name: "{{ .Values.postgresql.urlSecret }}"
                 key: binding
           - name: POSTGRESQL_USER
             valueFrom:
               secretKeyRef:
-                name: postgresql-user
+                name: "{{ .Values.postgresql.userSecret }}"
                 key: binding
           - name: POSTGRESQL_PWD
             valueFrom:
               secretKeyRef:
-                name: postgresql-pwd
+                name: "{{ .Values.postgresql.passwordSecret }}"
                 key: binding
