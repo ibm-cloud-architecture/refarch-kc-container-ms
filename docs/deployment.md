@@ -10,6 +10,18 @@ Regardless of specific deployment targets (OCP, IKS, k8s), the following prerequ
 2. Create optional `eventstreams-apikey` Secret, if you are using Event Streams as your Kafka broker provider
   - Command: `kubectl create secret generic eventstreams-apikey --from-literal=binding='<replace with api key>' -n <namespace>`
   - Example: `kubectl create secret generic eventstreams-apikey --from-literal=binding='z...12345...notanactualkey...67890...a' -n eda-refarch`
+3. Create `postgresql-ca-pem` Secret
+  - Command: `kubectl create secret generic postgresql-ca-pem --from-literal=binding='<replace with postgresql ca-pem certificate>' -n <namespace>`
+  - Example: `kubectl create secret generic postgresql-ca-pem --from-literal=binding='-----BEGIN CERTIFICATE-----...MIIEczCCA1ugAw...-----END CERTIFICATE-----' -n eda-refarch`
+4. Create `postgresql-url` Secret
+  - Command: `kubectl create secret generic postgresql-url --from-literal=binding='<replace with postgresql url>' -n <namespace>`
+  - Example: `kubectl create secret generic postgresql-url --from-literal=binding='jdbc:postgresql://bd2...' -n eda-refarch`
+5. Create `postgresql-user` Secret
+  - Command: `kubectl create secret generic postgresql-user --from-literal=binding='<replace with postgresql user>' -n <namespace>`
+  - Example: `kubectl create secret generic postgresql-user --from-literal=binding='postgresqlUser' -n eda-refarch`
+6. Create `postgresql-pwd` Secret
+  - Command: `kubectl create secret generic postgresql-pwd --from-literal=binding='<replace with postgresql password>' -n <namespace>`
+  - Example: `kubectl create secret generic postgresql-pwd --from-literal=binding='postgresqlPassword' -n eda-refarch`
 
 ## Local deployment
 
@@ -88,9 +100,14 @@ For [ IBM Cloud Private deployments go to this article.](https://ibm-cloud-archi
     - `--set image.pullPolicy=Always`
     - `--set eventstreams.env=ICP`
     - `--set eventstreams.brokersConfigMap=<kafka brokers ConfigMap name>`
+    - `--set eventstreams.brokersConfigMap=<kafka brokers ConfigMap name>`
+    - `--set postgresql.capemSecret=<postgresql CA pem certificate Secret name>`
+    - `--set postgresql.urlSecret=<postgresql url Secret name>`
+    - `--set postgresql.userSecret=<postgresql user Secret name>`
+    - `--set postgresql.passwordSecret=<postgresql password Secret name>`
     - `--set serviceAccountName=<service-account-name>`
     - `--namespace <target-namespace>`
     - `--output-dir <local-template-directory>`
-  - Example: `helm template --set image.repository=rhos-quay.internal-network.local/browncompute/kc-spring-container-ms --set image.tag=latest --set image.pullSecret= --set image.pullPolicy=Always --set eventstreams.env=ICP --set eventstreams.brokersConfigMap=kafka-brokers --set serviceAccountName=kcontainer-runtime --output-dir templ --namespace eda-refarch chart/springcontainerms/`
+  - Example: `helm template --set image.repository=rhos-quay.internal-network.local/browncompute/kc-spring-container-ms --set image.tag=latest --set image.pullSecret= --set image.pullPolicy=Always --set eventstreams.env=ICP --set eventstreams.brokersConfigMap=kafka-brokers --set postgresql.capemSecret=postgresql-ca-pem --set postgresql.urlSecret=postgresql-url --set postgresql.userSecret=postgresql-user --set postgresql.passwordSecret=postgresql-pwd --set serviceAccountName=kcontainer-runtime --output-dir templ --namespace eda-refarch chart/springcontainerms/`
 4. Deploy application using `oc apply`:
   - `oc apply -f templates/springcontainerms/templates`
