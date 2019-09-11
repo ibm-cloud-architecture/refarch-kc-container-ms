@@ -15,6 +15,7 @@ service:
   name: Node
   type: NodePort
   servicePort: 8080
+  nodePort: 31900
 hpa:
   enabled: false
   minReplicas: 1
