@@ -9,5 +9,6 @@ spec:
   ports:
   - name: http
     port: {{ .Values.service.servicePort }}
+    nodePort: {{ .Values.service.nodePort }}
   selector:
     app: "{{  .Chart.Name }}-selector"
