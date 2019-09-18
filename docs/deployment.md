@@ -100,7 +100,6 @@ For [ IBM Cloud Private deployments go to this article.](https://ibm-cloud-archi
     - `--set image.pullPolicy=Always`
     - `--set eventstreams.env=ICP`
     - `--set eventstreams.brokersConfigMap=<kafka brokers ConfigMap name>`
-    - `--set eventstreams.brokersConfigMap=<kafka brokers ConfigMap name>`
     - `--set postgresql.capemSecret=<postgresql CA pem certificate Secret name>`
     - `--set postgresql.urlSecret=<postgresql url Secret name>`
     - `--set postgresql.userSecret=<postgresql user Secret name>`
