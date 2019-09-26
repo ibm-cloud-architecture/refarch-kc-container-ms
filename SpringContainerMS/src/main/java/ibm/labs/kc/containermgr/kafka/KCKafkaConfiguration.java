@@ -65,8 +65,11 @@ public class KCKafkaConfiguration {
                     "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"token\" password=\""
                             + env.get("KAFKA_APIKEY") + "\";");
             properties.put(SslConfigs.SSL_PROTOCOL_CONFIG, "TLSv1.2");
-            if (env.get("JKS_LOCATION") != null) {
-            	 properties.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, env.get("JKS_LOCATION"));
+            //if (env.get("JKS_LOCATION") != null) {
+            	 //properties.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, env.get("JKS_LOCATION"));
+            //}
+            if (env.get("TRUSTSTORE_PATH") != null) {
+            	 properties.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, env.get("TRUSTSTORE_PATH"));
             }
             if (env.get("TRUSTSTORE_PWD") != null) {
             	properties.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, env.get("TRUSTSTORE_PWD"));
@@ -80,7 +83,7 @@ public class KCKafkaConfiguration {
                 properties.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, env.get("KAFKA_BROKERS"));
             }
         }
-        
+
         return properties;
     }
 

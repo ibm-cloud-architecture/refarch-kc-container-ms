@@ -48,5 +48,9 @@ postgresql:
   passwordSecret: postgresql-pwd
 java:
   truststore:
+    enabled: false
+    pathName: /etc/ssl/certs/kafka
+    fileName: es-cert.jks
+    secretName: es-truststore-jks
     pwd: changeit
 serviceAccountName: default

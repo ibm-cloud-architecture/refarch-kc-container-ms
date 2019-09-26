@@ -33,8 +33,14 @@ spec:
             value: "{{ .Values.service.servicePort }}"
           - name: APPLICATION_NAME
             value: "{{ .Chart.Name }}"
+          {{- if .Values.java.truststore.enabled }}
+          - name: TRUSTSTORE_ENABLED
+            value: "{{ .Values.java.truststore.enabled }}"
           - name: TRUSTSTORE_PWD
             value: "{{ .Values.java.truststore.pwd }}"
+          - name: TRUSTSTORE_PATH
+            value: "{{ .Values.java.truststore.pathName }}/{{ .Values.java.truststore.fileName }}"
+          {{- end }}
           - name: JKS_LOCATION
             value: "$JAVA_HOME/jre/lib/security/cacerts"
           - name: KAFKA_ENV
@@ -71,3 +77,15 @@ spec:
               secretKeyRef:
                 name: "{{ .Values.postgresql.passwordSecret }}"
                 key: binding
+      {{- if .Values.java.truststore.enabled }}
+        volumeMounts:
+          - mountPath: "{{ .Values.java.truststore.pathName }}"
+            name: eventstreams-truststore
+            readOnly: true
+      {{- end }}
+      {{- if .Values.java.truststore.enabled }}
+      volumes:
+        - name: eventstreams-truststore
+          secret:
+            secretName: "{{ .Values.java.truststore.secretName }}"
+      {{- end }}
