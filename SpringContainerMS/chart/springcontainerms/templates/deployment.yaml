@@ -33,35 +33,35 @@ spec:
             value: "{{ .Values.service.servicePort }}"
           - name: APPLICATION_NAME
             value: "{{ .Chart.Name }}"
-          {{- if .Values.java.truststore.enabled }}
+          {{- if .Values.eventstreams.truststoreRequired }}
           - name: TRUSTSTORE_ENABLED
-            value: "{{ .Values.java.truststore.enabled }}"
+            value: "{{ .Values.eventstreams.truststoreRequired }}"
           - name: TRUSTSTORE_PWD
-            value: "{{ .Values.java.truststore.pwd }}"
+            value: "{{ .Values.eventstreams.truststorePassword }}"
           - name: TRUSTSTORE_PATH
-            value: "{{ .Values.java.truststore.pathName }}/{{ .Values.java.truststore.fileName }}"
+            value: "{{ .Values.eventstreams.truststorePath }}/{{ .Values.eventstreams.truststoreFile }}"
           {{- end }}
-          - name: JKS_LOCATION
-            value: "$JAVA_HOME/jre/lib/security/cacerts"
-          - name: KAFKA_ENV
-            value: "{{ .Values.eventstreams.env }}"
+          #- name: JKS_LOCATION
+          #  value: "$JAVA_HOME/jre/lib/security/cacerts"
           - name: KAFKA_BROKERS
             valueFrom:
               configMapKeyRef:
-                name: "{{ .Values.eventstreams.brokersConfigMap }}"
+                name: "{{ .Values.kafka.brokersConfigMap }}"
                 key: brokers
-          {{if or (eq .Values.eventstreams.env "IBMCLOUD") (eq .Values.eventstreams.env "ICP")}}
+          {{- if .Values.eventstreams.enabled }}
           - name: KAFKA_APIKEY
             valueFrom:
               secretKeyRef:
                 name: "{{ .Values.eventstreams.apikeyConfigMap }}"
                 key: binding
+          {{- end }}
+          {{- if .Values.postgresql.capemRequired }}
           - name: POSTGRESQL_CA_PEM
             valueFrom:
               secretKeyRef:
                 name: "{{ .Values.postgresql.capemSecret }}"
                 key: binding
-          {{end}}
+          {{- end }}
           - name: POSTGRESQL_URL
             valueFrom:
               secretKeyRef:
@@ -77,15 +77,15 @@ spec:
               secretKeyRef:
                 name: "{{ .Values.postgresql.passwordSecret }}"
                 key: binding
-      {{- if .Values.java.truststore.enabled }}
+      {{- if .Values.eventstreams.truststoreRequired }}
         volumeMounts:
-          - mountPath: "{{ .Values.java.truststore.pathName }}"
+          - mountPath: "{{ .Values.eventstreams.truststorePath }}"
             name: eventstreams-truststore
             readOnly: true
       {{- end }}
-      {{- if .Values.java.truststore.enabled }}
+      {{- if .Values.eventstreams.truststoreRequired }}
       volumes:
         - name: eventstreams-truststore
           secret:
-            secretName: "{{ .Values.java.truststore.secretName }}"
+            secretName: "{{ .Values.eventstreams.truststoreSecret }}"
       {{- end }}

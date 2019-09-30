@@ -80,26 +80,22 @@ For [ IBM Cloud Private deployments go to this article.](https://ibm-cloud-archi
   - NOTE: This requires `cluster-admin` level privileges.
 
 **Perform the following for the `SpringContainerMS` microservice:**
-1. Build and push Docker image
-  1. Create a Jenkins project, pointing to the remote GitHub repository for the Order Microservices, creating the necessary parameters.  Refer to the individual microservice's `Jenkinsfile.NoKubernetesPlugin` for appropriate parameter values.
-    - Create a String parameter named `REGISTRY` to determine a remote registry that is accessible from your cluster.
-    - Create a String parameter named `REGISTRY_NAMESPACE` to describe the registry namespace to push image into.
-    - Create a String parameter named `IMAGE_NAME` which should be self-expalantory.
-    - Create a String parameter named `CONTEXT_DIR` to determine the correct working directory to work from inside the source code, with respect to the root of the repository.
-    - Create a String parameter named `DOCKERFILE` to determine the desired Dockerfile to use to build the Docker image.  This is determined with respect to the `CONTEXT_DIR` parameter.
-    - Create a Credentials parameter named `REGISTRY_CREDENTIALS` and assign the necessary credentials to allow Jenkins to push the image to the remote repository.
-  2. Manually build the Docker image and push it to a registry that is accessible from your cluster (Docker Hub, IBM Cloud Container Registry, manually deployed Quay instance):
-    - `docker build -t <private-registry>/<image-namespace>/kc-spring-container-ms:latest order-command-ms/`
+1. Build and push the Docker image by one of the two options below:
+  - Create a Jenkins project, pointing to the remote GitHub repository for the `voyages-ms` microservice, and manually creating the necessary parameters.  Refer to the individual microservice's [`Jenkinsfile.NoKubernetesPlugin`](../SpringContainerMS/Jenkinsfile.NoKubernetesPlugin) for appropriate parameter values.
+  - Manually build the Docker image and push it to a registry that is accessible from your cluster (Docker Hub, IBM Cloud Container Registry, manually deployed Quay instance):
+    - `docker build -t <private-registry>/<image-namespace>/kc-spring-container-ms:latest SpringContainerMS/`
     - `docker login <private-registry>`
     - `docker push <private-registry>/<image-namespace>/kc-spring-container-ms:latest`
 3. Generate application YAMLs via `helm template`:
   - Parameters:
     - `--set image.repository=<private-registry>/<image-namespace>/<image-repository>`
-    - `--set image.tag=latest`
     - `--set image.pullSecret=<private-registry-pullsecret>` (optional or set to blank)
-    - `--set image.pullPolicy=Always`
-    - `--set eventstreams.env=ICP`
-    - `--set eventstreams.brokersConfigMap=<kafka brokers ConfigMap name>`
+    - `--set kafka.brokersConfigMap=<kafka brokers ConfigMap name>`
+    - `--set eventstreams.enabled=(true/false)` (`true` when connecting to Event Streams of any kind, `false` when connecting to Kafka directly)
+    - `--set eventstreams.apikeyConfigMap=<kafka api key Secret name>`
+    - `--set eventstreams.caPemFileRequired=(true/false)` (`true` when connecting to Event Streams via ICP4I)
+    - `--set eventstreams.caPemSecretName=<eventstreams ca pem file secret name>` (only used when connecting to Event Streams via ICP4I)
+    - `--set postgresql.capemRequired=(true/false)` (`true` when connecting to Postgresql Services requiring SSL and CA PEM-secured communication)
     - `--set postgresql.capemSecret=<postgresql CA pem certificate Secret name>`
     - `--set postgresql.urlSecret=<postgresql url Secret name>`
     - `--set postgresql.userSecret=<postgresql user Secret name>`
@@ -107,6 +103,6 @@ For [ IBM Cloud Private deployments go to this article.](https://ibm-cloud-archi
     - `--set serviceAccountName=<service-account-name>`
     - `--namespace <target-namespace>`
     - `--output-dir <local-template-directory>`
-  - Example: `helm template --set image.repository=rhos-quay.internal-network.local/browncompute/kc-spring-container-ms --set image.tag=latest --set image.pullSecret= --set image.pullPolicy=Always --set eventstreams.env=ICP --set eventstreams.brokersConfigMap=kafka-brokers --set postgresql.capemSecret=postgresql-ca-pem --set postgresql.urlSecret=postgresql-url --set postgresql.userSecret=postgresql-user --set postgresql.passwordSecret=postgresql-pwd --set serviceAccountName=kcontainer-runtime --output-dir templ --namespace eda-refarch chart/springcontainerms/`
+  - Example: `helm template --set image.repository=rhos-quay.internal-network.local/browncompute/kc-spring-container-ms --set image.pullSecret= --set eventstreams.brokersConfigMap=kafka-brokers --set postgresql.capemRequired=true --set postgresql.capemSecret=postgresql-ca-pem --set postgresql.urlSecret=postgresql-url --set postgresql.userSecret=postgresql-user --set postgresql.passwordSecret=postgresql-pwd --set serviceAccountName=kcontainer-runtime --output-dir templ --namespace eda-refarch chart/springcontainerms/`
 4. Deploy application using `oc apply`:
   - `oc apply -f templates/springcontainerms/templates`
