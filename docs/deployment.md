@@ -93,8 +93,9 @@ For [ IBM Cloud Private deployments go to this article.](https://ibm-cloud-archi
     - `--set kafka.brokersConfigMap=<kafka brokers ConfigMap name>`
     - `--set eventstreams.enabled=(true/false)` (`true` when connecting to Event Streams of any kind, `false` when connecting to Kafka directly)
     - `--set eventstreams.apikeyConfigMap=<kafka api key Secret name>`
-    - `--set eventstreams.caPemFileRequired=(true/false)` (`true` when connecting to Event Streams via ICP4I)
-    - `--set eventstreams.caPemSecretName=<eventstreams ca pem file secret name>` (only used when connecting to Event Streams via ICP4I)
+    - `--set eventstreams.truststoreRequired=(true/false)` (`true` when connecting to Event Streams via ICP4I)
+    - `--set eventstreams.truststoreSecret=<eventstreams jks file secret name>` (only used when connecting to Event Streams via ICP4I)
+    - `--set eventstreams.truststorePassword=<eventstreams jks password>` (only used when connecting to Event Streams via ICP4I)
     - `--set postgresql.capemRequired=(true/false)` (`true` when connecting to Postgresql Services requiring SSL and CA PEM-secured communication)
     - `--set postgresql.capemSecret=<postgresql CA pem certificate Secret name>`
     - `--set postgresql.urlSecret=<postgresql url Secret name>`
@@ -103,6 +104,14 @@ For [ IBM Cloud Private deployments go to this article.](https://ibm-cloud-archi
     - `--set serviceAccountName=<service-account-name>`
     - `--namespace <target-namespace>`
     - `--output-dir <local-template-directory>`
-  - Example: `helm template --set image.repository=rhos-quay.internal-network.local/browncompute/kc-spring-container-ms --set image.pullSecret= --set eventstreams.brokersConfigMap=kafka-brokers --set postgresql.capemRequired=true --set postgresql.capemSecret=postgresql-ca-pem --set postgresql.urlSecret=postgresql-url --set postgresql.userSecret=postgresql-user --set postgresql.passwordSecret=postgresql-pwd --set serviceAccountName=kcontainer-runtime --output-dir templ --namespace eda-refarch chart/springcontainerms/`
+  - Example using Event Streams via ICP4I:
+   ```shell
+   helm template --set image.repository=rhos-quay.internal-network.local/browncompute/kc-spring-container-ms --set image.pullSecret= --set kafka.brokersConfigMap=es-kafka-brokers --set eventstreams.enabled=true --set eventstreams.apikeyConfigMap=es-eventstreams-apikey --set eventstreams.truststoreRequired=true --set eventstreams.truststoreSecret=es-truststore-jks --set eventstreams.truststorePassword=password --set postgresql.capemRequired=true --set postgresql.capemSecret=postgresql-ca-pem --set postgresql.urlSecret=postgresql-url --set postgresql.userSecret=postgresql-user --set postgresql.passwordSecret=postgresql-pwd --set serviceAccountName=kcontainer-runtime --output-dir templates --namespace eda-refarch chart/springcontainerms
+   ```
+  - Example using Event Streams hosted on IBM Cloud:
+  ```shell
+  helm template --set image.repository=rhos-quay.internal-network.local/browncompute/kc-spring-container-ms --set image.pullSecret= --set kafka.brokersConfigMap=es-kafka-brokers --set eventstreams.enabled=true --set eventstreams.apikeyConfigMap=es-eventstreams-apikey --set postgresql.capemRequired=true --set postgresql.capemSecret=postgresql-ca-pem --set postgresql.urlSecret=postgresql-url --set postgresql.userSecret=postgresql-user --set postgresql.passwordSecret=postgresql-pwd --set serviceAccountName=kcontainer-runtime --output-dir templates --namespace eda-refarch chart/springcontainerms
+  ```
+
 4. Deploy application using `oc apply`:
   - `oc apply -f templates/springcontainerms/templates`
