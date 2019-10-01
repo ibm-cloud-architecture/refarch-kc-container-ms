@@ -51,36 +51,31 @@ public class KCKafkaConfiguration {
     	Map<String, Object> properties = new HashMap<String,Object>();
         Map<String, String> env = System.getenv();
 
-        if (IC_ENV.equals(env.get("KAFKA_ENV")) || ICP_ENV.equals(env.get("KAFKA_ENV"))) {
             if (env.get("KAFKA_BROKERS") == null) {
                 throw new IllegalStateException("Missing environment variable KAFKA_BROKERS");
             }
-            if (env.get("KAFKA_APIKEY") == null) {
-                throw new IllegalStateException("Missing environment variable KAFKA_APIKEY");
-            }
             properties.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, env.get("KAFKA_BROKERS"));
-            properties.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_SSL");
-            properties.put(SaslConfigs.SASL_MECHANISM, "PLAIN");
-            properties.put(SaslConfigs.SASL_JAAS_CONFIG,
-                    "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"token\" password=\""
-                            + env.get("KAFKA_APIKEY") + "\";");
-            properties.put(SslConfigs.SSL_PROTOCOL_CONFIG, "TLSv1.2");
-            if (env.get("JKS_LOCATION") != null) {
-            	 properties.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, env.get("JKS_LOCATION"));
+
+            if (env.get("KAFKA_APIKEY") != null) {
+              properties.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_SSL");
+              properties.put(SaslConfigs.SASL_MECHANISM, "PLAIN");
+              properties.put(SaslConfigs.SASL_JAAS_CONFIG,
+                      "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"token\" password=\""
+                              + env.get("KAFKA_APIKEY") + "\";");
+              properties.put(SslConfigs.SSL_PROTOCOL_CONFIG, "TLSv1.2");
+              properties.put(SslConfigs.SSL_ENABLED_PROTOCOLS_CONFIG, "TLSv1.2");
+              properties.put(SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG, "HTTPS");
+
+              //if (env.get("JKS_LOCATION") != null) {
+              	 //properties.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, env.get("JKS_LOCATION"));
+              //}
+
+              if ("true".equals(env.get("TRUSTSTORE_ENABLED"))){
+                properties.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, env.get("TRUSTSTORE_PATH"));
+                properties.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, env.get("TRUSTSTORE_PWD"));
+              }
             }
-            if (env.get("TRUSTSTORE_PWD") != null) {
-            	properties.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, env.get("TRUSTSTORE_PWD"));
-            }
-            properties.put(SslConfigs.SSL_ENABLED_PROTOCOLS_CONFIG, "TLSv1.2");
-            properties.put(SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG, "HTTPS");
-        } else {
-            if (env.get("KAFKA_BROKERS") == null) {
-                properties.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
-            } else {
-                properties.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, env.get("KAFKA_BROKERS"));
-            }
-        }
-        
+
         return properties;
     }
 

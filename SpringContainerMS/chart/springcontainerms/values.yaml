@@ -34,19 +34,20 @@ base:
 istio:
   enabled: false
   weight: 100
-eventstreams:
-  brokersConfigMap: kafka-brokers
-  apikeyConfigMap: eventstreams-apikey
-  #brokers:
-  #  - kafka01-prod02.messagehub.services.us-south.bluemix.net:9093
-  #  - kafka02-prod02.messagehub.services.us-south.bluemix.net:9093
-  env: IBMCLOUD
 postgresql:
+  capemRequired: false
   capemSecret: postgresql-ca-pem
   urlSecret: postgresql-url
   userSecret: postgresql-user
   passwordSecret: postgresql-pwd
-java:
-  truststore:
-    pwd: changeit
+kafka:
+  brokersConfigMap: kafka-brokers
+eventstreams:
+  enabled: true
+  apikeyConfigMap: eventstreams-apikey
+  truststoreRequired: false
+  truststorePath: /config/resources/security/es-ssl
+  truststoreFile: es-cert.jks
+  truststoreSecret: es-truststore-jks
+  truststorePassword: changeit
 serviceAccountName: default
