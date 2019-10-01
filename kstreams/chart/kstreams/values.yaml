@@ -3,7 +3,7 @@
 replicaCount: 1
 revisionHistoryLimit: 1
 image:
-  repository: streamer.icp:8500/greencompute/kc-containerkstreams
+  repository: us.icr.io/ibmcaseeda/kc-containerkstreams
   tag: latest
   pullPolicy: Always
   resources:
@@ -34,7 +34,17 @@ base:
 istio:
   enabled: false
   weight: 100
+generatedBindings:
+  enabled: false
+kafka:
+  brokersConfigMap: kafka-brokers
 eventstreams:
-  brokers: rolling-streams-ibm-es-kafka-broker-svc-0.streams.svc.cluster.local:9092,rolling-streams-ibm-es-kafka-broker-svc-1.streams.svc.cluster.local:9092,rolling-streams-ibm-es-kafka-broker-svc-2.streams.svc.cluster.local:9092
-  env: ICP
   jks_location: /opt/ibm/wlp/usr/servers/defaultServer/resources/security/es-cert.jks
+  enabled: true
+  apikeyConfigMap: eventstreams-apikey
+  truststoreRequired: false
+  truststorePath: /config/resources/security/es-ssl
+  truststoreFile: es-cert.jks
+  truststoreSecret: es-truststore-jks
+  truststorePassword: changeit
+serviceAccountName: default
