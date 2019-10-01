@@ -39,7 +39,6 @@ generatedBindings:
 kafka:
   brokersConfigMap: kafka-brokers
 eventstreams:
-  jks_location: /opt/ibm/wlp/usr/servers/defaultServer/resources/security/es-cert.jks
   enabled: true
   apikeyConfigMap: eventstreams-apikey
   truststoreRequired: false

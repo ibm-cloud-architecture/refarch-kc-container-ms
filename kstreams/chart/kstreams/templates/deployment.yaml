@@ -49,12 +49,6 @@ spec:
                 name: "{{ .Values.eventstreams.apikeyConfigMap }}"
                 key: binding
           {{- end }}
-
-          ##TODO
-          - name: JKS_LOCATION
-            value: "{{ .Values.eventstreams.jks_location }}"
-          ##TODO
-
           {{- if .Values.eventstreams.truststoreRequired }}
           - name: TRUSTSTORE_ENABLED
             value: "{{ .Values.eventstreams.truststoreRequired }}"
