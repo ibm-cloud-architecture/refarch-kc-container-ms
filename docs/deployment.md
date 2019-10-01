@@ -7,19 +7,33 @@ Regardless of specific deployment targets (OCP, IKS, k8s), the following prerequ
 1. Create `kafka-brokers` ConfigMap
   - Command: `kubectl create configmap kafka-brokers --from-literal=brokers='<replace with comma-separated list of brokers>' -n <namespace>`
   - Example: `kubectl create configmap kafka-brokers --from-literal=brokers='broker-3-j7fxtxtp5fs84205.kafka.svc01.us-south.eventstreams.cloud.ibm.com:9093,broker-2-j7fxtxtp5fs84205.kafka.svc01.us-south.eventstreams.cloud.ibm.com:9093,broker-1-j7fxtxtp5fs84205.kafka.svc01.us-south.eventstreams.cloud.ibm.com:9093,broker-5-j7fxtxtp5fs84205.kafka.svc01.us-south.eventstreams.cloud.ibm.com:9093,broker-0-j7fxtxtp5fs84205.kafka.svc01.us-south.eventstreams.cloud.ibm.com:9093,broker-4-j7fxtxtp5fs84205.kafka.svc01.us-south.eventstreams.cloud.ibm.com:9093' -n eda-refarch`
+
 2. Create optional `eventstreams-apikey` Secret, if you are using Event Streams as your Kafka broker provider
   - Command: `kubectl create secret generic eventstreams-apikey --from-literal=binding='<replace with api key>' -n <namespace>`
   - Example: `kubectl create secret generic eventstreams-apikey --from-literal=binding='z...12345...notanactualkey...67890...a' -n eda-refarch`
-3. Create `postgresql-ca-pem` Secret
+
+3. If you are using Event Streams as your Kafka broker provider and it is deployed via the IBM Cloud Pak for Integration (ICP4I), you will need to create an additional Secret to store the generated Certificates & Truststores.
+  - From the "Connect to this cluster" tab on the landing page of your Event Streams installation, download both the **Java truststore** and the **PEM certificate**.
+  - Create the Java truststore Secret:
+    - Command: `kubectl create secret generic <secret-name> --from-file=/path/to/downloaded/file.jks`
+    - Example: `kubectl create secret generic es-truststore-jks --from-file=/Users/osowski/Downloads/es-cert.jks`
+  - Create the PEM certificate Secret:
+    - Command: `kubectl create secret generic <secret-name> --from-file=/path/to/downloaded/file.pem`
+    - Example: `kubectl create secret generic es-ca-pemfile --from-file=/Users/osowski/Downloads/es-cert.pem`
+
+4. Create `postgresql-ca-pem` Secret
   - Command: `kubectl create secret generic postgresql-ca-pem --from-literal=binding='<replace with postgresql ca-pem certificate>' -n <namespace>`
   - Example: `kubectl create secret generic postgresql-ca-pem --from-literal=binding='-----BEGIN CERTIFICATE-----...MIIEczCCA1ugAw...-----END CERTIFICATE-----' -n eda-refarch`
-4. Create `postgresql-url` Secret
+
+5. Create `postgresql-url` Secret
   - Command: `kubectl create secret generic postgresql-url --from-literal=binding='<replace with postgresql url>' -n <namespace>`
   - Example: `kubectl create secret generic postgresql-url --from-literal=binding='jdbc:postgresql://bd2...' -n eda-refarch`
-5. Create `postgresql-user` Secret
+
+6. Create `postgresql-user` Secret
   - Command: `kubectl create secret generic postgresql-user --from-literal=binding='<replace with postgresql user>' -n <namespace>`
   - Example: `kubectl create secret generic postgresql-user --from-literal=binding='postgresqlUser' -n eda-refarch`
-6. Create `postgresql-pwd` Secret
+
+7. Create `postgresql-pwd` Secret
   - Command: `kubectl create secret generic postgresql-pwd --from-literal=binding='<replace with postgresql password>' -n <namespace>`
   - Example: `kubectl create secret generic postgresql-pwd --from-literal=binding='postgresqlPassword' -n eda-refarch`
 
