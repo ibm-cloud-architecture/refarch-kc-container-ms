@@ -1,14 +1,11 @@
-# Default values for containerkstreams.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
-
 replicaCount: 1
 revisionHistoryLimit: 1
 image:
   repository: us.icr.io/ibmcaseeda/kc-containerkstreams
   tag: latest
   pullPolicy: Always
-  pullSecret: browncompute-registry-secret
   resources:
     requests:
       cpu: 200m
@@ -19,14 +16,6 @@ service:
   servicePort: 9080
   servicePortHttps: 9443
   nodePort: 31001
-
-ingress:
-  enabled: false
-  annotations: {}
-  path: /
-  hosts:
-    - chart-example.local
-  tls: []
 hpa:
   enabled: false
   minReplicas: 1
@@ -36,17 +25,25 @@ hpa:
       targetAverageUtilization: 70
     memory:
       targetAverageUtilization: 70
-istio:
-  enabled: false
-  weight: 100
 base:
   enabled: false
   replicaCount: 1
   image:
     tag : v0.9.9
   weight: 100
+istio:
+  enabled: false
+  weight: 100
 generatedBindings:
   enabled: false
+kafka:
+  brokersConfigMap: kafka-brokers
 eventstreams:
-  brokers: kafka03-prod02.messagehub.services.us-south.bluemix.net:9093,kafka01-prod02.messagehub.services.us-south.bluemix.net:9093,kafka02-prod02.messagehub.services.us-south.bluemix.net:9093,kafka04-prod02.messagehub.services.us-south.bluemix.net:9093,kafka05-prod02.messagehub.services.us-south.bluemix.net:9093
-  env: IBMCLOUD
+  enabled: true
+  apikeyConfigMap: eventstreams-apikey
+  truststoreRequired: false
+  truststorePath: /config/resources/security/es-ssl
+  truststoreFile: es-cert.jks
+  truststoreSecret: es-truststore-jks
+  truststorePassword: changeit
+serviceAccountName: default
