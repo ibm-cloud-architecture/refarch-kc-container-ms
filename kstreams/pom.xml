@@ -101,6 +101,11 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
   				<version>2.18.1</version>
+  				<configuration>
+                  <environmentVariables>
+                     <KAFKA_BROKERS>localhost:9092</KAFKA_BROKERS>
+                  </environmentVariables>
+                </configuration>
                 <executions>
                     <execution>
                         <phase>test</phase>
@@ -190,6 +195,9 @@
                                 <liberty.test.port>${testServerHttpPort}</liberty.test.port>
                                 <war.context>${warContext}</war.context>
                             </systemPropertyVariables>
+                            <environmentVariables>
+                                <KAFKA_BROKERS>${env.KAFKA_BROKERS}</KAFKA_BROKERS>
+                            </environmentVariables>
                         </configuration>
                     </execution>
                     <execution>
