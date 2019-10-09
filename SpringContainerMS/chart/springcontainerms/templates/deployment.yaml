@@ -13,8 +13,11 @@ spec:
         app: "{{  .Chart.Name }}-selector"
         version: "current"
     spec:
+      serviceAccountName: {{ .Values.serviceAccountName }}
+      {{- if .Values.image.pullSecret }}
       imagePullSecrets:
       - name: {{ .Values.image.pullSecret }}
+      {{- end }}
       containers:
       - name: "{{  .Chart.Name  }}"
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
