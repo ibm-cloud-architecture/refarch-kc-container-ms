@@ -19,20 +19,18 @@ import ibm.labs.kc.model.events.OrderEvent;
 @Component
 public class OrderProducerImpl implements OrderProducer {
 	private static final Logger LOG = Logger.getLogger(OrderProducerImpl.class.toString());
-	
+
 	@Value("${kcsolution.orders}")
-    public  String ORDERS_TOPIC;
+  public String ORDERS_TOPIC;
 	@Value("${kafka.orders.producer.clientid}")
 	public String CLIENT_ID;
 	protected KafkaTemplate<String, String> template;
-	
-	
+
 	public OrderProducerImpl() {
 		template = createTemplate();
 	    template.setDefaultTopic(ORDERS_TOPIC);
 	}
-	
-	
+
 	@Override
 	public void emit(OrderEvent co) {
 		String value = new Gson().toJson(co);
@@ -48,7 +46,7 @@ public class OrderProducerImpl implements OrderProducer {
 	}
 
 	private KafkaTemplate<String, String> createTemplate() {
-	    Map<String, Object> senderProps = KCKafkaConfiguration.getPublisherProperties(CLIENT_ID + UUID.randomUUID().toString()); 
+	    Map<String, Object> senderProps = KCKafkaConfiguration.getPublisherProperties(CLIENT_ID + UUID.randomUUID().toString());
 	    ProducerFactory<String, String> pf =
 	              new DefaultKafkaProducerFactory<String, String>(senderProps);
 	    return new KafkaTemplate<>(pf);

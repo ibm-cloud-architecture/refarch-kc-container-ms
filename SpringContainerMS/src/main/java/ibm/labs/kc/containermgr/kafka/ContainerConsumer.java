@@ -23,7 +23,7 @@ import ibm.labs.kc.model.events.ContainerCreationEvent;
 import ibm.labs.kc.model.events.ContainerEvent;
 /*
  * Consume events from 'containers' topic. Started when the spring application context
- * is initialized. 
+ * is initialized.
  */
 @Component
 public class ContainerConsumer {
@@ -31,15 +31,15 @@ public class ContainerConsumer {
 	@Value("${kafka.containers.consumer.groupid}")
 	public String CONSUMER_GROUPID;
 	@Value("${kcsolution.containers}")
-    public String CONTAINERS_TOPIC;
+  public String CONTAINERS_TOPIC;
 	private Gson parser = new Gson();
-	
+
 	@Autowired
 	private ContainerDAO containerDAO;
-	
+
 	@Autowired
 	private CityDAO cityDAO;
-	
+
 	@EventListener
     public void onApplicationEvent(ContextRefreshedEvent event) {
 		ContainerProperties containerProps = new ContainerProperties(CONTAINERS_TOPIC);
@@ -54,14 +54,14 @@ public class ContainerConsumer {
 		        		cce.setCurrentCity(cityDAO.getCityName(cce.getLatitude(),cce.getLongitude()));
 		        		containerDAO.save(cce);
 		        	}
-		        	
+
 		        }
 		    });
 		KafkaMessageListenerContainer<Integer, String> kafkaEventListener = createSpringKafkaListener(containerProps);
 		kafkaEventListener.setBeanName(CONSUMER_GROUPID);
 		kafkaEventListener.start();
 	}
-	
+
 	private KafkaMessageListenerContainer<Integer, String> createSpringKafkaListener(
             ContainerProperties containerProps) {
 		Map<String, Object> props = KCKafkaConfiguration.getConsumerProperties(CONSUMER_GROUPID);

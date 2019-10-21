@@ -42,6 +42,8 @@ postgresql:
   passwordSecret: postgresql-pwd
 kafka:
   brokersConfigMap: kafka-brokers
+  orderTopicName: orders
+  containerTopicName: containers
 eventstreams:
   enabled: true
   apikeyConfigMap: eventstreams-apikey
