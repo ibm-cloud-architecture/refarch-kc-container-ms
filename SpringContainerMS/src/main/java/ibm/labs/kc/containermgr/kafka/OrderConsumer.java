@@ -22,7 +22,7 @@ import ibm.labs.kc.model.events.OrderEvent;
 import ibm.labs.kc.order.model.Order;
 /*
  * Consume events from 'orders' topic. Started when the spring application context
- * is initialized. 
+ * is initialized.
  */
 @Component
 public class OrderConsumer {
@@ -30,12 +30,12 @@ public class OrderConsumer {
 	@Value("${kafka.orders.consumer.groupid}")
 	public String CONSUMER_GROUPID;
 	@Value("${kcsolution.orders}")
-    public String ORDERS_TOPIC;
+  public String ORDERS_TOPIC;
 	private Gson parser = new Gson();
-	
+
 	@Autowired
 	private ContainerService containerService;
-	
+
 	@EventListener
     public void onApplicationEvent(ContextRefreshedEvent event) {
 		ContainerProperties containerProps = new ContainerProperties(ORDERS_TOPIC);
@@ -55,7 +55,7 @@ public class OrderConsumer {
 		kafkaEventListener.setBeanName(CONSUMER_GROUPID);
 		kafkaEventListener.start();
 	}
-	
+
 	private KafkaMessageListenerContainer<Integer, String> createSpringKafkaListener(
             ContainerProperties containerProps) {
 		Map<String, Object> props = KCKafkaConfiguration.getConsumerProperties(CONSUMER_GROUPID);
