@@ -106,7 +106,7 @@ public class ContainerOrderAssignment {
 	public Topology buildProcessFlow() {
 		final StreamsBuilder builder = new StreamsBuilder();
 	  
-	        KStream<String,OrderEvent>[] branches = builder.stream(KafkaStreamConfig.ORDERS_TOPIC,Consumed.with(Serdes.String(), buildOrderEventSerde()))
+	        KStream<String,OrderEvent>[] branches = builder.stream(KafkaStreamConfig.getOrderTopic(),Consumed.with(Serdes.String(), buildOrderEventSerde()))
 	        		.filter((key,orderEvent) -> {
 	        			   return (OrderEvent.TYPE_BOOKED.equals(orderEvent.getType())); 
 	        		})
@@ -125,19 +125,19 @@ public class ContainerOrderAssignment {
 	        	orderEvent.getPayload().setStatus(Order.ONHOLD_STATUS);
 	        	orderEvent.setType(OrderEvent.TYPE_REJECTED);
 	        	return orderEvent;
-	        }).through(KafkaStreamConfig.REJECTED_ORDERS_TOPIC);
+	        }).through(KafkaStreamConfig.getRejectedOrdersTopic());
 	        
 	        branches[1].mapValues(orderEvent -> {
 	        	orderEvent.getPayload().setStatus(Order.CONTAINER_ALLOCATED_STATUS);
 	        	orderEvent.setType(OrderEvent.TYPE_CONTAINER_ALLOCATED);
 	        	return orderEvent;
-	        }).through(KafkaStreamConfig.ALLOCATED_ORDERS_TOPIC)
+	        }).through(KafkaStreamConfig.getAllocatedOrdersTopic())
 	        .mapValues(orderEvent -> {
 	        		Container c = new Container();
 	        		c.setContainerID(orderEvent.getPayload().getContainerID());
 	        		c.setOrderID(orderEvent.getPayload().getOrderID());
 	        		return c;
-		        }).through(KafkaStreamConfig.CONTAINERS_TOPIC);
+		        }).through(KafkaStreamConfig.getContainerTopic());
 	        
 	        return builder.build();
 	}

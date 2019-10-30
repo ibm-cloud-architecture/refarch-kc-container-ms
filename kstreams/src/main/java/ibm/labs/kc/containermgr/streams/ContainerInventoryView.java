@@ -58,7 +58,7 @@ public class ContainerInventoryView  implements ContainerDAO {
 	public  Topology buildProcessFlow() {
 		final StreamsBuilder builder = new StreamsBuilder();
 	   
-	    builder.stream(KafkaStreamConfig.CONTAINERS_TOPIC).mapValues((containerEvent) -> {
+	    builder.stream(KafkaStreamConfig.getContainerTopic()).mapValues((containerEvent) -> {
 	    		 // the container payload is of interest to keep in table
 	   			Container c = manageContainerUpdate((String)containerEvent);
 	   			 return jsonParser.toJson(c);

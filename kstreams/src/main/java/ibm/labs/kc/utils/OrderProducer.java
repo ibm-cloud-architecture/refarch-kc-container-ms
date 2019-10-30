@@ -48,7 +48,7 @@ public class OrderProducer {
 		String key = oe.getPayload().getOrderID();
 		
 		String value = new Gson().toJson(oe);
-	    ProducerRecord<String, String> record = new ProducerRecord<>(KafkaStreamConfig.ORDERS_TOPIC, key, value);
+	    ProducerRecord<String, String> record = new ProducerRecord<>(KafkaStreamConfig.getOrderTopic(), key, value);
 
 	    Future<RecordMetadata> send = kafkaProducer.send(record);
 	    send.get(KafkaStreamConfig.PRODUCER_TIMEOUT_SECS, TimeUnit.SECONDS);
