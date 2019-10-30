@@ -45,7 +45,7 @@ kafka:
   orderTopicName: orders
   containerTopicName: containers
   rejectedOrdersTopicName: rejected-orders
-  allocatedOrders: allocated-orders
+  allocatedOrdersTopicName: allocated-orders
 eventstreams:
   enabled: true
   apikeyConfigMap: eventstreams-apikey

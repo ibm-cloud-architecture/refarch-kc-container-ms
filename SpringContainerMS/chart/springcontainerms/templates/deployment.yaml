@@ -58,7 +58,7 @@ spec:
           - name: KCSOLUTION_REJECTED_ORDERS
             value: "{{ .Values.kafka.rejectedOrdersTopicName }}"
           - name: KCSOLUTION_ALLOCATED_ORDERS
-            value: "{{ .Values.kafka.allocatedOrders }}"
+            value: "{{ .Values.kafka.allocatedOrdersTopicName }}"
           {{- if .Values.eventstreams.enabled }}
           - name: KAFKA_APIKEY
             valueFrom:
