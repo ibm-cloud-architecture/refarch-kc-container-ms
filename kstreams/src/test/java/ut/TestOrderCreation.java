@@ -168,6 +168,7 @@ public class TestOrderCreation {
 									ce2.getPayload().getContainerID(), 
 									parser.toJson(ce2));
 		testDriver.pipeInput(record);
+		testDriver.close();
 		return containers;
 	}
 	

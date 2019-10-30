@@ -29,7 +29,6 @@ public class KafkaStreamConfig {
 	private static String REJECTED_ORDERS_TOPIC;
 	private static String ALLOCATED_ORDERS_TOPIC;
 	private static String CONTAINERS_TOPIC;
-	private static String ERROR_TOPIC;
 
 	private static final String ORDERS_TOPIC_DEFAULT = "orders";
 	private static final String REJECTED_ORDERS_TOPIC_DEFAULT = "rejected-orders";
@@ -38,8 +37,6 @@ public class KafkaStreamConfig {
 
 	public static final String CONTAINERS_STORE_NAME = "queryable-container-store";
 
-	public static final String ICP_ENV = "ICP";
-	public static final String IC_ENV = "IBMCLOUD";
 	public static final long PRODUCER_TIMEOUT_SECS = 10;
 	public static final long PRODUCER_CLOSE_TIMEOUT_SEC = 10;
 	public static final String CONSUMER_GROUP_ID = "order-command-grp";
@@ -49,32 +46,38 @@ public class KafkaStreamConfig {
 
 	public static String getOrderTopic() {
 		ORDERS_TOPIC = config.getValue("order.topic", String.class);
+		if(ORDERS_TOPIC.isBlank()) {
+			ORDERS_TOPIC = ORDERS_TOPIC_DEFAULT;
+		}
 		logger.info("Get Order Topic: {}", ORDERS_TOPIC);
 		return ORDERS_TOPIC;
 	}
 
 	public static String getRejectedOrdersTopic() {
 		REJECTED_ORDERS_TOPIC = config.getValue("rejected.order.topic", String.class);
+		if(REJECTED_ORDERS_TOPIC.isBlank()) {
+			REJECTED_ORDERS_TOPIC = REJECTED_ORDERS_TOPIC_DEFAULT;
+		}
 		logger.info("Get Rejected Orders Topic: {}", REJECTED_ORDERS_TOPIC);
 		return REJECTED_ORDERS_TOPIC;
 	}
 
 	public static String getAllocatedOrdersTopic() {
 		ALLOCATED_ORDERS_TOPIC = config.getValue("allocated.order.topic", String.class);
+		if(ALLOCATED_ORDERS_TOPIC.isBlank()) {
+			ALLOCATED_ORDERS_TOPIC = ALLOCATED_ORDERS_TOPIC_DEFAULT;
+		}
 		logger.info("Get Allocated Orders Topic: {}", ALLOCATED_ORDERS_TOPIC);
 		return ALLOCATED_ORDERS_TOPIC;
 	}
 
 	public static String getContainerTopic() {
 		CONTAINERS_TOPIC = config.getValue("container.topic", String.class);
+		if(CONTAINERS_TOPIC.isBlank()) {
+			CONTAINERS_TOPIC = CONTAINERS_TOPIC_DEFAULT;
+		}
 		logger.info("Get Container Topic: {}", CONTAINERS_TOPIC);
 		return CONTAINERS_TOPIC;
-	}
-
-	public static String getErrorTopic() {
-		ERROR_TOPIC = config.getValue("error.topic", String.class);
-		logger.info("Get Error Topic: {}", ERROR_TOPIC);
-		return ERROR_TOPIC;
 	}
 
 	/**
