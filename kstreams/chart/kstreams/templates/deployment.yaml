@@ -44,6 +44,14 @@ spec:
               configMapKeyRef:
                 name: "{{ .Values.kafka.brokersConfigMap }}"
                 key: brokers
+          - name: CONTAINER_TOPIC
+            value: "{{ .Values.kafka.containerTopicName }}"
+          - name: ORDER_TOPIC
+            value: "{{ .Values.kafka.orderTopicName }}"
+          - name: REJECTED_ORDER_TOPIC
+            value: "{{ .Values.kafka.rejectedOrdersTopicName }}"
+          - name: ALLOCATED_ORDER_TOPIC
+            value: "{{ .Values.kafka.allocatedOrderTopicName }}"
           {{- if .Values.eventstreams.enabled }}
           - name: KAFKA_APIKEY
             valueFrom:

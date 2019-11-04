@@ -60,7 +60,7 @@ public class TestContainerAssignment {
 		
 		testDriver = new TopologyTestDriver(
 				inventory.buildProcessFlow(), props);
-		containerEventFactory = new ConsumerRecordFactory<String, String>(KafkaStreamConfig.CONTAINERS_TOPIC,
+		containerEventFactory = new ConsumerRecordFactory<String, String>(KafkaStreamConfig.getContainerTopic(),
 				new StringSerializer(), new StringSerializer());
 	}
 	
@@ -123,7 +123,7 @@ public class TestContainerAssignment {
 		ContainerCreation ce = buildContainerEvent();
 		Gson parser = new Gson();
 		
-		ConsumerRecord<byte[],byte[]> record = containerEventFactory.create(KafkaStreamConfig.CONTAINERS_TOPIC,ce.getContainerID(), parser.toJson(ce));
+		ConsumerRecord<byte[],byte[]> record = containerEventFactory.create(KafkaStreamConfig.getContainerTopic(),ce.getContainerID(), parser.toJson(ce));
 		List<ConsumerRecord<byte[],byte[]>> records = new ArrayList<ConsumerRecord<byte[],byte[]>>();
 		records.add(record);
 		ce = buildContainerEvent();
@@ -131,7 +131,7 @@ public class TestContainerAssignment {
 		ce.getPayload().setContainerID("c02");
 		ce.getPayload().setLatitude(31.5);
 		ce.getPayload().setLongitude(121.4);
-		record = containerEventFactory.create(KafkaStreamConfig.CONTAINERS_TOPIC,ce.getContainerID(), parser.toJson(ce));
+		record = containerEventFactory.create(KafkaStreamConfig.getContainerTopic(),ce.getContainerID(), parser.toJson(ce));
 		records.add(record);
 		return records;
 	}

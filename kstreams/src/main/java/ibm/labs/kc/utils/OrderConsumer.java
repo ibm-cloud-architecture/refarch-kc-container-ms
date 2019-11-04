@@ -12,8 +12,6 @@ import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.Topology;
 
-import ibm.labs.kc.model.events.OrderEvent;
-
 public class OrderConsumer {
 	private static OrderConsumer instance;
 	private KafkaStreams streams;

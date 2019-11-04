@@ -47,7 +47,7 @@ public class TestContainerInventory {
 		
 		testDriver = new TopologyTestDriver(
 				dao.buildProcessFlow(), props);
-		containerEventFactory = new ConsumerRecordFactory<String, String>(KafkaStreamConfig.CONTAINERS_TOPIC,
+		containerEventFactory = new ConsumerRecordFactory<String, String>(KafkaStreamConfig.getContainerTopic(),
 				new StringSerializer(), new StringSerializer());
 	}
 
@@ -83,7 +83,7 @@ public class TestContainerInventory {
 	public void shouldHaveContainerInTableFromContainerCreatedEvent() {
 		
 		ContainerCreation ce = buildContainerEvent();
-		ConsumerRecord<byte[],byte[]> record = containerEventFactory.create(KafkaStreamConfig.CONTAINERS_TOPIC,ce.getContainerID(), parser.toJson(ce));
+		ConsumerRecord<byte[],byte[]> record = containerEventFactory.create(KafkaStreamConfig.getContainerTopic(),ce.getContainerID(), parser.toJson(ce));
 		
 		testDriver.pipeInput(record);
 		
@@ -111,7 +111,7 @@ public class TestContainerInventory {
 		ContainerCreation ce = buildContainerEvent();
 		ce.setContainerID("c034");
 		ce.getPayload().setContainerID(ce.getContainerID());
-		ConsumerRecord<byte[],byte[]> record = containerEventFactory.create(KafkaStreamConfig.CONTAINERS_TOPIC,ce.getContainerID(), parser.toJson(ce));
+		ConsumerRecord<byte[],byte[]> record = containerEventFactory.create(KafkaStreamConfig.getContainerTopic(),ce.getContainerID(), parser.toJson(ce));
 		testDriver.pipeInput(record);
 		Thread.sleep(1000);
 		// 2- verify attributes
@@ -125,7 +125,7 @@ public class TestContainerInventory {
 		Assert.assertTrue("NotAssigned".equals(container.getOrderID()));
 		// 3- now inject a container assignment event 
 		ContainerAssignment ca = new ContainerAssignment("order01",container.getContainerID());
-		record = containerEventFactory.create(KafkaStreamConfig.CONTAINERS_TOPIC,ce.getContainerID(), parser.toJson(ca));
+		record = containerEventFactory.create(KafkaStreamConfig.getContainerTopic(),ce.getContainerID(), parser.toJson(ca));
 		testDriver.pipeInput(record);
 		Thread.sleep(3000);
 		// 4- Verify only the orderID attribute was modified
