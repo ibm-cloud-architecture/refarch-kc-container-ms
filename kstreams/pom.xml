@@ -119,62 +119,6 @@
                     </execution>
                 </executions>
             </plugin>
-                  <!-- Configure javametrics monitoring -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <version>3.0.1</version>
-                <executions>
-                    <execution>
-                        <id>copy-javametrics-dash</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-                          <stripVersion>true</stripVersion>
-                          <outputDirectory>${project.build.directory}/liberty/wlp/usr/servers/defaultServer/dropins</outputDirectory>
-                          <includeArtifactIds>javametrics-dash</includeArtifactIds>
-                      </configuration>
-                    </execution>
-                    <execution>
-                        <id>copy-javametrics-rest</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-                          <stripVersion>true</stripVersion>
-                          <outputDirectory>${project.build.directory}/liberty/wlp/usr/servers/defaultServer/dropins</outputDirectory>
-                          <includeArtifactIds>javametrics-rest</includeArtifactIds>
-                      </configuration>
-                    </execution>
-                    <execution>
-                        <id>copy-javametrics-agent</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-                          <stripVersion>true</stripVersion>
-                          <outputDirectory>${project.build.directory}/liberty/wlp/usr/servers/defaultServer/resources/</outputDirectory>
-                          <includeArtifactIds>javametrics-agent</includeArtifactIds>
-                      </configuration>
-                    </execution>
-                    <execution>
-                        <id>copy-javametrics-asm</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-                          <outputDirectory>${project.build.directory}/liberty/wlp/usr/servers/defaultServer/resources/asm</outputDirectory>
-                          <includeGroupIds>org.ow2.asm</includeGroupIds>
-                          <includeArtifactIds>asm,asm-commons</includeArtifactIds>
-                      </configuration>
-                    </execution>
-                </executions>
-            </plugin>
             <!-- Plugin to run functional tests -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -269,7 +213,7 @@
                         </lifecycleMappingMetadata>
                     </configuration>
                 </plugin>
-          
+
             </plugins>
         </pluginManagement>
     </build>
@@ -419,27 +363,6 @@
             <artifactId>commons-lang3</artifactId>
             <version>3.8</version>
         </dependency>
-         <dependency>
-            <groupId>com.ibm.runtimetools</groupId>
-            <artifactId>javametrics-agent</artifactId>
-            <version>[1.2,2.0)</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.ibm.runtimetools</groupId>
-            <artifactId>javametrics-dash</artifactId>
-            <version>[1.2,2.0)</version>
-            <scope>provided</scope>
-            <type>war</type>
-        </dependency>
-        <dependency>
-            <groupId>com.ibm.runtimetools</groupId>
-            <artifactId>javametrics-rest</artifactId>
-            <version>[1.2,2.0)</version>
-            <scope>provided</scope>
-            <type>war</type>
-        </dependency>
-
          <dependency>
             <groupId>com.ibm.websphere.appserver.api</groupId>
             <artifactId>com.ibm.websphere.appserver.api.jaxrs20</artifactId>
