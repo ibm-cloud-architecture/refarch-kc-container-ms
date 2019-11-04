@@ -46,7 +46,7 @@ public class KafkaStreamConfig {
 
 	public static String getOrderTopic() {
 		ORDERS_TOPIC = config.getValue("order.topic", String.class);
-		if(ORDERS_TOPIC.isBlank()) {
+		if(ORDERS_TOPIC.isEmpty()) {
 			ORDERS_TOPIC = ORDERS_TOPIC_DEFAULT;
 		}
 		logger.info("Get Order Topic: {}", ORDERS_TOPIC);
@@ -55,7 +55,7 @@ public class KafkaStreamConfig {
 
 	public static String getRejectedOrdersTopic() {
 		REJECTED_ORDERS_TOPIC = config.getValue("rejected.order.topic", String.class);
-		if(REJECTED_ORDERS_TOPIC.isBlank()) {
+		if(REJECTED_ORDERS_TOPIC.isEmpty()) {
 			REJECTED_ORDERS_TOPIC = REJECTED_ORDERS_TOPIC_DEFAULT;
 		}
 		logger.info("Get Rejected Orders Topic: {}", REJECTED_ORDERS_TOPIC);
@@ -64,7 +64,7 @@ public class KafkaStreamConfig {
 
 	public static String getAllocatedOrdersTopic() {
 		ALLOCATED_ORDERS_TOPIC = config.getValue("allocated.order.topic", String.class);
-		if(ALLOCATED_ORDERS_TOPIC.isBlank()) {
+		if(ALLOCATED_ORDERS_TOPIC.isEmpty()) {
 			ALLOCATED_ORDERS_TOPIC = ALLOCATED_ORDERS_TOPIC_DEFAULT;
 		}
 		logger.info("Get Allocated Orders Topic: {}", ALLOCATED_ORDERS_TOPIC);
@@ -73,7 +73,7 @@ public class KafkaStreamConfig {
 
 	public static String getContainerTopic() {
 		CONTAINERS_TOPIC = config.getValue("container.topic", String.class);
-		if(CONTAINERS_TOPIC.isBlank()) {
+		if(CONTAINERS_TOPIC.isEmpty()) {
 			CONTAINERS_TOPIC = CONTAINERS_TOPIC_DEFAULT;
 		}
 		logger.info("Get Container Topic: {}", CONTAINERS_TOPIC);
