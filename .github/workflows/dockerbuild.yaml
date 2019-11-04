@@ -46,5 +46,5 @@ jobs:
         DOCKER_P: ${{ secrets.DOCKER_PASSWORD }}
         WORKDIR: kstreams
         DOCKERFILE: Dockerfile.multistage
-        IMAGE_NAME: ibmcase/kcontainer-kstream
+        IMAGE_NAME: ibmcase/kcontainer-kstreams
         IMAGE_TAG: ${{ steps.bump-version-action.outputs.new_tag }}
