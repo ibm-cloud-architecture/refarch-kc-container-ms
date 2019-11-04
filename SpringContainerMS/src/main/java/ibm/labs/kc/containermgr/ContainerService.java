@@ -65,7 +65,7 @@ public class ContainerService {
 		
 	public int manageCapacity(int quantityToFill,ContainerEntity ce) {
 		int currentCapa = ce.getCapacity();
-		if ( ce.getCapacity() >= quantityToFill) {  
+		if ( ce.getCapacity() > quantityToFill) {  
 			  ce.setCapacity(currentCapa-quantityToFill);
 			  ce.setStatus(ContainerStatus.PartiallyLoaded);
 			  return 0;		 
