@@ -2,10 +2,8 @@
 FROM maven:3.3-jdk-8 as builder
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
-# this is to reuse local .m2. if not all the dependencies will be always downloaded
-#  it can be removed
-VOLUME ${HOME}/.m2:/root/.m2
-ADD . /usr/src/app
+
+COPY . /usr/src/app
 
 ARG POSTGRESQL_URL
 ARG POSTGRESQL_USER
