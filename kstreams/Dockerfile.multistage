@@ -34,7 +34,7 @@ ENV POSTGRESQL_USER=""
 ENV POSTGRESQL_PWD=""
 
 COPY --from=0 /local/gitrepo/target/liberty/wlp/usr/servers/defaultServer /config/
-COPY --from=0 /local/gitrepo/target/liberty/wlp/usr/shared/resources /config/resources/
+#COPY --from=0 /local/gitrepo/target/liberty/wlp/usr/shared/resources /config/resources/
 
 USER 1001
 
