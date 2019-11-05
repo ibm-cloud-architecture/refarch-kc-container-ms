@@ -22,12 +22,19 @@ Regardless of specific deployment targets (OCP, IKS, k8s), the following prerequ
     - Example: `kubectl create secret generic es-ca-pemfile --from-file=/Users/osowski/Downloads/es-cert.pem`
 
 4. Create `postgresql-ca-pem` Secret
-  - Command: `kubectl create secret generic postgresql-ca-pem --from-literal=binding='<replace with postgresql ca-pem certificate>' -n <namespace>`
-  - Example: `kubectl create secret generic postgresql-ca-pem --from-literal=binding='-----BEGIN CERTIFICATE-----...MIIEczCCA1ugAw...-----END CERTIFICATE-----' -n eda-refarch`
+  - Install the IBM Cloud Database CLI Plugin:
+    - `ibmcloud plugin install cloud-databases`
+  - Get the certificate using the name of the postgresql service:
+    - `ibmcloud cdb deployment-cacert <name of postgresql instance> --save`
+    - `export CERT_FILE=$(ibmcloud cdb deployment-cacert gse-eda-sandbox-db --save | grep "Certificate written to" | sed "s/Certificate written to //")`
+  - Add it into an environment variable
+    - `export POSTGRESQL_CA_PEM="$(cat CERT_FILE)"`
+  - Create the secret:
+    - `kubectl create secret generic postgresql-ca-pem --from-literal=binding="$POSTGRESQL_CA_PEM" -n browncompute`
 
 5. Create `postgresql-url` Secret
   - Command: `kubectl create secret generic postgresql-url --from-literal=binding='<replace with postgresql url>' -n <namespace>`
-  - Example: `kubectl create secret generic postgresql-url --from-literal=binding='jdbc:postgresql://bd2...' -n eda-refarch`
+  - Example: `kubectl create secret generic postgresql-url --from-literal=binding='jdbc:postgresql://58...77f.databases.appdomain.cloud:32569/ibmclouddb?sslmode=verify-full&sslfactory=org.postgresql.ssl.NonValidatingFactory' -n eda-refarch`
 
 6. Create `postgresql-user` Secret
   - Command: `kubectl create secret generic postgresql-user --from-literal=binding='<replace with postgresql user>' -n <namespace>`
