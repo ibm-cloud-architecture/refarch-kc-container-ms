@@ -7,8 +7,8 @@ fi
 
 if [[ $# -ne 5 ]];then
    echo "Usage: deployhelm env repository tag namespace brokers"
-   echo "example: deployhelm MINIKUBE ibmcase/kc-springcontainerms latest greencompute kafkabitmani:9092"
-   echo "other example:  deployhelm IBMCLOUD us.icr.io/ibmcaseeda/kc-springcontainerms latest greencompute  kafka03-prod02.messagehub.services.us-south.bluemix.net:9093,kafka01-prod02.messagehub.services.us-south.bluemix.net:9093,kafka02-prod02.messagehub.services.us-south.bluemix.net:9093,kafka04-prod02.messagehub.services.us-south.bluemix.net:9093,kafka05-prod02.messagehub.services.us-south.bluemix.net:9093"
+   echo "example: deployhelm MINIKUBE ibmcase/kcontainer-spring-container-ms latest greencompute kafkabitmani:9092"
+   echo "other example:  deployhelm IBMCLOUD us.icr.io/ibmcaseeda/kcontainer-spring-container-ms latest greencompute  kafka03-prod02.messagehub.services.us-south.bluemix.net:9093,kafka01-prod02.messagehub.services.us-south.bluemix.net:9093,kafka02-prod02.messagehub.services.us-south.bluemix.net:9093,kafka04-prod02.messagehub.services.us-south.bluemix.net:9093,kafka05-prod02.messagehub.services.us-south.bluemix.net:9093"
    exit
 fi
 
@@ -54,6 +54,3 @@ fi
 
 podId=$(kubectl get pods -n $ns | grep $msname | awk '{print $1}')
 verifyPod $podId
-
-
-

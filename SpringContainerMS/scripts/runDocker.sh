@@ -12,7 +12,7 @@ fi
 msname="springcontainerms"
 ns="greencompute"
 chart=$(ls ./chart/| grep $msname)
-kname="kc-"$chart
+kname="kcontainer-spring-container-ms"
 source ../../refarch-kc/scripts/setenv.sh $kcenv
 echo $kname
 docker rm $kname
@@ -28,4 +28,4 @@ docker run --name $kname \
   -e POSTGRESQL_USER=$POSTGRESQL_USER \
   -e POSTGRESQL_PWD=$POSTGRESQL_PWD \
   -e TRUSTSTORE_PWD=${TRUSTSTORE_PWD} \
-    -p 8080:8080 -ti  ibmcase/$kname 
+    -p 8080:8080 -ti  ibmcase/$kname

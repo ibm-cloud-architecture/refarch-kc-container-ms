@@ -3,7 +3,7 @@
 replicaCount: 1
 revisionHistoryLimit: 1
 image:
-  repository: us.icr.io/ibmcaseeda/kc-springcontainerms
+  repository: ibmcase/kcontainer-spring-container-ms
   tag: latest
   pullPolicy: Always
   pullSecret: null
