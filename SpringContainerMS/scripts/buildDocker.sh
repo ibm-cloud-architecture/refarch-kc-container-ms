@@ -15,7 +15,7 @@ fi
 msname="springcontainerms"
 ns="greencompute"
 chart=$(ls ./chart/| grep $msname)
-kname="kc-"$chart
+kname="kcontainer-spring-container-ms"
 source ../../refarch-kc/scripts/setenv.sh $kcenv
 
 if [[ $kcenv == "IBMCLOUD" ]]
@@ -29,7 +29,7 @@ then
   ev=$(ibmcloud cdb deployables-show 2>&1 | grep "not a registered command")
   if [[ -n "$ev" ]]
   then
-    ibmcloud plugin install cloud-databases   
+    ibmcloud plugin install cloud-databases
   fi
   ibmcloud cdb deployment-cacert $IC_POSTGRES_SERV > postgresql.crt
   export POSTGRESQL_CA_PEM="$(cat ./postgresql.crt)"
@@ -53,12 +53,12 @@ if [[ $kcenv == "IBMCLOUD" ]]
 then
    # image for private registry in IBM Cloud
    echo "Tag docker image for $kname to deploy on $kcenv"
-   docker tag ibmcase/$kname  us.icr.io/ibmcaseeda/$kname 
+   docker tag ibmcase/$kname  us.icr.io/ibmcaseeda/$kname
 fi
 
 if [[ $kcenv == "ICP" ]]
 then
    # image for private registry in IBM Cloud Private
    echo "Tag docker image for $kname to deploy on $kcenv"
-   docker tag ibmcase/$kname  $CLUSTER_NAME:8500/$ns/$kname 
+   docker tag ibmcase/$kname  $CLUSTER_NAME:8500/$ns/$kname
 fi

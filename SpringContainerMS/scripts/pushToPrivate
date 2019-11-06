@@ -1,1 +1,1 @@
-docker push us.icr.io/ibmcaseeda/kc-springcontainerms
+docker push us.icr.io/ibmcaseeda/kcontainer-spring-container-ms
