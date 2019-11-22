@@ -51,6 +51,11 @@ spec:
               configMapKeyRef:
                 name: "{{ .Values.kafka.brokersConfigMap }}"
                 key: brokers
+          - name: BPM_ANOMALY
+            valueFrom:
+              configMapKeyRef:
+                name: "{{ .Values.bpm.anomalyConfigMap }}"
+                key: url
           - name: KCSOLUTION_CONTAINERS
             value: "{{ .Values.kafka.containerTopicName }}"
           - name: KCSOLUTION_ORDERS
