@@ -158,27 +158,17 @@ public class ContainerConsumer {
 			if (response.getStatusCode() == HttpStatus.OK) {
 				LOG.info("Response from BPM service:");
 				LOG.info(response.getBody());
-			} else {
-				LOG.info("[ERROR] - An error ocurred reaching the BMP service:");
-				LOG.info(response.getBody());
-			}
+			} 
 		}
 		catch (HttpStatusCodeException ex) {
-			// Raw http status code e.g `404`
-			LOG.info("" + ex.getRawStatusCode());
-			// Http status code e.g. `404 NOT_FOUND`
-			LOG.info(ex.getStatusCode().toString());
+			LOG.info("[ERROR] - An error occurred calling the BPM service: " + ex.getStatusCode().toString());
 			// Get response body
 			LOG.info(ex.getResponseBodyAsString());
-			// Get http headers
-			HttpHeaders headers_response= ex.getResponseHeaders();
-			LOG.info(headers_response.get("Content-Type").toString());
-			LOG.info(headers_response.get("Server").toString());
-			// throw new Exception(ex);
 		}
 	}
 	// @Recover
     // private void recover(Exception e){
 	// 	LOG.info("[ERROR] - Recover function");
+
     // }
 }
