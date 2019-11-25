@@ -30,6 +30,7 @@ import com.google.gson.Gson;
 import ibm.labs.kc.containermgr.dao.CityDAO;
 import ibm.labs.kc.containermgr.dao.ContainerDAO;
 import ibm.labs.kc.containermgr.model.ContainerEntity;
+import ibm.labs.kc.containermgr.model.ContainerStatus;
 import ibm.labs.kc.model.events.ContainerCreationEvent;
 import ibm.labs.kc.model.events.ContainerAnomalyEvent;
 import ibm.labs.kc.model.events.ContainerEvent;
@@ -68,10 +69,10 @@ public class ContainerConsumer {
 						// Create container events
 						//---------------------------------------------
 						LOG.info("Received create new container event: " + message.value());
-		        		ContainerCreationEvent ce = parser.fromJson(message.value(), ContainerCreationEvent.class);
-		        		ContainerEntity cce = new ContainerEntity(ce.getPayload());
-		        		cce.setCurrentCity(cityDAO.getCityName(cce.getLatitude(),cce.getLongitude()));
-		        		containerDAO.save(cce);
+		        		ContainerCreationEvent cce = parser.fromJson(message.value(), ContainerCreationEvent.class);
+		        		ContainerEntity ce = new ContainerEntity(cce.getPayload());
+		        		ce.setCurrentCity(cityDAO.getCityName(ce.getLatitude(),ce.getLongitude()));
+		        		containerDAO.save(ce);
 					}
 					else if (message.value().contains(ContainerEvent.CONTAINER_ANOMALY)) {
 						// --------------------------------------------
@@ -80,30 +81,39 @@ public class ContainerConsumer {
 						LOG.info("Received new container anomaly event: " + message.value());
 						// Get the ContainerAnomalyEvent objet from the event received
 						ContainerAnomalyEvent cae = parser.fromJson(message.value(), ContainerAnomalyEvent.class);
-						// Check if we have already received an anomaly event for this containerID
-						if (maintenance.containsKey(cae.getContainerID())){
-							// Add this event to the list of anomaly events already received for this containerID
-							if (maintenance.get(cae.getContainerID()) instanceof List<?>){
-								List<ContainerAnomalyEvent> anomaly_list = maintenance.get(cae.getContainerID());
-								anomaly_list.add(cae);
-								maintenance.put(cae.getContainerID(), anomaly_list);
+						// If the container is not in maintenance mode yet
+						if (containerDAO.getById(cae.getContainerID()).getStatus() != ContainerStatus.MaintenanceNeeded){
+							// Check if we have already received an anomaly event for this containerID
+							if (maintenance.containsKey(cae.getContainerID())){
+								// Add this event to the list of anomaly events already received for this containerID
+								if (maintenance.get(cae.getContainerID()) instanceof List<?>){
+									List<ContainerAnomalyEvent> anomaly_list = maintenance.get(cae.getContainerID());
+									anomaly_list.add(cae);
+									maintenance.put(cae.getContainerID(), anomaly_list);
+								}
+								else {
+									// An error occurred when getting the list of anomaly events for this containerID
+									LOG.info("[ERROR] - There was a problem retrieving the ContainerAnomaly events for ContainerID " + cae.getContainerID());
+								}
+								// Check if we have received 3 anomaly events for this containerID
+								if (maintenance.get(cae.getContainerID()).size() == 3){
+									// Send request to BPM
+									if (callBPM(cae)){
+										ContainerEntity ce = containerDAO.getById(cae.getContainerID());
+										ce.setStatus(ContainerStatus.MaintenanceNeeded);
+										// TODO: Do we need to also update location, timestamp, etc coming from the Container Anomaly event
+										// or is this sth that only makes sense to keep updated in the order query command??
+										containerDAO.update(ce.getId(), ce);
+									}
+									maintenance.remove(cae.getContainerID());
+								}
 							}
+							// This is the first anomaly event received for this containerID
 							else {
-								// An error occurred when getting the list of anomaly events for this containerID
-								LOG.info("[ERROR] - There was a problem retrieving the ContainerAnomaly events for ContainerID " + cae.getContainerID());
+								List<ContainerAnomalyEvent> new_list = new ArrayList<ContainerAnomalyEvent>();
+								new_list.add(cae);
+								maintenance.put(cae.getContainerID(), new_list);
 							}
-							// Check if we have received 10 anomaly events for this containerID
-							if (maintenance.get(cae.getContainerID()).size() == 3){
-								// Send request to BPM
-								callBPM(cae);
-								maintenance.remove(cae.getContainerID());
-							}
-						}
-						// This is the first anomaly event received for this containerID
-						else {
-							List<ContainerAnomalyEvent> new_list = new ArrayList<ContainerAnomalyEvent>();
-							new_list.add(cae);
-							maintenance.put(cae.getContainerID(), new_list);
 						}
 					}
 					else {
@@ -112,7 +122,6 @@ public class ContainerConsumer {
 						//---------------------------------------------
 						LOG.info("[WARNING] -  Received unexpected event: " + message.value());
 					}
-
 		        }
 			});
 			
