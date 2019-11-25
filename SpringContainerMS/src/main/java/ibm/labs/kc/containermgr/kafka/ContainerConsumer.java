@@ -21,8 +21,6 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.listener.KafkaMessageListenerContainer;
 import org.springframework.kafka.listener.MessageListener;
-// import org.springframework.retry.annotation.Recover;
-// import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
@@ -81,32 +79,31 @@ public class ContainerConsumer {
 						//---------------------------------------------
 						LOG.info("Received new container anomaly event: " + message.value());
 						// Get the ContainerAnomalyEvent objet from the event received
-						ContainerAnomalyEvent ce = parser.fromJson(message.value(), ContainerAnomalyEvent.class);
+						ContainerAnomalyEvent cae = parser.fromJson(message.value(), ContainerAnomalyEvent.class);
 						// Check if we have already received an anomaly event for this containerID
-						if (maintenance.containsKey(ce.getContainerID())){
+						if (maintenance.containsKey(cae.getContainerID())){
 							// Add this event to the list of anomaly events already received for this containerID
-							if (maintenance.get(ce.getContainerID()) instanceof List<?>){
-								List<ContainerAnomalyEvent> anomaly_list = maintenance.get(ce.getContainerID());
-								anomaly_list.add(ce);
-								maintenance.put(ce.getContainerID(), anomaly_list);
+							if (maintenance.get(cae.getContainerID()) instanceof List<?>){
+								List<ContainerAnomalyEvent> anomaly_list = maintenance.get(cae.getContainerID());
+								anomaly_list.add(cae);
+								maintenance.put(cae.getContainerID(), anomaly_list);
 							}
 							else {
 								// An error occurred when getting the list of anomaly events for this containerID
-								LOG.info("[ERROR] - There was a problem retrieving the ContainerAnomaly events for ContainerID " + ce.getContainerID());
+								LOG.info("[ERROR] - There was a problem retrieving the ContainerAnomaly events for ContainerID " + cae.getContainerID());
 							}
 							// Check if we have received 10 anomaly events for this containerID
-							if (maintenance.get(ce.getContainerID()).size() == 3){
+							if (maintenance.get(cae.getContainerID()).size() == 3){
 								// Send request to BPM
-								LOG.info("BPM Call");
-								sendBPM();
-								maintenance.remove(ce.getContainerID());
+								callBPM(cae);
+								maintenance.remove(cae.getContainerID());
 							}
 						}
 						// This is the first anomaly event received for this containerID
 						else {
 							List<ContainerAnomalyEvent> new_list = new ArrayList<ContainerAnomalyEvent>();
-							new_list.add(ce);
-							maintenance.put(ce.getContainerID(), new_list);
+							new_list.add(cae);
+							maintenance.put(cae.getContainerID(), new_list);
 						}
 					}
 					else {
@@ -131,8 +128,10 @@ public class ContainerConsumer {
 		return container;
 	}
 
-	// @Retryable(maxAttempts=3,value=Exception.class)
-	private void sendBPM() {
+	private Boolean callBPM(ContainerAnomalyEvent cae) {
+		Boolean succeeded = false;
+		int max_retries = 3;
+		int retries = 0;
 		// create headers
 		HttpHeaders headers = new HttpHeaders();
 		// set `content-type` header
@@ -143,32 +142,32 @@ public class ContainerConsumer {
 		// create an instance of RestTemplate
 		RestTemplate restTemplate = new RestTemplate();
 
-		// create a map for post parameters
-		Map<String, Object> map = new HashMap<>();
-		map.put("test1", "test1");
-		map.put("test2", "test2");
+		// Get the map for post parameters
+		Map<String, String> map = cae.getBPMMessage();
 
 		// build the request
-		HttpEntity<Map<String, Object>> entity = new HttpEntity<>(map, headers);
+		HttpEntity<Map<String, String>> entity = new HttpEntity<>(map, headers);
 
-		try {
-			// send POST request
-			ResponseEntity<String> response = restTemplate.postForEntity(bpm_anomaly_url, entity, String.class);
-			//check response status code
-			if (response.getStatusCode() == HttpStatus.OK) {
-				LOG.info("Response from BPM service:");
-				LOG.info(response.getBody());
-			} 
+		while (!succeeded && retries < max_retries){
+			LOG.info("Calling the BPM service - Attempt " + retries);
+			try {
+				// send POST request
+				ResponseEntity<String> response = restTemplate.postForEntity(bpm_anomaly_url, entity, String.class);
+				//check response status code
+				if (response.getStatusCode() == HttpStatus.OK) {
+					LOG.info("BPM service called successfully. Response from the BPM service:");
+					LOG.info(response.getBody());
+					succeeded = true;
+				} 
+			}
+			catch (HttpStatusCodeException ex) {
+				LOG.info("[ERROR] - An error occurred calling the BPM service: " + ex.getStatusCode().toString());
+				// Get response body
+				LOG.info(ex.getResponseBodyAsString());
+				retries++;
+			}
 		}
-		catch (HttpStatusCodeException ex) {
-			LOG.info("[ERROR] - An error occurred calling the BPM service: " + ex.getStatusCode().toString());
-			// Get response body
-			LOG.info(ex.getResponseBodyAsString());
-		}
+		if (!succeeded) LOG.info("The BPM service could not be reached or returned an unexpected value. Please check the logs above.");
+		return succeeded;
 	}
-	// @Recover
-    // private void recover(Exception e){
-	// 	LOG.info("[ERROR] - Recover function");
-
-    // }
 }
