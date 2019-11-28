@@ -57,3 +57,7 @@ eventstreams:
 bpm:
   anomalyConfigMap: bpm-anomaly
 serviceAccountName: default
+logging:
+  root: INFO
+  consumer.config: ERROR
+  producer.config: ERROR
