@@ -1,5 +1,6 @@
 package ibm.labs.kc.containermgr.kafka;
 
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -17,6 +18,8 @@ import org.springframework.stereotype.Component;
 import com.google.gson.Gson;
 
 import ibm.labs.kc.containermgr.ContainerService;
+import ibm.labs.kc.containermgr.dao.OrderDAO;
+import ibm.labs.kc.model.container.ContainerOrder;
 import ibm.labs.kc.model.events.OrderCreationEvent;
 import ibm.labs.kc.model.events.OrderEvent;
 import ibm.labs.kc.order.model.Order;
@@ -30,11 +33,14 @@ public class OrderConsumer {
 	@Value("${kafka.orders.consumer.groupid}")
 	public String CONSUMER_GROUPID;
 	@Value("${kcsolution.orders}")
-  public String ORDERS_TOPIC;
+  	public String ORDERS_TOPIC;
 	private Gson parser = new Gson();
 
 	@Autowired
 	private ContainerService containerService;
+
+	@Autowired
+	private OrderDAO orderDAO;
 
 	@EventListener
     public void onApplicationEvent(ContextRefreshedEvent event) {
@@ -47,7 +53,18 @@ public class OrderConsumer {
 		        	if (message.value().contains(OrderEvent.TYPE_CREATED)) {
 		        		OrderCreationEvent oe = parser.fromJson(message.value(), OrderCreationEvent.class);
 		        		Order o = oe.getPayload();
-						containerService.assignContainerToOrder(o);
+						List<ContainerOrder> listOfContainers = containerService.assignContainerToOrder(o);
+						if (listOfContainers.size()>0){
+							String containers="";
+							for (ContainerOrder co : listOfContainers){
+								orderDAO.save(co);
+								containers = containers + co.getContainerID() + " ";
+							} 
+							LOG.info("These are the containers assigned for the order " + o.getOrderID() + ": " + containers);
+						}
+						else {
+							// TBD: REJECT ORDER
+						}
 		        	}
 		        }
 		    });

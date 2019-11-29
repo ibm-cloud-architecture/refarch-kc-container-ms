@@ -12,6 +12,7 @@ public class OrderEvent<T> extends AbstractEvent {
     public static final String TYPE_COMPLETED = "OrderCompleted";
     public static final String TYPE_REJECTED = "OrderRejected";
     public static final String TYPE_CANCELLED = "OrderCancelled";
+    public static final String TYPE_SPOILT = "OrderSpoilt"; // from containers ms
    
     public static final String TYPE_CONTAINER_ALLOCATED = "ContainerAllocated";
     public static final String TYPE_FULL_CONTAINER_VOYAGE_READY = "FullContainerVoyageReady";
