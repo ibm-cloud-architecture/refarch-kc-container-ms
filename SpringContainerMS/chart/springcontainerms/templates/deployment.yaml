@@ -65,11 +65,11 @@ spec:
           - name: KCSOLUTION_ALLOCATED_ORDERS
             value: "{{ .Values.kafka.allocatedOrdersTopicName }}"
           - name: LOGGING_CONTAINER_MS_ROOT
-            value: "{{ .Chart.logging.root }}"
+            value: "{{ .Values.logging.root }}"
           - name: LOGGING_CONTAINER_MS_CONSUMER_CONFIG
-            value: "{{ .Chart.logging.consumer.config }}"
+            value: "{{ .Values.logging.consumer.config }}"
           - name: LOGGING_CONTAINER_MS_PRODUCER_CONFIG
-            value: "{{ .Chart.logging.producer.config }}"
+            value: "{{ .Values.logging.producer.config }}"
           {{- if .Values.eventstreams.enabled }}
           - name: KAFKA_APIKEY
             valueFrom:
