@@ -51,6 +51,11 @@ spec:
               configMapKeyRef:
                 name: "{{ .Values.kafka.brokersConfigMap }}"
                 key: brokers
+          - name: BPM_ANOMALY
+            valueFrom:
+              configMapKeyRef:
+                name: "{{ .Values.bpm.anomalyConfigMap }}"
+                key: url
           - name: KCSOLUTION_CONTAINERS
             value: "{{ .Values.kafka.containerTopicName }}"
           - name: KCSOLUTION_ORDERS
@@ -59,6 +64,12 @@ spec:
             value: "{{ .Values.kafka.rejectedOrdersTopicName }}"
           - name: KCSOLUTION_ALLOCATED_ORDERS
             value: "{{ .Values.kafka.allocatedOrdersTopicName }}"
+          - name: LOGGING_CONTAINER_MS_ROOT
+            value: "{{ .Values.logging.root }}"
+          - name: LOGGING_CONTAINER_MS_CONSUMER_CONFIG
+            value: "{{ .Values.logging.consumer.config }}"
+          - name: LOGGING_CONTAINER_MS_PRODUCER_CONFIG
+            value: "{{ .Values.logging.producer.config }}"
           {{- if .Values.eventstreams.enabled }}
           - name: KAFKA_APIKEY
             valueFrom:

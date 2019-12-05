@@ -54,4 +54,10 @@ eventstreams:
   truststoreFile: es-cert.jks
   truststoreSecret: es-truststore-jks
   truststorePassword: changeit
+bpm:
+  anomalyConfigMap: bpm-anomaly
 serviceAccountName: default
+logging:
+  root: INFO
+  consumer.config: ERROR
+  producer.config: ERROR

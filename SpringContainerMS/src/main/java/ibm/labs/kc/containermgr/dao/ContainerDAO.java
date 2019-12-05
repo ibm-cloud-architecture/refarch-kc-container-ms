@@ -21,4 +21,6 @@ public interface ContainerDAO {
 	public ContainerEntity save(ContainerEntity e);
 	
 	public ContainerEntity update(String containerId, ContainerEntity container);
+
+	public boolean existsById(String containerId);
 }

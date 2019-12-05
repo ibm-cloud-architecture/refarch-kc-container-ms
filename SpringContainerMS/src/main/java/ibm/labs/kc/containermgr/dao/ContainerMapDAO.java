@@ -58,5 +58,9 @@ public class ContainerMapDAO implements ContainerDAO {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	@Override
+	public boolean existsById(String containerId){
+		return containers.containsKey(containerId);
+	}
 
 }

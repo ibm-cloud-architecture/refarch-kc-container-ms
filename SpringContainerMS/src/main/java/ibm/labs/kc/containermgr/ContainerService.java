@@ -2,6 +2,7 @@ package ibm.labs.kc.containermgr;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.springframework.stereotype.Component;
 
@@ -11,14 +12,20 @@ import ibm.labs.kc.containermgr.kafka.ContainerProducer;
 import ibm.labs.kc.containermgr.kafka.OrderProducer;
 import ibm.labs.kc.containermgr.model.ContainerEntity;
 import ibm.labs.kc.containermgr.model.ContainerStatus;
+import ibm.labs.kc.containermgr.rest.ResourceNotFoundException;
+import ibm.labs.kc.model.container.Container;
 import ibm.labs.kc.model.container.ContainerOrder;
 import ibm.labs.kc.model.events.ContainerAssignmentEvent;
+import ibm.labs.kc.model.events.ContainerOffMaintenanceEvent;
+import ibm.labs.kc.model.events.ContainerOnMaintenanceEvent;
 import ibm.labs.kc.model.events.OrderContainerAssignmentEvent;
+import ibm.labs.kc.model.events.OrderSpoiltEvent;
 import ibm.labs.kc.order.model.City;
 import ibm.labs.kc.order.model.Order;
 
 @Component
 public class ContainerService {
+		private static final Logger LOG = Logger.getLogger(ContainerService.class.toString());
 	
 		protected CityDAO cityDAO;
 		protected ContainerDAO containerDAO;
@@ -36,31 +43,39 @@ public class ContainerService {
 		}
 	
 		public List<ContainerOrder> assignContainerToOrder(Order order) {
-			List<ContainerOrder> l = new ArrayList<ContainerOrder>();
+			List<ContainerOrder> listOfContainersForOrder = new ArrayList<ContainerOrder>();
+			
+			// Get the city for the order's pickup address
 			City city = this.cityDAO.getCity(order.getPickupAddress().getCity());
-			if (city == null) return l;
+			if (city == null){
+				LOG.severe("[ERROR] - Pickup address for order " + order.getOrderID() + " does not belong to any known city.");
+				return listOfContainersForOrder;
+			}
 			
 			int quantityToFill = order.getQuantity();
 			// this is not the best implementation but as of now we have few containers so we can do that
 			// a static query at the database will be better to assess status
 			for (ContainerEntity ce : containerDAO.getAllContainers(city)) {				
 				// In real life we should test the type of product ... 
-				if (ce.getStatus() == null 
-					|| ContainerStatus.Empty.equals(ce.getStatus())
-					|| ContainerStatus.PartiallyLoaded.equals(ce.getStatus())
-						) {
-							quantityToFill = manageCapacity(quantityToFill,ce);
-							ContainerOrder co = new ContainerOrder(ce.getId(), order.getOrderID());
-							l.add(co);
-							containerDAO.save(ce);
-							
-							orderProducer.emit(new OrderContainerAssignmentEvent(co));
-							containerProducer.emit(new ContainerAssignmentEvent(co));
-				} // candidate container
-				if (quantityToFill <= 0) return l;
+				// Check if this container has space available
+				if (ce.getStatus() == null || ContainerStatus.Empty.equals(ce.getStatus()) || ContainerStatus.PartiallyLoaded.equals(ce.getStatus())) {
+					// Calculate available load for the container for the quantity to be sent in this order
+					quantityToFill = manageCapacity(quantityToFill,ce);
+					// Save ContainerEntity with new load
+					containerDAO.save(ce);
+					// Create new ContainerOrder to be sent to the order microservice
+					ContainerOrder co = new ContainerOrder(ce.getId(), order.getOrderID());
+					// Add the ContainerOrder to the list of containers used for this particular order
+					listOfContainersForOrder.add(co);
+					// Send the ContainerAllocated event for the order and microservice
+					orderProducer.emit(new OrderContainerAssignmentEvent(co));
+					// Send the ContainerAssignedToOrder event for order and container microservices
+					containerProducer.emit(new ContainerAssignmentEvent(co));
+				}
+				if (quantityToFill <= 0) return listOfContainersForOrder;
 			} 
 			// still quantity to assign ?
-			return l;
+			return listOfContainersForOrder;
 	}
 		
 	public int manageCapacity(int quantityToFill,ContainerEntity ce) {
@@ -74,5 +89,78 @@ public class ContainerService {
 			  ce.setStatus(ContainerStatus.Loaded);
 			  return quantityToFill - currentCapa;
 		  }
+	}
+
+	public boolean setContainerToMaintenance(Container container){
+		try {
+			LOG.info("Sending ContainerOnMaintenance event for container " + container.getContainerID());
+			ContainerEntity ce = containerDAO.getById(container.getContainerID());
+			if (ce.getStatus() != ContainerStatus.InMaintenance){
+				containerProducer.emit(new ContainerOnMaintenanceEvent(container));
+				LOG.info("ContainerOnMaintenance event successfully sent");
+			} else{
+				LOG.info("[INFO] - The container " + container.getContainerID() + " is already in maintenance.");
+			}
+			return true;
+		} catch(ResourceNotFoundException e){
+			LOG.severe("[ERROR] - The container " + container.getContainerID() + " does not exist");
+			return false;
+		}
+	}
+
+	public boolean setContainerOffMaintenance(Container container){
+		try {
+			LOG.info("Sending ContainerOffMaintenance event for container " + container.getContainerID());
+			ContainerEntity ce = containerDAO.getById(container.getContainerID());
+			if (ce.getStatus() == ContainerStatus.InMaintenance){
+				containerProducer.emit(new ContainerOffMaintenanceEvent(container));
+				LOG.info("ContainerOffMaintenance event successfully sent");
+				return true;
+			} else{
+				LOG.severe("[ERROR] - The container " + container.getContainerID() + " is not in maintenance.");
+				return false;
+			}
+		} catch(ResourceNotFoundException e){
+			LOG.severe("[ERROR] - The container " + container.getContainerID() + " does not exist");
+			return false;
+		}
+	}
+	
+    public ContainerEntity createContainer(Container container) {
+		LOG.info("Creating a new container from: " + container.toString());
+		if (!containerDAO.existsById(container.getContainerID())) {
+			ContainerEntity ce = new ContainerEntity(container);
+			ce.setCurrentCity(cityDAO.getCityName(ce.getLatitude(),ce.getLongitude()));
+			LOG.info("Container successfully created.");
+			return containerDAO.save(ce);
+		} else {
+			LOG.severe("[ERROR] - There is already an existing container with id " + container.getContainerID() + ". A new container will not be created");
+			return null;
+		}
+	}
+	
+	public ContainerEntity updateContainer(Container container){
+		LOG.info("Updating container from: " + container.toString());
+		try {
+			ContainerEntity ce = new ContainerEntity(container);
+			ce.setCurrentCity(cityDAO.getCityName(ce.getLatitude(),ce.getLongitude()));
+			ContainerEntity ce_returned = containerDAO.update(ce.getId(), ce);
+			LOG.info("Container successfully updated.");
+			return ce_returned;
+		} catch (ResourceNotFoundException e){
+			LOG.severe("[ERROR] - " + e.getMessage());
+			return null;
+		}	
+	}
+
+	public void spoilOrders(String containerId, List<String> orders){
+		LOG.info("Creating OrderSpoilt events for containerId: " + containerId);
+		if (orders != null){
+			for (String order: orders){
+				ContainerOrder containerOrder = new ContainerOrder(containerId, order);
+				orderProducer.emit(new OrderSpoiltEvent(containerOrder));
+				LOG.info("OrderSpoilt event sent for containerId: " + containerId + " and orderId: " + order);
+			}
+		} else LOG.severe("[ERROR] - Order list for containerId: " + containerId + " is null");
 	}
 }

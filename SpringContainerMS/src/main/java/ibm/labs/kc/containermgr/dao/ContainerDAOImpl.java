@@ -73,4 +73,9 @@ public class ContainerDAOImpl implements ContainerDAO {
 					  return containerRepository.save(container);
 		}).orElseThrow(() -> new ResourceNotFoundException("Container not found with id " + containerId));
 	}
+
+	@Override
+	public boolean existsById(String containerId){
+		return containerRepository.existsById(containerId);
+	}
 }
