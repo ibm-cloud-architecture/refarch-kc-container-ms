@@ -71,14 +71,7 @@ public class ContainerConsumer {
     public void onApplicationEvent(ContextRefreshedEvent event) {
 		ContainerProperties containerProps = new ContainerProperties(CONTAINERS_TOPIC);
 		LOG.info(" Topic:" + CONTAINERS_TOPIC + " " + CONSUMER_GROUPID);
-		LOG.info("****************************************************************************************************************");
-		LOG.info("****************************************************************************************************************");
-		LOG.info("****************************************************************************************************************");
-		LOG.info("****************************************************************************************************************");
-		LOG.info("****************************************************************************************************************");
-		LOG.info("****************************************************************************************************************");
-		LOG.info("****************************************************************************************************************");
-		LOG.info(bpm_anomaly_url);
+		LOG.info("BPM service for container anomaly events at: " + bpm_anomaly_url);
 		containerProps.setMessageListener(new MessageListener<Integer, String>() {
 		        @Override
 		        public void onMessage(ConsumerRecord<Integer, String> message) {
