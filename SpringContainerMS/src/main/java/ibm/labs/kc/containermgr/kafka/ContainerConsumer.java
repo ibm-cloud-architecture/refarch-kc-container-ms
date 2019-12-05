@@ -52,7 +52,7 @@ public class ContainerConsumer {
 	private Gson parser = new Gson();
 
 	@Value("${kcsolution.bpm_anomaly}")
-	String bpm_anomaly_url;
+	private String bpm_anomaly_url;
 	private HashMap<String, List<ContainerAnomalyEvent>> maintenance = new HashMap<String, List<ContainerAnomalyEvent>>();
 
 	@Autowired
@@ -71,6 +71,14 @@ public class ContainerConsumer {
     public void onApplicationEvent(ContextRefreshedEvent event) {
 		ContainerProperties containerProps = new ContainerProperties(CONTAINERS_TOPIC);
 		LOG.info(" Topic:" + CONTAINERS_TOPIC + " " + CONSUMER_GROUPID);
+		LOG.info("****************************************************************************************************************");
+		LOG.info("****************************************************************************************************************");
+		LOG.info("****************************************************************************************************************");
+		LOG.info("****************************************************************************************************************");
+		LOG.info("****************************************************************************************************************");
+		LOG.info("****************************************************************************************************************");
+		LOG.info("****************************************************************************************************************");
+		LOG.info(bpm_anomaly_url);
 		containerProps.setMessageListener(new MessageListener<Integer, String>() {
 		        @Override
 		        public void onMessage(ConsumerRecord<Integer, String> message) {
