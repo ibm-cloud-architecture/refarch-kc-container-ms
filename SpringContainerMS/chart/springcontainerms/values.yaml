@@ -16,6 +16,18 @@ service:
   type: NodePort
   servicePort: 8080
   nodePort: 31900
+ingress:
+  enabled: false
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  path: /
+  hosts:
+    - chart-example.local
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
 hpa:
   enabled: false
   minReplicas: 1
@@ -59,5 +71,7 @@ bpm:
 serviceAccountName: default
 logging:
   root: INFO
-  consumer.config: ERROR
-  producer.config: ERROR
+  consumer:
+    config: ERROR
+  producer:
+    config: ERROR
