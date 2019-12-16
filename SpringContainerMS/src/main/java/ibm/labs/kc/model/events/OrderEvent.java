@@ -19,6 +19,8 @@ public class OrderEvent<T> extends AbstractEvent {
     public static final String TYPE_CONTAINER_ON_SHIP = "ContainerOnShip";
     public static final String TYPE_CONTAINER_OFF_SHIP = "ContainerOffShip";
     public static final String TYPE_CONTAINER_DELIVERED = "ContainerDelivered";
+    public static final String TYPE_CONTAINER_NOT_FOUND = "ContainerNotFound";
+    public static final String TYPE_VOYAGE_NOT_FOUND = "VoyageNotFound"; // from voyage ms
      
     protected String orderID;
     protected T payload;
