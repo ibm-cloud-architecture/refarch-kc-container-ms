@@ -20,8 +20,10 @@ import com.google.gson.Gson;
 import ibm.labs.kc.containermgr.ContainerService;
 import ibm.labs.kc.containermgr.dao.OrderDAO;
 import ibm.labs.kc.model.container.ContainerOrder;
+import ibm.labs.kc.model.events.ContainerNotFoundEvent;
 import ibm.labs.kc.model.events.OrderCreationEvent;
 import ibm.labs.kc.model.events.OrderEvent;
+import ibm.labs.kc.model.events.OrderRejectedEvent;
 import ibm.labs.kc.order.model.Order;
 /*
  * Consume events from 'orders' topic. Started when the spring application context
@@ -42,6 +44,9 @@ public class OrderConsumer {
 	@Autowired
 	private OrderDAO orderDAO;
 
+	@Autowired
+	private OrderProducer orderProducer;
+
 	@EventListener
     public void onApplicationEvent(ContextRefreshedEvent event) {
 		ContainerProperties containerProps = new ContainerProperties(ORDERS_TOPIC);
@@ -52,20 +57,31 @@ public class OrderConsumer {
 		        	LOG.info("Received order event:" + message.value());
 		        	if (message.value().contains(OrderEvent.TYPE_CREATED)) {
 		        		OrderCreationEvent oe = parser.fromJson(message.value(), OrderCreationEvent.class);
-		        		Order o = oe.getPayload();
-						List<ContainerOrder> listOfContainers = containerService.assignContainerToOrder(o);
+		        		Order order = oe.getPayload();
+						List<ContainerOrder> listOfContainers = containerService.assignContainerToOrder(order);
 						if (listOfContainers.size()>0){
 							String containers="";
 							for (ContainerOrder co : listOfContainers){
 								orderDAO.save(co);
 								containers = containers + co.getContainerID() + " ";
 							} 
-							LOG.info("These are the containers assigned for the order " + o.getOrderID() + ": " + containers);
+							LOG.info("These are the containers assigned for the order " + order.getOrderID() + ": " + containers);
 						}
 						else {
-							// TBD: REJECT ORDER
+							LOG.info("There is no container available for orderID: " + order.getOrderID() + ". The order will be rejected.");
+							orderProducer.emit(new ContainerNotFoundEvent(order.getOrderID(), "A container could not be found for this order"));
 						}
-		        	}
+					}
+					if (message.value().contains(OrderEvent.TYPE_REJECTED)) {
+						OrderRejectedEvent orderRejected = parser.fromJson(message.value(), OrderRejectedEvent.class);
+						Order order = orderRejected.getPayload();
+						// Only unassign container from order when a container has previously been assigned.
+						// Otherwise, this OrderReject event comes from this very microservice where a container had not been assigned.
+						if (order.getContainerID() != null && order.getContainerID() != "" && !order.getContainerID().isEmpty()){
+							if (!containerService.unAssignContainerToOrder(order))
+								LOG.severe("[ERROR] - An error occurred unassigning container: " + order.getContainerID() + " from order: " + order.getOrderID());
+						}
+					}
 		        }
 		    });
 		KafkaMessageListenerContainer<Integer, String> kafkaEventListener = createSpringKafkaListener(containerProps);
@@ -73,13 +89,10 @@ public class OrderConsumer {
 		kafkaEventListener.start();
 	}
 
-	private KafkaMessageListenerContainer<Integer, String> createSpringKafkaListener(
-            ContainerProperties containerProps) {
+	private KafkaMessageListenerContainer<Integer, String> createSpringKafkaListener(ContainerProperties containerProps) {
 		Map<String, Object> props = KCKafkaConfiguration.getConsumerProperties(CONSUMER_GROUPID);
-		DefaultKafkaConsumerFactory<Integer, String> cf =
-			                new DefaultKafkaConsumerFactory<Integer, String>(props);
-		KafkaMessageListenerContainer<Integer, String> container =
-			                new KafkaMessageListenerContainer<>(cf, containerProps);
-			return container;
+		DefaultKafkaConsumerFactory<Integer, String> cf = new DefaultKafkaConsumerFactory<Integer, String>(props);
+		KafkaMessageListenerContainer<Integer, String> container = new KafkaMessageListenerContainer<>(cf, containerProps);
+		return container;
 	}
 }
