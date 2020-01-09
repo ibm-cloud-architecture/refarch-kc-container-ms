@@ -23,4 +23,8 @@ public interface ContainerDAO {
 	public ContainerEntity update(String containerId, ContainerEntity container);
 
 	public boolean existsById(String containerId);
+
+	public boolean deleteContainer(ContainerEntity e);
+
+	public boolean deleteAllContainers();
 }

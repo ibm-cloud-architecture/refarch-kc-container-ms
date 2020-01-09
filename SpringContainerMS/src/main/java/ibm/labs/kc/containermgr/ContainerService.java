@@ -169,6 +169,28 @@ public class ContainerService {
 		}	
 	}
 
+	public boolean deleteContainer(ContainerEntity ce){
+		boolean results = false;
+		try{
+			results = containerDAO.deleteContainer(ce);
+		} catch (Exception e){
+			LOG.severe("[ERROR] - " + e.getMessage());
+			results = false;
+		}
+		return results;
+	}
+
+	public boolean deleteAllContainers(){
+		boolean results = false;
+		try{
+			results = containerDAO.deleteAllContainers();
+		} catch (Exception e){
+			LOG.severe("[ERROR] - " + e.getMessage());
+			results = false;
+		}
+		return results;
+	}
+
 	public void spoilOrders(String containerId, List<String> orders){
 		LOG.info("Creating OrderSpoilt events for containerId: " + containerId);
 		if (orders != null){
