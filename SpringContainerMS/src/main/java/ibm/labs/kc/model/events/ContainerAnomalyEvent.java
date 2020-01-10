@@ -40,23 +40,23 @@ public class ContainerAnomalyEvent extends ContainerEvent<ContainerSpec>  {
 
 	public Map<String,String> getBPMMessage(){
 		Map<String, String> map = new HashMap<>();
-		map.put("ContainerID",this.getContainerID());
+		map.put("containerID",this.getContainerID());
 		map.put("temperature",String.valueOf(this.getPayload().getTemperature()));
-		map.put("target_temperature",String.valueOf(this.getPayload().getTarget_temperature()));
-		map.put("ambiant_temperature",String.valueOf(this.getPayload().getAmbiant_temperature()));
+		map.put("targetTemperature",String.valueOf(this.getPayload().getTarget_temperature()));
+		map.put("ambientTemperature",String.valueOf(this.getPayload().getAmbiant_temperature()));
 		map.put("kilowatts",String.valueOf(this.getPayload().getKilowatts()));
-		map.put("content_type",String.valueOf(this.getPayload().getContent_type()));
-		map.put("oxygen_level",String.valueOf(this.getPayload().getOxygen_level()));
-		map.put("nitrogen_level",String.valueOf(this.getPayload().getNitrogen_level()));
-		map.put("carbon_dioxide_level",String.valueOf(this.getPayload().getCarbon_dioxide_level()));
-		map.put("humidity_level",String.valueOf(this.getPayload().getHumidity_level()));
+		map.put("contentType",String.valueOf(this.getPayload().getContent_type()));
+		map.put("oxygenLevel",String.valueOf(this.getPayload().getOxygen_level()));
+		map.put("nitrogenLevel",String.valueOf(this.getPayload().getNitrogen_level()));
+		map.put("carbonDioxideLevel",String.valueOf(this.getPayload().getCarbon_dioxide_level()));
+		map.put("humidityLevel",String.valueOf(this.getPayload().getHumidity_level()));
 		map.put("latitude",String.valueOf(this.getPayload().getLatitude()));
 		map.put("longitude",String.valueOf(this.getPayload().getLongitude()));
-		map.put("vent_1",String.valueOf(this.getPayload().isVent_1()));
-		map.put("vent_2",String.valueOf(this.getPayload().isVent_2()));
-		map.put("vent_3",String.valueOf(this.getPayload().isVent_3()));
-		map.put("time_door_open",String.valueOf(this.getPayload().getTime_door_open()));
-		map.put("defrost_cycle",String.valueOf(this.getPayload().getDefrost_cycle()));
+		map.put("vent1",String.valueOf(this.getPayload().isVent_1()));
+		map.put("vent2",String.valueOf(this.getPayload().isVent_2()));
+		map.put("vent3",String.valueOf(this.getPayload().isVent_3()));
+		map.put("timeDoorOpen",String.valueOf(this.getPayload().getTime_door_open()));
+		map.put("defrostCycle",String.valueOf(this.getPayload().getDefrost_cycle()));
 		return map;
 	}
 }
