@@ -91,4 +91,21 @@ public class ContainerController {
         }
         return ResponseEntity.badRequest().body("[ERROR] - A problem occurred deleting container "+containerId + ".");
     }
+    
+    @GetMapping("/bpm/enable")
+    public ResponseEntity<String> enableBPM() {
+        containerService.enableBPM();
+        return ResponseEntity.status(HttpStatus.OK).body("BPM service enabled = " + containerService.statusBPM());
+    }
+    
+    @GetMapping("/bpm/disable")
+    public ResponseEntity<String> disableBPM() {
+        containerService.disableBPM();
+        return ResponseEntity.status(HttpStatus.OK).body("BPM service enabled = " + containerService.statusBPM());
+    }
+    
+    @GetMapping("/bpm/status")
+    public ResponseEntity<String> statusBPM() {
+    	return ResponseEntity.status(HttpStatus.OK).body("BPM service enabled = " + containerService.statusBPM());
+    }
 }

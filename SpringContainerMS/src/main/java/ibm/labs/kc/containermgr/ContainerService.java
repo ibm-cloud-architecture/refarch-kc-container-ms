@@ -201,4 +201,20 @@ public class ContainerService {
 			}
 		} else LOG.severe("[ERROR] - Order list for containerId: " + containerId + " is null");
 	}
+
+	public void enableBPM(){
+		LOG.info("Enabling BPM...");
+		System.setProperty("bpm_anomaly_service_enabled","true");
+		LOG.info("BPM Status: " + System.getProperty("bpm_anomaly_service_enabled"));
+	}
+	
+	public void disableBPM(){
+		LOG.info("Disabling BPM...");
+		System.setProperty("bpm_anomaly_service_enabled","false");
+		LOG.info("BPM Status: " + System.getProperty("bpm_anomaly_service_enabled"));
+	}
+	
+	public String statusBPM(){
+		return System.getProperty("bpm_anomaly_service_enabled");
+	}
 }
