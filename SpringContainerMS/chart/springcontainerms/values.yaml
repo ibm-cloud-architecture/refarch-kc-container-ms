@@ -61,6 +61,7 @@ eventstreams:
   truststorePassword: changeit
 bpm:
   anomalyConfigMap: bpm-anomaly
+  anomalySecret: bpm-anomaly
 serviceAccountName: default
 logging:
   root: INFO

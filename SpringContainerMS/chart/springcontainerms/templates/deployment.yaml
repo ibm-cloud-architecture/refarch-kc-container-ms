@@ -57,6 +57,24 @@ spec:
                 name: "{{ .Values.bpm.anomalyConfigMap }}"
                 key: url
                 optional: true
+          - name: BPM_ANOMALY_LOGIN
+            valueFrom:
+              configMapKeyRef:
+                name: "{{ .Values.bpm.anomalyConfigMap }}"
+                key: login
+                optional: true
+          - name: BPM_ANOMALY_USER
+            valueFrom:
+              secretKeyRef:
+                name: "{{ .Values.bpm.anomalySecret }}"
+                key: user
+                optional: true
+          - name: BPM_ANOMALY_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: "{{ .Values.bpm.anomalySecret }}"
+                key: password
+                optional: true
           - name: KCSOLUTION_CONTAINERS
             value: "{{ .Values.kafka.containerTopicName }}"
           - name: KCSOLUTION_ORDERS
