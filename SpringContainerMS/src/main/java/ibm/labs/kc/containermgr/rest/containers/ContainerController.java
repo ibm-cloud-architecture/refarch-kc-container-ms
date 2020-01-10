@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -70,5 +71,24 @@ public class ContainerController {
             return ResponseEntity.status(HttpStatus.OK).body("Container " + container.getContainerID() + " out from maintenance.");
         }
         return ResponseEntity.badRequest().body("[ERROR] - A problem ocurred getting container " + container.getContainerID() + " out from maintenance.");
+    }
+
+    @DeleteMapping("/containers/all")
+    //Delete all existing containers from the backend
+    public ResponseEntity<String> deleteAllContainers(){
+        if(containerService.deleteAllContainers()){
+            return ResponseEntity.status(HttpStatus.OK).body("All containers deleted successfully.");
+        }
+        return ResponseEntity.badRequest().body("[ERROR] - A problem occurred deleting all containers.");
+    }
+
+    @DeleteMapping("/containers/{containerId}")
+    //Delete all existing containers from the backend
+    public ResponseEntity<String> deleteContainerById(@PathVariable String containerId){
+        ContainerEntity ce = containerDao.getById(containerId);
+        if(containerService.deleteContainer(ce)){
+            return ResponseEntity.status(HttpStatus.OK).body("Container "+ containerId + " deleted successfully.");
+        }
+        return ResponseEntity.badRequest().body("[ERROR] - A problem occurred deleting container "+containerId + ".");
     }
 }

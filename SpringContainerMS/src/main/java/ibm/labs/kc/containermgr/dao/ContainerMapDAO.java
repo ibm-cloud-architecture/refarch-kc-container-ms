@@ -63,4 +63,30 @@ public class ContainerMapDAO implements ContainerDAO {
 		return containers.containsKey(containerId);
 	}
 
+	@Override
+	public boolean deleteContainer(ContainerEntity ce) {
+		boolean results = false;
+		try{
+			ContainerEntity ce_removed = containers.remove(ce.getId());
+			results = ce.equals(ce_removed);
+		} catch (Exception e){
+			results = false;
+			e.printStackTrace(System.out);
+		}
+		return results;
+	}
+
+	@Override
+	public boolean deleteAllContainers() {
+		boolean results = false;
+		try{
+			containers.clear();
+		 	results = true;
+		} catch (Exception e){
+			results = false;
+			e.printStackTrace(System.out);
+		}
+		return results;
+	}
+
 }

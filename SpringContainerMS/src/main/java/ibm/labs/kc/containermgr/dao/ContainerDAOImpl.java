@@ -78,4 +78,30 @@ public class ContainerDAOImpl implements ContainerDAO {
 	public boolean existsById(String containerId){
 		return containerRepository.existsById(containerId);
 	}
+
+	@Override
+	public boolean deleteContainer(ContainerEntity ce) {
+		boolean results = false;
+		try{
+			containerRepository.deleteById(ce.getId());
+			results = true;
+		} catch (Exception e){
+			e.printStackTrace(System.out);
+			results = false;
+		}
+		return results;
+	}
+
+	@Override
+	public boolean deleteAllContainers() {
+		boolean results = false;
+		try{
+			containerRepository.deleteAll();
+			results = true;
+		} catch (Exception e){
+			e.printStackTrace(System.out);
+			results = false;
+		}
+		return results;
+	}
 }
