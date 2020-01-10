@@ -22,10 +22,12 @@ import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.listener.KafkaMessageListenerContainer;
 import org.springframework.kafka.listener.MessageListener;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import ibm.labs.kc.containermgr.ContainerService;
 import ibm.labs.kc.containermgr.dao.CityDAO;
@@ -51,8 +53,15 @@ public class ContainerConsumer {
   	public String CONTAINERS_TOPIC;
 	private Gson parser = new Gson();
 
-	@Value("${kcsolution.bpm_anomaly}")
-	private String bpm_anomaly_url;
+	@Value("${kcsolution.bpm_anomaly_service_login}")
+	private String bpm_anomaly_service_login;
+	@Value("${kcsolution.bpm_anomaly_service}")
+	private String bpm_anomaly_service;
+	@Value("${kcsolution.bpm_anomaly_service_user}")
+	private String bpm_anomaly_service_user;
+	@Value("${kcsolution.bpm_anomaly_service_password}")
+	private String bpm_anomaly_service_password;
+
 	private HashMap<String, List<ContainerAnomalyEvent>> maintenance = new HashMap<String, List<ContainerAnomalyEvent>>();
 
 	@Autowired
@@ -71,7 +80,9 @@ public class ContainerConsumer {
     public void onApplicationEvent(ContextRefreshedEvent event) {
 		ContainerProperties containerProps = new ContainerProperties(CONTAINERS_TOPIC);
 		LOG.info(" Topic:" + CONTAINERS_TOPIC + " " + CONSUMER_GROUPID);
-		LOG.info("BPM service for container anomaly events at: " + bpm_anomaly_url);
+		System.setProperty("bpm_anomaly_service_enabled","true");
+		LOG.info("BPM service enabled: " + System.getProperty("bpm_anomaly_service_enabled"));
+		LOG.info("BPM service for container anomaly events at: " + bpm_anomaly_service);
 		containerProps.setMessageListener(new MessageListener<Integer, String>() {
 		        @Override
 		        public void onMessage(ConsumerRecord<Integer, String> message) {
@@ -121,7 +132,7 @@ public class ContainerConsumer {
 											containerDAO.update(ce.getId(), ce);
 											// Spoil Orders
 											if (orderDAO.getOrders(cae.getContainerID()) != null) containerService.spoilOrders(cae.getContainerID(), orderDAO.getOrders(cae.getContainerID()));
-											else LOG.severe("[ERROR] - There is no order which container " + cae.getContainerID() + " is allocated for");
+											else LOG.info("There is no order which container " + cae.getContainerID() + " is allocated for. Therefore, there is no need to send any oderSpoilt event.");
 										}
 										maintenance.remove(cae.getContainerID());
 									}
@@ -205,42 +216,118 @@ public class ContainerConsumer {
 	}
 
 	private Boolean callBPM(ContainerAnomalyEvent cae) {
+		// Check if we need to call BPM or it has been disabled (for integration tests for instance)
+		if (System.getProperty("bpm_anomaly_service_enabled") == "false"){
+			LOG.info("BPM service disabled. Bypassing it.");
+			return true;
+		}
+
 		Boolean succeeded = false;
 		int max_retries = 3;
 		int retries = 0;
-		// create headers
-		HttpHeaders headers = new HttpHeaders();
-		// set `content-type` header
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		// set `accept` header
-		headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-
-		// create an instance of RestTemplate
-		RestTemplate restTemplate = new RestTemplate();
-
-		// Get the map for post parameters
-		Map<String, String> map = cae.getBPMMessage();
-
-		// build the request
-		HttpEntity<Map<String, String>> entity = new HttpEntity<>(map, headers);
+		String bpm_token = "";
 
 		while (!succeeded && retries < max_retries){
 			LOG.info("Calling the BPM service - Attempt " + retries);
+			
+			if (bpm_token == ""){
+
+				// create headers
+				HttpHeaders headers_login = new HttpHeaders();
+				// Set the basicAuth header parameter
+				headers_login.setBasicAuth(bpm_anomaly_service_user,bpm_anomaly_service_password);
+				// set `content-type` header
+				headers_login.setContentType(MediaType.APPLICATION_JSON);
+				// set `accept` header
+				headers_login.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+
+				// create an instance of RestTemplate
+				RestTemplate restTemplate_login = new RestTemplate();
+
+				// Create the map for post parameters
+				Map<String, String> data_login = new HashMap<>();
+				data_login.put("refresh_groups", "true");
+				data_login.put("requested_lifetime", "7200");
+
+				// build the request
+				HttpEntity<Map<String, String>> entity_login = new HttpEntity<>(data_login, headers_login);
+
+				try {
+					// send POST request
+					ResponseEntity<String> response_login = restTemplate_login.postForEntity(bpm_anomaly_service_login, entity_login, String.class);
+					//check response status code
+					if (response_login.getStatusCode() == HttpStatus.CREATED) {
+						LOG.info("BPM service login successful.");
+						JsonObject jsonObject = new JsonParser().parse(response_login.getBody()).getAsJsonObject();
+						bpm_token = jsonObject.get("csrf_token").getAsString();
+					}
+					else{
+						LOG.severe("[ERROR] - An error occurred authenticating with the BPM service. Please, make sure your credentials are valid.");
+						LOG.severe(response_login.toString());
+						retries++;
+						continue;
+					}
+				}
+				catch (Exception ex) {
+					LOG.severe("[ERROR] - An error occurred calling the BPM service authentication endpoint");
+					LOG.severe(ex.toString());
+					retries++;
+					continue;
+				}
+			}
+			
+			// -------------------------------- CREATE MAINTENANCE REQUEST ---------------------------------
+			// create headers
+			HttpHeaders headers_maintenance = new HttpHeaders();
+			// Set the basicAuth header parameter
+			headers_maintenance.setBasicAuth(bpm_anomaly_service_user,bpm_anomaly_service_password);
+			// set the BPMCSRFToken header
+			headers_maintenance.set("BPMCSRFToken",bpm_token);
+			// set `content-type` header
+			headers_maintenance.setContentType(MediaType.APPLICATION_JSON);
+			// set `accept` header
+			headers_maintenance.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+
+			// create an instance of RestTemplate
+			RestTemplate restTemplate_maintenance = new RestTemplate();
+
+			// Create the map for post parameters
+			Map<String, List> data = new HashMap<>();
+			List<Map> input_list = new ArrayList<Map>();
+			Map<String, Object> input_map = new HashMap<>();
+			input_map.put("name", "incomingWarning");
+			input_map.put("data", cae.getBPMMessage());
+			input_list.add(input_map);
+			data.put("input", input_list);
+
+			// build the request
+			HttpEntity<Map<String, List>> entity_maintenance = new HttpEntity<>(data, headers_maintenance);
+			// ---------------------------------------------------------------------------------------------
+
 			try {
 				// send POST request
-				ResponseEntity<String> response = restTemplate.postForEntity(bpm_anomaly_url, entity, String.class);
+				ResponseEntity<String> response_maintenance = restTemplate_maintenance.postForEntity(bpm_anomaly_service, entity_maintenance, String.class);
 				//check response status code
-				if (response.getStatusCode() == HttpStatus.OK) {
-					LOG.info("BPM service called successfully. Response from the BPM service:");
-					LOG.info(response.getBody());
-					succeeded = true;
-				} 
+				if (response_maintenance.getStatusCode() == HttpStatus.CREATED) {
+					LOG.info("BPM service call successful.");
+					succeeded=true;
+				}
+				else{
+					LOG.severe("[ERROR] - An error occurred calling the BPM service container anomaly process.");
+					LOG.info("Response to string: " + response_maintenance.toString());
+					LOG.info("Response body: " + response_maintenance.getBody());
+					LOG.info("Response code: " + response_maintenance.getStatusCodeValue());
+					retries++;
+					continue;
+				}
 			}
-			catch (HttpStatusCodeException ex) {
-				LOG.severe("[ERROR] - An error occurred calling the BPM service: " + ex.getStatusCode().toString());
-				// Get response body
-				LOG.severe(ex.getResponseBodyAsString());
+			catch (HttpClientErrorException ex) {
+				LOG.severe("[ERROR] - An error occurred calling the BPM service");
+				LOG.severe("Exception to String: " + ex.toString());
+				LOG.severe("Exception message: " + ex.getMessage());
+				LOG.severe("Exception body: " + ex.getResponseBodyAsString());
 				retries++;
+				continue;
 			}
 		}
 		if (!succeeded) LOG.severe("[ERROR] - The BPM service could not be reached or returned an unexpected value. Please check the logs above.");
