@@ -84,17 +84,17 @@ spec:
             valueFrom:
               configMapKeyRef:
                 name: "{{ .Values.kafka.topicsConfigMap }}"
-                key: ordersTopicName
+                key: ordersTopic
           - name: KCSOLUTION_REJECTED_ORDERS
             valueFrom:
               configMapKeyRef:
                 name: "{{ .Values.kafka.topicsConfigMap }}"
-                key: rejectedOrdersTopicName
+                key: rejectedOrdersTopic
           - name: KCSOLUTION_ALLOCATED_ORDERS
             valueFrom:
               configMapKeyRef:
                 name: "{{ .Values.kafka.topicsConfigMap }}"
-                key: allocatedOrdersTopicName
+                key: allocatedOrdersTopic
           - name: LOGGING_CONTAINER_MS_ROOT
             value: "{{ .Values.logging.root }}"
           - name: LOGGING_CONTAINER_MS_CONSUMER_CONFIG
