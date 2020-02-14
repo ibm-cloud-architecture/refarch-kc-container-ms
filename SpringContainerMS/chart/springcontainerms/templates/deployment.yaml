@@ -76,13 +76,25 @@ spec:
                 key: password
                 optional: true
           - name: KCSOLUTION_CONTAINERS
-            value: "{{ .Values.kafka.containerTopicName }}"
+            valueFrom:
+              configMapKeyRef:
+                name: "{{ .Values.kafka.topicsConfigMap }}"
+                key: containersTopic
           - name: KCSOLUTION_ORDERS
-            value: "{{ .Values.kafka.orderTopicName }}"
+            valueFrom:
+              configMapKeyRef:
+                name: "{{ .Values.kafka.topicsConfigMap }}"
+                key: ordersTopicName
           - name: KCSOLUTION_REJECTED_ORDERS
-            value: "{{ .Values.kafka.rejectedOrdersTopicName }}"
+            valueFrom:
+              configMapKeyRef:
+                name: "{{ .Values.kafka.topicsConfigMap }}"
+                key: rejectedOrdersTopicName
           - name: KCSOLUTION_ALLOCATED_ORDERS
-            value: "{{ .Values.kafka.allocatedOrdersTopicName }}"
+            valueFrom:
+              configMapKeyRef:
+                name: "{{ .Values.kafka.topicsConfigMap }}"
+                key: allocatedOrdersTopicName
           - name: LOGGING_CONTAINER_MS_ROOT
             value: "{{ .Values.logging.root }}"
           - name: LOGGING_CONTAINER_MS_CONSUMER_CONFIG
