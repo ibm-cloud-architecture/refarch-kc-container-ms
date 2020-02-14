@@ -53,17 +53,17 @@ spec:
             valueFrom:
               configMapKeyRef:
                 name: "{{ .Values.kafka.topicsConfigMap }}"
-                key: ordersTopicName
+                key: ordersTopic
           - name: REJECTED_ORDER_TOPIC
             valueFrom:
               configMapKeyRef:
                 name: "{{ .Values.kafka.topicsConfigMap }}"
-                key: rejectedOrdersTopicName
+                key: rejectedOrdersTopic
           - name: ALLOCATED_ORDER_TOPIC
             valueFrom:
               configMapKeyRef:
                 name: "{{ .Values.kafka.topicsConfigMap }}"
-                key: allocatedOrdersTopicName
+                key: allocatedOrdersTopic
           {{- if .Values.eventstreams.enabled }}
           - name: KAFKA_APIKEY
             valueFrom:
