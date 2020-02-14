@@ -39,10 +39,7 @@ generatedBindings:
   enabled: false
 kafka:
   brokersConfigMap: kafka-brokers
-  orderTopicName: orders
-  containerTopicName: containers
-  rejectedOrdersTopicName: rejected-orders
-  allocatedOrdersTopicName: allocated-orders
+  topicsConfigMap: kafka-topics
 eventstreams:
   enabled: true
   apikeyConfigMap: eventstreams-apikey

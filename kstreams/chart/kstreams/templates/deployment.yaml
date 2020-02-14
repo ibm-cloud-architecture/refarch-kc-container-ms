@@ -45,13 +45,25 @@ spec:
                 name: "{{ .Values.kafka.brokersConfigMap }}"
                 key: brokers
           - name: CONTAINER_TOPIC
-            value: "{{ .Values.kafka.containerTopicName }}"
+            valueFrom:
+              configMapKeyRef:
+                name: "{{ .Values.kafka.topicsConfigMap }}"
+                key: containersTopic
           - name: ORDER_TOPIC
-            value: "{{ .Values.kafka.orderTopicName }}"
+            valueFrom:
+              configMapKeyRef:
+                name: "{{ .Values.kafka.topicsConfigMap }}"
+                key: ordersTopicName
           - name: REJECTED_ORDER_TOPIC
-            value: "{{ .Values.kafka.rejectedOrdersTopicName }}"
+            valueFrom:
+              configMapKeyRef:
+                name: "{{ .Values.kafka.topicsConfigMap }}"
+                key: rejectedOrdersTopicName
           - name: ALLOCATED_ORDER_TOPIC
-            value: "{{ .Values.kafka.allocatedOrderTopicName }}"
+            valueFrom:
+              configMapKeyRef:
+                name: "{{ .Values.kafka.topicsConfigMap }}"
+                key: allocatedOrdersTopicName
           {{- if .Values.eventstreams.enabled }}
           - name: KAFKA_APIKEY
             valueFrom:
