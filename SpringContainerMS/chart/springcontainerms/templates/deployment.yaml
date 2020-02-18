@@ -51,6 +51,12 @@ spec:
               configMapKeyRef:
                 name: "{{ .Values.kafka.brokersConfigMap }}"
                 key: brokers
+          - name: ANOMALY_THRESHOLD
+            valueFrom:
+              configMapKeyRef:
+                name: "{{ .Values.bpm.anomalyConfigMap }}"
+                key: anomalyThreshold
+                optional: true
           - name: BPM_ANOMALY
             valueFrom:
               configMapKeyRef:

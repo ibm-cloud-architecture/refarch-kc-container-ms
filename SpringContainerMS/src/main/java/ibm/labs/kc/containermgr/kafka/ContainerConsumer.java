@@ -53,6 +53,8 @@ public class ContainerConsumer {
   	public String CONTAINERS_TOPIC;
 	private Gson parser = new Gson();
 
+	@Value("${kcsolution.container_anomaly_threshold:3}")
+	private int container_anomaly_threshold;
 	@Value("${kcsolution.bpm_anomaly_service_login}")
 	private String bpm_anomaly_service_login;
 	@Value("${kcsolution.bpm_anomaly_service}")
@@ -124,7 +126,7 @@ public class ContainerConsumer {
 										LOG.severe("[ERROR] - There was a problem retrieving the ContainerAnomaly events for ContainerID " + cae.getContainerID());
 									}
 									// Check if we have received 3 anomaly events for this containerID
-									if (maintenance.get(cae.getContainerID()).size() == 3){
+									if (maintenance.get(cae.getContainerID()).size() == container_anomaly_threshold){
 										// Send request to BPM
 										if (callBPM(cae)){
 											ContainerEntity ce = containerDAO.getById(cae.getContainerID());
