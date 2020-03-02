@@ -34,7 +34,6 @@ jobs:
         validate_secret DOCKER_PASSWORD ${DOCKER_PASSWORD}
         validate_secret DOCKER_REPOSITORY ${DOCKER_REPOSITORY}
         validate_secret DOCKER_IMAGE_SPRING ${DOCKER_IMAGE_SPRING}
-        validate_secret DOCKER_IMAGE_KSTREAMS ${DOCKER_IMAGE_KSTREAMS}
 
         if [ "${FAIL}" = "true" ]; then
           exit 1
@@ -44,7 +43,6 @@ jobs:
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         DOCKER_REPOSITORY: ${{ secrets.DOCKER_REPOSITORY }}
         DOCKER_IMAGE_SPRING: ${{ secrets.DOCKER_IMAGE_SPRING }}
-        DOCKER_IMAGE_KSTREAMS: ${{ secrets.DOCKER_IMAGE_KSTREAMS }}
   build-docker-images:
     needs:
       validate-docker-secrets
@@ -74,24 +72,6 @@ jobs:
         DOCKER_I: ${{ secrets.DOCKER_IMAGE_SPRING }}
         WORKDIR: SpringContainerMS
         DOCKERFILE: Dockerfile
-        IMAGE_TAG: ${{ steps.bump-version-action.outputs.new_tag }}
-    - name: Build the kstreams docker image
-      id: build-kstreams-image
-      run: |
-        echo "Build and push the docker image"
-        IMAGE_NAME="${DOCKER_R}/${DOCKER_I}"
-        docker login -u ${DOCKER_U} -p ${DOCKER_P}
-        cd ${WORKDIR}
-        docker build . --file ${DOCKERFILE} --tag ${IMAGE_NAME}:${IMAGE_TAG}
-        docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${IMAGE_NAME}:latest
-        docker push ${IMAGE_NAME}
-      env:
-        DOCKER_U: ${{ secrets.DOCKER_USERNAME }}
-        DOCKER_P: ${{ secrets.DOCKER_PASSWORD }}
-        DOCKER_R: ${{ secrets.DOCKER_REPOSITORY }}
-        DOCKER_I: ${{ secrets.DOCKER_IMAGE_KSTREAMS }}
-        WORKDIR: kstreams
-        DOCKERFILE: Dockerfile.multistage
         IMAGE_TAG: ${{ steps.bump-version-action.outputs.new_tag }}
     - name: Webhook to GitOps repo
       id: gitops-repo-webhook
