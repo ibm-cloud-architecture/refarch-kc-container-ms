@@ -5,11 +5,7 @@
 
 ## TL;TR
 
-The goal of this Container management service is to support the reefer containers inventory management and to process all the events related to the container entity. We are proposing three different implementations:
-
-* Springboot and spring kafka template and spring postgreSQL. [See this note.](./springboot/README.md)
-* Python with Flask and Confluent Kafka API for Python. See [this description.](./flask/README.md) - NOT DONE YET
-* Microprofile 2.2 using Kafka Streams. See [this description.](./kstreams/README.md) - NOT DONE YET
+The goal of this Container management service is to support the reefer containers inventory management and to process all the events related to the container entity.
 
 We are demonstrating in this project how to transform an event storming analysis to an event-driven microservice implementation and how to address ['reversibility'](https://www.ibm.com/cloud/garage/practices/run/reversibility-in-the-cloud) between the different platform. The service is packaged via dockerfile, and helm release is defined to deploy to kubernetes.
 
@@ -69,12 +65,13 @@ While on the running Java microservice, you will could see the service consumed 
 INFO 47 --- [ingConsumer-C-1] c.l.k.c.kafka.ContainerConsumer          : Received container event: {"containerID": "itg-C02", "timestamp": 1559868907, "type": "ContainerAdded", "payload": {"containerID": "itg-C02", "type": "Reefer", "status": "Empty", "latitude": 37.8, "longitude": -122.25, "capacity": 110, "brand": "itg-brand"}}
 ```
 
-It is also possible to start the python environment with Docker, and then inside the container bash session use python as you will do in your own computer. 
+It is also possible to start the python environment with Docker, and then inside the container bash session use python as you will do in your own computer.
+
 ```shell
 source ../../scripts/setenv.sh
 docker run -e KAFKA_BROKERS=$KAFKA_BROKERS -v $(pwd):/home --network=docker_default -ti ibmcase/python bash
 root@2f049cb7b4f2:/ cd home
-root@2f049cb7b4f2:/ python ProduceContainerCreatedEvent.py 
+root@2f049cb7b4f2:/ python ProduceContainerCreatedEvent.py
 ```
 
 ## Assign container to order
