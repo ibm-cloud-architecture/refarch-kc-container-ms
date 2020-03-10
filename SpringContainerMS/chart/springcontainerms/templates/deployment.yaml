@@ -69,6 +69,12 @@ spec:
                 name: "{{ .Values.bpm.anomalyConfigMap }}"
                 key: login
                 optional: true
+          - name: BPM_EXPIRATION
+            valueFrom:
+              secretKeyRef:
+                name: "{{ .Values.bpm.anomalyConfigMap }}"
+                key: expiration
+                optional: true
           - name: BPM_ANOMALY_USER
             valueFrom:
               secretKeyRef:
@@ -80,12 +86,6 @@ spec:
               secretKeyRef:
                 name: "{{ .Values.bpm.anomalySecret }}"
                 key: password
-                optional: true
-          - name: BPM_EXPIRATION
-            valueFrom:
-              secretKeyRef:
-                name: "{{ .Values.bpm.anomalySecret }}"
-                key: expiration
                 optional: true
           - name: KCSOLUTION_CONTAINERS_TOPIC
             valueFrom:
