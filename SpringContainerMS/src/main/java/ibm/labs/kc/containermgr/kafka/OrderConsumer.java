@@ -34,7 +34,7 @@ public class OrderConsumer {
 	private static final Logger LOG = Logger.getLogger(OrderConsumer.class.toString());
 	@Value("${kafka.orders.consumer.groupid}")
 	public String CONSUMER_GROUPID;
-	@Value("${kcsolution.orders}")
+	@Value("${kcsolution.orders.topic}")
   	public String ORDERS_TOPIC;
 	private Gson parser = new Gson();
 

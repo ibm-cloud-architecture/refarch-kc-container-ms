@@ -19,6 +19,8 @@ public class ContainerEvent<T> extends AbstractEvent {
 	public static final String CONTAINER_ON_TRUCK = "ContainerOnTruck";
 	public static final String CONTAINER_OFF_TRUCK = "ContainerOffTruck";
 	public static final String CONTAINER_ANOMALY= "ContainerAnomaly";
+	public static final String CONTAINER_ANOMALY_RETRY= "ContainerAnomalyRetry";
+	public static final String CONTAINER_ANOMALY_DEAD= "ContainerAnomalyDead";
 	
 	protected String containerID;
 	protected T payload;
