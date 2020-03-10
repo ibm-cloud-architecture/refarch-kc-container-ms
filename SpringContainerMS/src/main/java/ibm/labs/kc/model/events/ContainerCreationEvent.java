@@ -7,6 +7,7 @@ public class ContainerCreationEvent extends ContainerEvent<Container>  {
 	
 	public ContainerCreationEvent() {
 		super();
+		this.setType(ContainerEvent.CONTAINER_ADDED);
 	}
 	
 	public ContainerCreationEvent(String type,String version, Container p) {

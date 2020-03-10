@@ -7,6 +7,7 @@ public class ContainerOffMaintenanceEvent extends ContainerEvent<Container>  {
 	
 	public ContainerOffMaintenanceEvent() {
 		super();
+		this.setType(ContainerEvent.CONTAINER_OFF_MAINTENANCE);
 	}
 	
 	public ContainerOffMaintenanceEvent(Container p) {

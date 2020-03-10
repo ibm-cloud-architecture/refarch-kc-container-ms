@@ -81,26 +81,32 @@ spec:
                 name: "{{ .Values.bpm.anomalySecret }}"
                 key: password
                 optional: true
-          - name: KCSOLUTION_CONTAINERS
+          - name: BPM_EXPIRATION
+            valueFrom:
+              secretKeyRef:
+                name: "{{ .Values.bpm.anomalySecret }}"
+                key: expiration
+                optional: true
+          - name: KCSOLUTION_CONTAINERS_TOPIC
             valueFrom:
               configMapKeyRef:
                 name: "{{ .Values.kafka.topicsConfigMap }}"
                 key: containersTopic
-          - name: KCSOLUTION_ORDERS
+          - name: KCSOLUTION_ORDERS_TOPIC
             valueFrom:
               configMapKeyRef:
                 name: "{{ .Values.kafka.topicsConfigMap }}"
                 key: ordersTopic
-          - name: KCSOLUTION_REJECTED_ORDERS
+          - name: KCSOLUTION_CONTAINER_ANOMALY_RETRY_TOPIC
             valueFrom:
               configMapKeyRef:
                 name: "{{ .Values.kafka.topicsConfigMap }}"
-                key: rejectedOrdersTopic
-          - name: KCSOLUTION_ALLOCATED_ORDERS
+                key: containerAnomalyRetryTopic
+          - name: KCSOLUTION_CONTAINER_ANOMALY_DEAD_TOPIC
             valueFrom:
               configMapKeyRef:
                 name: "{{ .Values.kafka.topicsConfigMap }}"
-                key: allocatedOrdersTopic
+                key: containerAnomalyDeadTopic
           - name: LOGGING_CONTAINER_MS_ROOT
             value: "{{ .Values.logging.root }}"
           - name: LOGGING_CONTAINER_MS_CONSUMER_CONFIG

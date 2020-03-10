@@ -20,7 +20,7 @@ import ibm.labs.kc.model.events.OrderEvent;
 public class OrderProducerImpl implements OrderProducer {
 	private static final Logger LOG = Logger.getLogger(OrderProducerImpl.class.toString());
 
-	@Value("${kcsolution.orders}")
+	@Value("${kcsolution.orders.topic}")
   public String ORDERS_TOPIC;
 	@Value("${kafka.orders.producer.clientid}")
 	public String CLIENT_ID;

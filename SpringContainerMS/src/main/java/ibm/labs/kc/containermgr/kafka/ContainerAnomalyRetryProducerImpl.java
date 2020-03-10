@@ -9,7 +9,6 @@ import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.config.SaslConfigs;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Primary;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
@@ -20,27 +19,28 @@ import com.google.gson.Gson;
 import ibm.labs.kc.model.events.ContainerEvent;
 
 @Component
-@Primary
-public class ContainerProducerImpl implements ContainerProducer {
-	private static final Logger LOG = Logger.getLogger(ContainerProducerImpl.class.toString());
+public class ContainerAnomalyRetryProducerImpl implements ContainerProducer {
+	private static final Logger LOG = Logger.getLogger(ContainerAnomalyRetryProducerImpl.class.toString());
 
-	@Value("${kcsolution.containers.topic}")
-  public String CONTAINERS_TOPIC;
-	@Value("${kafka.containers.producer.clientid}")
+	@Value("${kcsolution.container.anomaly.retry.topic}")
+  	public String CONTAINER_ANOMALY_RETRY_TOPIC;
+	
+	@Value("${kafka.container.anomaly.retry.producer.clientid}")
 	public String CLIENT_ID;
+	
 	protected KafkaTemplate<String, String> template;
 
-	public ContainerProducerImpl() {
+	public ContainerAnomalyRetryProducerImpl() {
 		template = createTemplate();
-	    template.setDefaultTopic(CONTAINERS_TOPIC);
+	    template.setDefaultTopic(CONTAINER_ANOMALY_RETRY_TOPIC);
 	}
 
 	@Override
 	public void emit(ContainerEvent co) {
 		String value = new Gson().toJson(co);
-		LOG.info("Emit container event:" + value);
+		LOG.info("Emit container anomaly retry event:" + value);
 		String key = co.getContainerID();
-		ProducerRecord<String,String> record = new ProducerRecord<String,String>(CONTAINERS_TOPIC,key,value);
+		ProducerRecord<String,String> record = new ProducerRecord<String,String>(CONTAINER_ANOMALY_RETRY_TOPIC,key,value);
 		template.send(record);
 	}
 

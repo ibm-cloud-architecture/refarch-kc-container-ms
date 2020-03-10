@@ -10,14 +10,15 @@ public class ContainerAnomalyEvent extends ContainerEvent<ContainerSpec>  {
 	
 	public ContainerAnomalyEvent() {
 		super();
+		this.setType(ContainerEvent.CONTAINER_ANOMALY);
 	}
 	
-	public ContainerAnomalyEvent(String type,String version, ContainerSpec p) {
+	public ContainerAnomalyEvent(String type,String version, ContainerEvent<ContainerSpec> ce) {
 		super();
-		//this.setContainerID(p.getContainerID());
+		this.setContainerID(ce.getContainerID());
 		this.setType(ContainerEvent.CONTAINER_ANOMALY);
 		this.setVersion(version);
-		this.payload = p;
+		this.setPayload(ce.getPayload());
 	}
 
 	public void setPayload(ContainerSpec payload) {
