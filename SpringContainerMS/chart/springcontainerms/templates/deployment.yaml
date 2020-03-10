@@ -71,7 +71,7 @@ spec:
                 optional: true
           - name: BPM_EXPIRATION
             valueFrom:
-              secretKeyRef:
+              configMapKeyRef:
                 name: "{{ .Values.bpm.anomalyConfigMap }}"
                 key: expiration
                 optional: true
