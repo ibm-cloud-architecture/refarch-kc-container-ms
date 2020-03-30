@@ -12,7 +12,7 @@
  * and limitations under the License.
  */
 
-package application;
+package ibm.labs.kc.containermgr;
 
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
