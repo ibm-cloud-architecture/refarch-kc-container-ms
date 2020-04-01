@@ -1,2 +1,2 @@
-project-name: appsody-proj
+project-name: spring-container-ms
 stack: docker.io/appsody/java-spring-boot2:0.3

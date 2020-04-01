@@ -2,33 +2,43 @@ apiVersion: appsody.dev/v1beta1
 kind: AppsodyApplication
 metadata:
   annotations:
+    commit.image.appsody.dev/author: David Jones <djones6@uk.ibm.com>
+    commit.image.appsody.dev/committer: David Jones <djones6@uk.ibm.com>
+    commit.image.appsody.dev/contextDir: C:\dev\refarch\appsody-container-ms
+    commit.image.appsody.dev/date: Wed Apr 1 11:40:52 2020 +0100
+    commit.image.appsody.dev/message: Initial app-deploy.yaml from appsody build
     commit.stack.appsody.dev/author: Richard Trotter <45805781+richard-trotter@users.noreply.github.com>
     commit.stack.appsody.dev/committer: GitHub <noreply@github.com>
     commit.stack.appsody.dev/contextDir: /incubator/java-spring-boot2
-    commit.stack.appsody.dev/date: Tue Mar 10 13:17:55 2020 +0000
-    commit.stack.appsody.dev/message: bump spring boot stack spring version to 2.1.12
-      (#703)
-    image.opencontainers.org/created: "2020-04-01T11:27:47+01:00"
+    commit.stack.appsody.dev/date: Wed Apr 1 11:16:02 2020 +0100
+    commit.stack.appsody.dev/message: retract spring boot stack image packages update
+      (#707)
+    image.opencontainers.org/created: "2020-04-01T15:23:38+01:00"
+    image.opencontainers.org/documentation: https://github.com/djones6/refarch-kc-container-ms
+    image.opencontainers.org/revision: 9a41eb56f363da8ccc0d6feb9200c7953065d4a2
+    image.opencontainers.org/source: |
+      https://github.com/djones6/refarch-kc-container-ms/tree/appsodyify2
+    image.opencontainers.org/url: https://github.com/djones6/refarch-kc-container-ms
     stack.appsody.dev/authors: Erin Schnabel <schnabel@us.ibm.com>, Ozzy Osborne <ozzy@ca.ibm.com>,
       Richard Trotter <rtrotter@us.ibm.com>, Harish Yayi <hyayi@us.ibm.com>
     stack.appsody.dev/configured: docker.io/appsody/java-spring-boot2:0.3
-    stack.appsody.dev/created: "2020-03-10T13:21:33Z"
+    stack.appsody.dev/created: "2020-04-01T10:19:47Z"
     stack.appsody.dev/description: Spring Boot using OpenJ9 and Maven
     stack.appsody.dev/documentation: https://github.com/appsody/stacks/tree/master/incubator/java-spring-boot2/README.md
     stack.appsody.dev/licenses: Apache-2.0
-    stack.appsody.dev/revision: aac511c610d9450a39de68ae22f891f063522ed9
+    stack.appsody.dev/revision: e5dd8297764280e82a94b3b2b6ead25c877b43b2
     stack.appsody.dev/source: https://github.com/appsody/stacks/tree/master/incubator/java-spring-boot2/image
-    stack.appsody.dev/tag: docker.io/appsody/java-spring-boot2:0.3.27
+    stack.appsody.dev/tag: docker.io/appsody/java-spring-boot2:0.3.28
     stack.appsody.dev/title: Spring Boot®
     stack.appsody.dev/url: https://github.com/appsody/stacks/tree/master/incubator/java-spring-boot2
   creationTimestamp: null
   labels:
-    image.opencontainers.org/title: appsody-proj
+    image.opencontainers.org/title: spring-container-ms
     stack.appsody.dev/id: java-spring-boot2
-    stack.appsody.dev/version: 0.3.27
+    stack.appsody.dev/version: 0.3.28
   name: appsody-proj
 spec:
-  applicationImage: dev.local/appsody-proj
+  applicationImage: dev.local/spring-container-ms
   createKnativeService: false
   expose: true
   livenessProbe:
