@@ -1,0 +1,4 @@
+resources:
+  - ./app-deploy.yaml
+
+namespace: shipping

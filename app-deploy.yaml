@@ -5,17 +5,17 @@ metadata:
     commit.image.appsody.dev/author: David Jones <djones6@uk.ibm.com>
     commit.image.appsody.dev/committer: David Jones <djones6@uk.ibm.com>
     commit.image.appsody.dev/contextDir: C:\dev\refarch\appsody-container-ms
-    commit.image.appsody.dev/date: Thu Apr 2 14:58:15 2020 +0100
-    commit.image.appsody.dev/message: Correct postgres secret names
+    commit.image.appsody.dev/date: Thu Apr 2 16:53:01 2020 +0100
+    commit.image.appsody.dev/message: Remove unnecessary env vars
     commit.stack.appsody.dev/author: Richard Trotter <45805781+richard-trotter@users.noreply.github.com>
     commit.stack.appsody.dev/committer: GitHub <noreply@github.com>
     commit.stack.appsody.dev/contextDir: /incubator/java-spring-boot2
     commit.stack.appsody.dev/date: Wed Apr 1 11:16:02 2020 +0100
     commit.stack.appsody.dev/message: retract spring boot stack image packages update
       (#707)
-    image.opencontainers.org/created: "2020-04-02T16:37:34+01:00"
+    image.opencontainers.org/created: "2020-04-02T17:09:03+01:00"
     image.opencontainers.org/documentation: https://github.com/djones6/refarch-kc-container-ms
-    image.opencontainers.org/revision: a7282b73a2acf34c18c32b02f6705c4099760770
+    image.opencontainers.org/revision: c50d6c44855238551b808953981e127a73f42515
     image.opencontainers.org/source: |
       https://github.com/djones6/refarch-kc-container-ms/tree/appsodyify2
     image.opencontainers.org/url: https://github.com/djones6/refarch-kc-container-ms
@@ -38,7 +38,7 @@ metadata:
     stack.appsody.dev/version: 0.3.28
   name: spring-container-ms
 spec:
-  applicationImage: djones6/spring-container-ms:0.0.2
+  applicationImage: djones6/spring-container-ms:0.0.1
   createKnativeService: false
   env:
   - name: KAFKA_BROKERS
@@ -103,11 +103,11 @@ spec:
         key: containerAnomalyDeadTopic
         name: kafka-topics
   - name: LOGGING_CONTAINER_MS_ROOT
-    value: "INFO"
+    value: INFO
   - name: LOGGING_CONTAINER_MS_CONSUMER_CONFIG
-    value: "ERROR"
+    value: ERROR
   - name: LOGGING_CONTAINER_MS_PRODUCER_CONFIG
-    value: "ERROR"
+    value: ERROR
   - name: POSTGRESQL_URL
     valueFrom:
       secretKeyRef:
