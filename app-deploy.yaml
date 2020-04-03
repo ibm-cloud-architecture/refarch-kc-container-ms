@@ -5,17 +5,17 @@ metadata:
     commit.image.appsody.dev/author: David Jones <djones6@uk.ibm.com>
     commit.image.appsody.dev/committer: David Jones <djones6@uk.ibm.com>
     commit.image.appsody.dev/contextDir: C:\dev\refarch\appsody-container-ms
-    commit.image.appsody.dev/date: Thu Apr 2 16:53:01 2020 +0100
-    commit.image.appsody.dev/message: Remove unnecessary env vars
+    commit.image.appsody.dev/date: Fri Apr 3 12:51:46 2020 +0100
+    commit.image.appsody.dev/message: Commit removed quotes, add namespace to kustomization
     commit.stack.appsody.dev/author: Richard Trotter <45805781+richard-trotter@users.noreply.github.com>
     commit.stack.appsody.dev/committer: GitHub <noreply@github.com>
     commit.stack.appsody.dev/contextDir: /incubator/java-spring-boot2
     commit.stack.appsody.dev/date: Wed Apr 1 11:16:02 2020 +0100
     commit.stack.appsody.dev/message: retract spring boot stack image packages update
       (#707)
-    image.opencontainers.org/created: "2020-04-02T17:09:03+01:00"
+    image.opencontainers.org/created: "2020-04-03T13:45:11+01:00"
     image.opencontainers.org/documentation: https://github.com/djones6/refarch-kc-container-ms
-    image.opencontainers.org/revision: c50d6c44855238551b808953981e127a73f42515
+    image.opencontainers.org/revision: 781cac7c0b3a7804abb587c726eac91dbb889c65
     image.opencontainers.org/source: |
       https://github.com/djones6/refarch-kc-container-ms/tree/appsodyify2
     image.opencontainers.org/url: https://github.com/djones6/refarch-kc-container-ms
@@ -33,12 +33,13 @@ metadata:
     stack.appsody.dev/url: https://github.com/appsody/stacks/tree/master/incubator/java-spring-boot2
   creationTimestamp: null
   labels:
+    app.kubernetes.io/part-of: refarch-kc
     image.opencontainers.org/title: spring-container-ms
     stack.appsody.dev/id: java-spring-boot2
     stack.appsody.dev/version: 0.3.28
   name: spring-container-ms
 spec:
-  applicationImage: djones6/spring-container-ms:0.0.1
+  applicationImage: djones6/spring-container-ms:0.0.3
   createKnativeService: false
   env:
   - name: KAFKA_BROKERS
