@@ -2,9 +2,9 @@ package ibm.labs.kc.model.events;
 
 import ibm.labs.kc.order.model.Order;
 
-public class OrderRejectedEvent extends OrderEvent<Order>{
+public class OrderCancelledOrRejectedEvent extends OrderEvent<Order>{
 
-	public OrderRejectedEvent(String type,String version, Order o) {
+	public OrderCancelledOrRejectedEvent(String type,String version, Order o) {
 		super();
 		this.setOrderID(o.getOrderID());
 		this.setType(OrderEvent.TYPE_REJECTED);
