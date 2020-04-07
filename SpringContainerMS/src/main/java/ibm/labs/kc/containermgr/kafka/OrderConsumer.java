@@ -24,7 +24,7 @@ import ibm.labs.kc.model.container.ContainerOrder;
 import ibm.labs.kc.model.events.ContainerNotFoundEvent;
 import ibm.labs.kc.model.events.OrderCreationEvent;
 import ibm.labs.kc.model.events.OrderEvent;
-import ibm.labs.kc.model.events.OrderRejectedEvent;
+import ibm.labs.kc.model.events.OrderCancelledOrRejectedEvent;
 import ibm.labs.kc.order.model.Order;
 /*
  * Consume events from 'orders' topic. Started when the spring application context
@@ -73,11 +73,11 @@ public class OrderConsumer {
 							orderProducer.emit(new ContainerNotFoundEvent(order.getOrderID(), "A container could not be found for this order"));
 						}
 					}
-					if (message.value().contains(OrderEvent.TYPE_REJECTED)) {
-						OrderRejectedEvent orderRejected = parser.fromJson(message.value(), OrderRejectedEvent.class);
-						Order order = orderRejected.getPayload();
+					if (message.value().contains(OrderEvent.TYPE_REJECTED) || message.value().contains(OrderEvent.TYPE_CANCELLED)) {
+						OrderCancelledOrRejectedEvent orderCancelledOrRejected = parser.fromJson(message.value(), OrderCancelledOrRejectedEvent.class);
+						Order order = orderCancelledOrRejected.getPayload();
 						// Only unassign container from order when a container has previously been assigned.
-						// Otherwise, this OrderReject event comes from this very microservice where a container had not been assigned.
+						// Otherwise, this OrderRejected event comes from this very microservice where a container had not been assigned or
 						if (order.getContainerID() != null && order.getContainerID() != "" && !order.getContainerID().isEmpty()){
 							if (!containerService.unAssignContainerToOrder(order))
 								LOG.severe("[ERROR] - An error occurred unassigning container: " + order.getContainerID() + " from order: " + order.getOrderID());
