@@ -1,0 +1,24 @@
+- op: add
+  path: "/spec/env/-"
+  value:
+    name: POSTGRESQL_URL
+    valueFrom:
+      secretKeyRef:
+        key: binding
+        name: postgresql-url
+- op: add
+  path: "/spec/env/-"
+  value:
+    name: POSTGRESQL_USER
+    valueFrom:
+      secretKeyRef:
+        key: binding
+        name: postgresql-user
+- op: add
+  path: "/spec/env/-"
+  value:
+    name: POSTGRESQL_PWD
+    valueFrom:
+      secretKeyRef:
+        key: binding
+        name: postgresql-pwd

@@ -1,0 +1,16 @@
+bases:
+  - ../../base
+
+resources:
+  - ./kafka-topics.yaml
+
+#patchesStrategicMerge:
+#  - env.yaml
+
+patchesJson6902:
+  - target:
+      group: appsody.dev
+      version: v1beta1
+      kind: AppsodyApplication
+      name: spring-container-ms
+    path: ./env-patch.yaml
