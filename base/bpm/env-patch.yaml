@@ -1,0 +1,54 @@
+- op: add
+  path: "/spec/env/-"
+  value:
+    name: ANOMALY_THRESHOLD
+    valueFrom:
+      configMapKeyRef:
+        key: anomalyThreshold
+        name: bpm-anomaly
+        optional: true
+- op: add
+  path: "/spec/env/-"
+  value:
+    name: BPM_ANOMALY
+    valueFrom:
+      configMapKeyRef:
+        key: url
+        name: bpm-anomaly
+        optional: true
+- op: add
+  path: "/spec/env/-"
+  value:
+    name: BPM_ANOMALY_LOGIN
+    valueFrom:
+      configMapKeyRef:
+        key: login
+        name: bpm-anomaly
+        optional: true
+- op: add
+  path: "/spec/env/-"
+  value:
+    name: BPM_EXPIRATION
+    valueFrom:
+      configMapKeyRef:
+        key: expiration
+        name: bpm-anomaly
+        optional: true
+- op: add
+  path: "/spec/env/-"
+  value:
+    name: BPM_ANOMALY_USER
+    valueFrom:
+      secretKeyRef:
+        key: user
+        name: bpm-anomaly
+        optional: true
+- op: add
+  path: "/spec/env/-"
+  value:
+    name: BPM_ANOMALY_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        key: password
+        name: bpm-anomaly
+        optional: true
