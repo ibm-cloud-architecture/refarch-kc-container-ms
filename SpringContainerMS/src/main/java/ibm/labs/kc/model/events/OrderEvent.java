@@ -5,22 +5,15 @@ import java.util.Date;
 public class OrderEvent<T> extends AbstractEvent {
 
     public static final String TYPE_CREATED = "OrderCreated";
-    public static final String TYPE_UPDATED = "OrderUpdated";
-    public static final String TYPE_BOOKED = "OrderBooked";
-    public static final String TYPE_ASSIGNED = "OrderAssigned"; // from voyage ms
-    public static final String TYPE_TRANSIT = "OrderInTransit";
-    public static final String TYPE_COMPLETED = "OrderCompleted";
+    public static final String TYPE_UPDATED = "OrderUpdated"; // Not used in this microservice
+    public static final String TYPE_ASSIGNED = "OrderAssigned"; // from voyage ms // Not used in this microservice
     public static final String TYPE_REJECTED = "OrderRejected";
     public static final String TYPE_CANCELLED = "OrderCancelled";
-    public static final String TYPE_SPOILT = "OrderSpoilt"; // from containers ms
+    public static final String TYPE_SPOILT = "OrderSpoilt"; // from containers ms // Not used in this microservice
    
-    public static final String TYPE_CONTAINER_ALLOCATED = "ContainerAllocated";
-    public static final String TYPE_FULL_CONTAINER_VOYAGE_READY = "FullContainerVoyageReady";
-    public static final String TYPE_CONTAINER_ON_SHIP = "ContainerOnShip";
-    public static final String TYPE_CONTAINER_OFF_SHIP = "ContainerOffShip";
-    public static final String TYPE_CONTAINER_DELIVERED = "ContainerDelivered";
-    public static final String TYPE_CONTAINER_NOT_FOUND = "ContainerNotFound";
-    public static final String TYPE_VOYAGE_NOT_FOUND = "VoyageNotFound"; // from voyage ms
+    public static final String TYPE_CONTAINER_ALLOCATED = "ContainerAllocated"; // Not used in this microservice
+    public static final String TYPE_CONTAINER_NOT_FOUND = "ContainerNotFound"; // Not used in this microservice
+    public static final String TYPE_VOYAGE_NOT_FOUND = "VoyageNotFound"; // from voyage ms // Not used in this microservice
      
     protected String orderID;
     protected T payload;
