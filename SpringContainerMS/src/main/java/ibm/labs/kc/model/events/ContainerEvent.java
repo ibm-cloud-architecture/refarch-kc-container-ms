@@ -6,18 +6,9 @@ public class ContainerEvent<T> extends AbstractEvent {
 
 	// those are the list of event types
 	public static final String CONTAINER_ADDED = "ContainerAdded";
-	public static final String CONTAINER_REMOVED = "ContainerRemoved";
-	public static final String CONTAINER_AT_LOCATION = "ContainerAtLocation";
 	public static final String CONTAINER_ON_MAINTENANCE = "ContainerOnMaintenance";
 	public static final String CONTAINER_OFF_MAINTENANCE =  "ContainerOffMaintenance";
 	public static final String CONTAINER_ORDER_ASSIGNED = "ContainerAssignedToOrder";
-	public static final String CONTAINER_ORDER_RELEASED = "ContainerReleasedFromOrder";
-	public static final String CONTAINER_GOOD_LOADED = "ContainerGoodLoaded";
-	public static final String CONTAINER_GOOD_UNLOADED = "ContainerGoodUnLoaded";
-	public static final String CONTAINER_ON_SHIP = "ContainerOnShip";
-	public static final String CONTAINER_OFF_SHIP = "ContainerOffShip";
-	public static final String CONTAINER_ON_TRUCK = "ContainerOnTruck";
-	public static final String CONTAINER_OFF_TRUCK = "ContainerOffTruck";
 	public static final String CONTAINER_ANOMALY= "ContainerAnomaly";
 	public static final String CONTAINER_ANOMALY_RETRY= "ContainerAnomalyRetry";
 	public static final String CONTAINER_ANOMALY_DEAD= "ContainerAnomalyDead";
