@@ -47,6 +47,48 @@ spec:
       configMapKeyRef:
         key: brokers
         name: kafka-brokers
+  # Need to add KAFKA_APIKEY reference to a secret which will have an empty value
+  # for local environment (but could be populated with a key for an eventstreams env)
+  - name: KAFKA_APIKEY
+    valueFrom:
+      secretKeyRef:
+        key: binding
+        name: kafka-apikey
+  - name: KCSOLUTION_CONTAINERS_TOPIC
+    valueFrom:
+      configMapKeyRef:
+        key: containersTopic
+        name: kafka-topics
+  - name: KCSOLUTION_ORDERS_TOPIC
+    valueFrom:
+      configMapKeyRef:
+        key: ordersTopic
+        name: kafka-topics
+  - name: KCSOLUTION_CONTAINER_ANOMALY_RETRY_TOPIC
+    valueFrom:
+      configMapKeyRef:
+        key: containerAnomalyRetryTopic
+        name: kafka-topics
+  - name: KCSOLUTION_CONTAINER_ANOMALY_DEAD_TOPIC
+    valueFrom:
+      configMapKeyRef:
+        key: containerAnomalyDeadTopic
+        name: kafka-topics
+  - name: POSTGRESQL_URL
+    valueFrom:
+      secretKeyRef:
+        key: binding
+        name: postgresql-url
+  - name: POSTGRESQL_USER
+    valueFrom:
+      secretKeyRef:
+        key: binding
+        name: postgresql-user
+  - name: POSTGRESQL_PWD
+    valueFrom:
+      secretKeyRef:
+        key: binding
+        name: postgresql-pwd
   - name: ANOMALY_THRESHOLD
     valueFrom:
       configMapKeyRef:
@@ -83,47 +125,12 @@ spec:
         key: password
         name: bpm-anomaly
         optional: true
-  - name: KCSOLUTION_CONTAINERS_TOPIC
-    valueFrom:
-      configMapKeyRef:
-        key: containersTopic
-        name: kafka-topics
-  - name: KCSOLUTION_ORDERS_TOPIC
-    valueFrom:
-      configMapKeyRef:
-        key: ordersTopic
-        name: kafka-topics
-  - name: KCSOLUTION_CONTAINER_ANOMALY_RETRY_TOPIC
-    valueFrom:
-      configMapKeyRef:
-        key: containerAnomalyRetryTopic
-        name: kafka-topics
-  - name: KCSOLUTION_CONTAINER_ANOMALY_DEAD_TOPIC
-    valueFrom:
-      configMapKeyRef:
-        key: containerAnomalyDeadTopic
-        name: kafka-topics
   - name: LOGGING_CONTAINER_MS_ROOT
     value: INFO
   - name: LOGGING_CONTAINER_MS_CONSUMER_CONFIG
     value: ERROR
   - name: LOGGING_CONTAINER_MS_PRODUCER_CONFIG
     value: ERROR
-  - name: POSTGRESQL_URL
-    valueFrom:
-      secretKeyRef:
-        key: binding
-        name: postgresql-url
-  - name: POSTGRESQL_USER
-    valueFrom:
-      secretKeyRef:
-        key: binding
-        name: postgresql-user
-  - name: POSTGRESQL_PWD
-    valueFrom:
-      secretKeyRef:
-        key: binding
-        name: postgresql-pwd
   expose: true
   livenessProbe:
     failureThreshold: 12
