@@ -130,24 +130,24 @@ spec:
     value: ERROR
   expose: true
   livenessProbe:
-    failureThreshold: 12
+    failureThreshold: 20
     httpGet:
       path: /actuator/liveness
       port: 8080
     initialDelaySeconds: 5
-    periodSeconds: 2
+    periodSeconds: 5
   monitoring:
     endpoints:
     - path: /actuator/prometheus
     labels:
       k8s-app: spring-container-ms
   readinessProbe:
-    failureThreshold: 12
+    failureThreshold: 20
     httpGet:
       path: /actuator/health
       port: 8080
     initialDelaySeconds: 5
-    periodSeconds: 2
+    periodSeconds: 5
     timeoutSeconds: 1
   service:
     annotations:
