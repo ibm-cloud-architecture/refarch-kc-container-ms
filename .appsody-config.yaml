@@ -1,0 +1,4 @@
+application-name: refarch-kc
+id: "20200518143146.13291000"
+project-name: spring-container-ms
+stack: docker.io/appsody/java-spring-boot2:0.3

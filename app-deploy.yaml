@@ -1,0 +1,159 @@
+apiVersion: appsody.dev/v1beta1
+kind: AppsodyApplication
+metadata:
+  annotations:
+    commit.image.appsody.dev/author: David Jones <djones6@uk.ibm.com>
+    commit.image.appsody.dev/committer: David Jones <djones6@uk.ibm.com>
+    commit.image.appsody.dev/contextDir: C:\dev\refarch\appsody-container-ms
+    commit.image.appsody.dev/date: Mon May 18 14:29:27 2020 +0100
+    commit.image.appsody.dev/message: Copy changes from gitops
+    commit.stack.appsody.dev/author: Harish Yayi <yharish991@gmail.com>
+    commit.stack.appsody.dev/committer: GitHub <noreply@github.com>
+    commit.stack.appsody.dev/contextDir: /incubator/java-spring-boot2
+    commit.stack.appsody.dev/date: Wed Apr 15 16:05:23 2020 +0100
+    commit.stack.appsody.dev/message: ' java-spring-boot2: add kafka template (#742)'
+    image.opencontainers.org/created: "2020-05-18T14:32:21+01:00"
+    image.opencontainers.org/documentation: https://github.com/djones6/refarch-kc-container-ms
+    image.opencontainers.org/revision: aa7f545af0f43ecd05f9a9e6f463b34398dce7a0
+    image.opencontainers.org/source: https://github.com/djones6/refarch-kc-container-ms/tree/appsodyify2
+    image.opencontainers.org/url: https://github.com/djones6/refarch-kc-container-ms
+    stack.appsody.dev/authors: Erin Schnabel <schnabel@us.ibm.com>, Ozzy Osborne <ozzy@ca.ibm.com>,
+      Richard Trotter <rtrotter@us.ibm.com>, Harish Yayi <hyayi@us.ibm.com>
+    stack.appsody.dev/configured: docker.io/appsody/java-spring-boot2:0.3
+    stack.appsody.dev/created: "2020-04-15T15:38:49Z"
+    stack.appsody.dev/description: Spring Boot using OpenJ9 and Maven
+    stack.appsody.dev/documentation: https://github.com/appsody/stacks/tree/master/incubator/java-spring-boot2/README.md
+    stack.appsody.dev/licenses: Apache-2.0
+    stack.appsody.dev/revision: 516d028cc6fe99e26c0ad0f3f49aca36e8949594
+    stack.appsody.dev/source: https://github.com/appsody/stacks/tree/master/incubator/java-spring-boot2/image
+    stack.appsody.dev/tag: docker.io/appsody/java-spring-boot2:0.3.29
+    stack.appsody.dev/title: Spring Boot®
+    stack.appsody.dev/url: https://github.com/appsody/stacks/tree/master/incubator/java-spring-boot2
+  creationTimestamp: null
+  labels:
+    app.kubernetes.io/part-of: refarch-kc
+    image.opencontainers.org/title: spring-container-ms
+    stack.appsody.dev/id: java-spring-boot2
+    stack.appsody.dev/version: 0.3.29
+  name: spring-container-ms
+spec:
+  applicationImage: djones6/spring-container-ms:0.1.30
+  createKnativeService: false
+  env:
+  - name: KAFKA_BROKERS
+    valueFrom:
+      configMapKeyRef:
+        key: brokers
+        name: kafka-brokers
+  - name: KAFKA_APIKEY
+    valueFrom:
+      secretKeyRef:
+        key: binding
+        name: kafka-apikey
+        optional: true
+  - name: KCSOLUTION_CONTAINERS_TOPIC
+    valueFrom:
+      configMapKeyRef:
+        key: containersTopic
+        name: kafka-topics
+  - name: KCSOLUTION_ORDERS_TOPIC
+    valueFrom:
+      configMapKeyRef:
+        key: ordersTopic
+        name: kafka-topics
+  - name: KCSOLUTION_CONTAINER_ANOMALY_RETRY_TOPIC
+    valueFrom:
+      configMapKeyRef:
+        key: containerAnomalyRetryTopic
+        name: kafka-topics
+  - name: KCSOLUTION_CONTAINER_ANOMALY_DEAD_TOPIC
+    valueFrom:
+      configMapKeyRef:
+        key: containerAnomalyDeadTopic
+        name: kafka-topics
+  - name: POSTGRESQL_URL
+    valueFrom:
+      secretKeyRef:
+        key: binding
+        name: postgresql-url
+  - name: POSTGRESQL_USER
+    valueFrom:
+      secretKeyRef:
+        key: binding
+        name: postgresql-user
+  - name: POSTGRESQL_PWD
+    valueFrom:
+      secretKeyRef:
+        key: binding
+        name: postgresql-pwd
+  - name: ANOMALY_THRESHOLD
+    valueFrom:
+      configMapKeyRef:
+        key: anomalyThreshold
+        name: bpm-anomaly
+        optional: true
+  - name: BPM_ANOMALY
+    valueFrom:
+      configMapKeyRef:
+        key: url
+        name: bpm-anomaly
+        optional: true
+  - name: BPM_ANOMALY_LOGIN
+    valueFrom:
+      configMapKeyRef:
+        key: login
+        name: bpm-anomaly
+        optional: true
+  - name: BPM_EXPIRATION
+    valueFrom:
+      configMapKeyRef:
+        key: expiration
+        name: bpm-anomaly
+        optional: true
+  - name: BPM_ANOMALY_USER
+    valueFrom:
+      secretKeyRef:
+        key: user
+        name: bpm-anomaly
+        optional: true
+  - name: BPM_ANOMALY_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        key: password
+        name: bpm-anomaly
+        optional: true
+  - name: LOGGING_CONTAINER_MS_ROOT
+    value: INFO
+  - name: LOGGING_CONTAINER_MS_CONSUMER_CONFIG
+    value: ERROR
+  - name: LOGGING_CONTAINER_MS_PRODUCER_CONFIG
+    value: ERROR
+  expose: true
+  livenessProbe:
+    failureThreshold: 20
+    httpGet:
+      path: /actuator/liveness
+      port: 8080
+    initialDelaySeconds: 5
+    periodSeconds: 5
+  monitoring:
+    endpoints:
+    - path: /actuator/prometheus
+    labels:
+      k8s-app: spring-container-ms
+  readinessProbe:
+    failureThreshold: 20
+    httpGet:
+      path: /actuator/health
+      port: 8080
+    initialDelaySeconds: 5
+    periodSeconds: 5
+    timeoutSeconds: 1
+  service:
+    annotations:
+      prometheus.io/path: /actuator/prometheus
+      prometheus.io/scrape: "true"
+    port: 8080
+    type: NodePort
+  stack: java-spring-boot2
+  version: 1.0.0

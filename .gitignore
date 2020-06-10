@@ -1,10 +1,44 @@
+/target/*
+.appsody-spring-trigger
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+/build/
+
+### VS Code ###
+.vscode/
+
+### Additions for project ###
 site/
-kstreams/target/
-kstreams/bin/
-SpringContainerMS/target
-MP-SpringContainerMS/target
-/.vscode
-kstreams/.settings/
+.DS_Store/
 **/setenv.sh
-container-ms/server/dbConfig.yaml
-SpringContainerMS/postgresql.crt
+**/postgresql.crt
+
+/caches
+/local.properties
+.*.swp
+certificates.der 
+clienttruststore
+
+src/main/resources/application-local.properties
+src/main/resources/localdev-config.json
+
