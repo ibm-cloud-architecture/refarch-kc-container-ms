@@ -2,42 +2,44 @@ apiVersion: appsody.dev/v1beta1
 kind: AppsodyApplication
 metadata:
   annotations:
-    commit.image.appsody.dev/author: David Jones <djones6@uk.ibm.com>
-    commit.image.appsody.dev/committer: David Jones <djones6@uk.ibm.com>
+    commit.image.appsody.dev/author: Rick O <rosowski@gmail.com>
+    commit.image.appsody.dev/committer: GitHub <noreply@github.com>
     commit.image.appsody.dev/contextDir: C:\dev\refarch\appsody-container-ms
-    commit.image.appsody.dev/date: Mon May 18 14:29:27 2020 +0100
-    commit.image.appsody.dev/message: Copy changes from gitops
+    commit.image.appsody.dev/date: Thu Jun 25 15:49:46 2020 -0500
+    commit.image.appsody.dev/message: Removed outdated mkdocs.yaml (#53)
     commit.stack.appsody.dev/author: Harish Yayi <yharish991@gmail.com>
     commit.stack.appsody.dev/committer: GitHub <noreply@github.com>
     commit.stack.appsody.dev/contextDir: /incubator/java-spring-boot2
-    commit.stack.appsody.dev/date: Wed Apr 15 16:05:23 2020 +0100
-    commit.stack.appsody.dev/message: ' java-spring-boot2: add kafka template (#742)'
-    image.opencontainers.org/created: "2020-05-18T14:32:21+01:00"
-    image.opencontainers.org/documentation: https://github.com/djones6/refarch-kc-container-ms
-    image.opencontainers.org/revision: aa7f545af0f43ecd05f9a9e6f463b34398dce7a0
-    image.opencontainers.org/source: https://github.com/djones6/refarch-kc-container-ms/tree/appsodyify2
-    image.opencontainers.org/url: https://github.com/djones6/refarch-kc-container-ms
-    stack.appsody.dev/authors: Erin Schnabel <schnabel@us.ibm.com>, Ozzy Osborne <ozzy@ca.ibm.com>,
-      Richard Trotter <rtrotter@us.ibm.com>, Harish Yayi <hyayi@us.ibm.com>
+    commit.stack.appsody.dev/date: Thu Jun 4 12:03:56 2020 +0100
+    commit.stack.appsody.dev/message: 'java-springboot2: define APPSODY_DEBUG_PORT
+      (#819)'
+    image.opencontainers.org/created: "2020-07-10T12:43:54+02:00"
+    image.opencontainers.org/documentation: https://github.com/jesusmah/refarch-kc-container-ms
+    image.opencontainers.org/revision: 71c8facd4ff8a76b37a003f46edc33a51fca592b-modified
+    image.opencontainers.org/source: https://github.com/jesusmah/refarch-kc-container-ms/tree/master
+    image.opencontainers.org/url: https://github.com/jesusmah/refarch-kc-container-ms
+    stack.appsody.dev/authors: Erin Schnabel <ebullient>, Ozzy Osborne <bardweller>,
+      Richard Trotter <richard-trotter>, Harish Yayi <yharish991>
     stack.appsody.dev/configured: docker.io/appsody/java-spring-boot2:0.3
-    stack.appsody.dev/created: "2020-04-15T15:38:49Z"
+    stack.appsody.dev/created: "2020-06-04T11:06:14Z"
     stack.appsody.dev/description: Spring Boot using OpenJ9 and Maven
     stack.appsody.dev/documentation: https://github.com/appsody/stacks/tree/master/incubator/java-spring-boot2/README.md
     stack.appsody.dev/licenses: Apache-2.0
-    stack.appsody.dev/revision: 516d028cc6fe99e26c0ad0f3f49aca36e8949594
+    stack.appsody.dev/revision: 7417563d37f987bc803711298b29817519cc648d
     stack.appsody.dev/source: https://github.com/appsody/stacks/tree/master/incubator/java-spring-boot2/image
-    stack.appsody.dev/tag: docker.io/appsody/java-spring-boot2:0.3.29
+    stack.appsody.dev/tag: docker.io/appsody/java-spring-boot2:0.3.30
     stack.appsody.dev/title: Spring Boot®
     stack.appsody.dev/url: https://github.com/appsody/stacks/tree/master/incubator/java-spring-boot2
   creationTimestamp: null
   labels:
+    app.appsody.dev/name: refarch-kc
     app.kubernetes.io/part-of: refarch-kc
     image.opencontainers.org/title: spring-container-ms
     stack.appsody.dev/id: java-spring-boot2
-    stack.appsody.dev/version: 0.3.29
+    stack.appsody.dev/version: 0.3.30
   name: spring-container-ms
 spec:
-  applicationImage: djones6/spring-container-ms:0.1.30
+  applicationImage: ibmcase/kcontainer-spring-container-ms:test
   createKnativeService: false
   env:
   - name: KAFKA_BROKERS
@@ -122,12 +124,6 @@ spec:
         key: password
         name: bpm-anomaly
         optional: true
-  - name: LOGGING_CONTAINER_MS_ROOT
-    value: INFO
-  - name: LOGGING_CONTAINER_MS_CONSUMER_CONFIG
-    value: ERROR
-  - name: LOGGING_CONTAINER_MS_PRODUCER_CONFIG
-    value: ERROR
   expose: true
   livenessProbe:
     failureThreshold: 20
@@ -157,3 +153,4 @@ spec:
     type: NodePort
   stack: java-spring-boot2
   version: 1.0.0
+status: {}

@@ -111,12 +111,6 @@ spec:
               configMapKeyRef:
                 name: "{{ .Values.kafka.topicsConfigMap }}"
                 key: containerAnomalyDeadTopic
-          - name: LOGGING_CONTAINER_MS_ROOT
-            value: "{{ .Values.logging.root }}"
-          - name: LOGGING_CONTAINER_MS_CONSUMER_CONFIG
-            value: "{{ .Values.logging.consumer.config }}"
-          - name: LOGGING_CONTAINER_MS_PRODUCER_CONFIG
-            value: "{{ .Values.logging.producer.config }}"
           {{- if .Values.eventstreams.enabled }}
           - name: KAFKA_APIKEY
             valueFrom:
