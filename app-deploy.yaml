@@ -4,25 +4,27 @@ metadata:
   annotations:
     commit.image.appsody.dev/author: Rick O <rosowski@gmail.com>
     commit.image.appsody.dev/committer: GitHub <noreply@github.com>
-    commit.image.appsody.dev/contextDir: C:\dev\refarch\appsody-container-ms
-    commit.image.appsody.dev/date: Thu Jun 25 15:49:46 2020 -0500
-    commit.image.appsody.dev/message: Removed outdated mkdocs.yaml (#53)
+    commit.image.appsody.dev/contextDir: C:\dev\refarch\refarch-kc-container-ms
+    commit.image.appsody.dev/date: Fri Jul 10 13:15:40 2020 -0700
+    commit.image.appsody.dev/message: 'Merge pull request #54 from jesusmah/compose_refactor'
     commit.stack.appsody.dev/author: Harish Yayi <yharish991@gmail.com>
     commit.stack.appsody.dev/committer: GitHub <noreply@github.com>
     commit.stack.appsody.dev/contextDir: /incubator/java-spring-boot2
     commit.stack.appsody.dev/date: Thu Jun 4 12:03:56 2020 +0100
     commit.stack.appsody.dev/message: 'java-springboot2: define APPSODY_DEBUG_PORT
       (#819)'
-    image.opencontainers.org/created: "2020-07-10T12:43:54+02:00"
-    image.opencontainers.org/documentation: https://github.com/jesusmah/refarch-kc-container-ms
-    image.opencontainers.org/revision: 71c8facd4ff8a76b37a003f46edc33a51fca592b-modified
-    image.opencontainers.org/source: https://github.com/jesusmah/refarch-kc-container-ms/tree/master
-    image.opencontainers.org/url: https://github.com/jesusmah/refarch-kc-container-ms
+    image.opencontainers.org/created: "2020-07-28T14:19:01+01:00"
+    image.opencontainers.org/documentation: https://github.com/ibm-cloud-architecture/refarch-kc-container-ms
+    image.opencontainers.org/revision: de73a4946cceaf3d5b7f8358758ef3f86e5f2220
+    image.opencontainers.org/source: https://github.com/ibm-cloud-architecture/refarch-kc-container-ms/tree/HEAD
+      -> upstream
+    image.opencontainers.org/url: https://github.com/ibm-cloud-architecture/refarch-kc-container-ms
     stack.appsody.dev/authors: Erin Schnabel <ebullient>, Ozzy Osborne <bardweller>,
       Richard Trotter <richard-trotter>, Harish Yayi <yharish991>
     stack.appsody.dev/configured: docker.io/appsody/java-spring-boot2:0.3
     stack.appsody.dev/created: "2020-06-04T11:06:14Z"
     stack.appsody.dev/description: Spring Boot using OpenJ9 and Maven
+    stack.appsody.dev/digest: sha256:b1dc6398a112888f2b4a5e46a517f5f39b13d0712132e2ec53d9382c15be8aaa
     stack.appsody.dev/documentation: https://github.com/appsody/stacks/tree/master/incubator/java-spring-boot2/README.md
     stack.appsody.dev/licenses: Apache-2.0
     stack.appsody.dev/revision: 7417563d37f987bc803711298b29817519cc648d
@@ -39,7 +41,7 @@ metadata:
     stack.appsody.dev/version: 0.3.30
   name: spring-container-ms
 spec:
-  applicationImage: ibmcase/kcontainer-spring-container-ms:test
+  applicationImage: ibmcase/kcontainer-spring-container-ms:latest
   createKnativeService: false
   env:
   - name: KAFKA_BROKERS
@@ -47,12 +49,6 @@ spec:
       configMapKeyRef:
         key: brokers
         name: kafka-brokers
-  - name: KAFKA_APIKEY
-    valueFrom:
-      secretKeyRef:
-        key: binding
-        name: eventstreams-apikey
-        optional: true
   - name: KCSOLUTION_CONTAINERS_TOPIC
     valueFrom:
       configMapKeyRef:
