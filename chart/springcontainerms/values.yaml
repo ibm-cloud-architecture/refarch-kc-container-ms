@@ -50,12 +50,12 @@ kafka:
   topicsConfigMap: kafka-topics
 eventstreams:
   enabled: true
-  apikeyConfigMap: eventstreams-apikey
+  esCredSecret: eventstreams-cred
   truststoreRequired: false
   truststorePath: /config/resources/security/es-ssl
-  truststoreFile: es-cert.jks
-  truststoreSecret: es-truststore-jks
-  truststorePassword: changeit
+  truststoreFile: es-cert.p12
+  truststoreSecret: eventstreams-truststore
+  truststorePasswordSecret: eventstreams-truststore-pwd
 bpm:
   anomalyConfigMap: bpm-anomaly
   anomalySecret: bpm-anomaly
