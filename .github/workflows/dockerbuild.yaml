@@ -34,6 +34,9 @@ jobs:
         validate_secret DOCKER_PASSWORD ${DOCKER_PASSWORD}
         validate_secret DOCKER_REPOSITORY ${DOCKER_REPOSITORY}
         validate_secret DOCKER_IMAGE_SPRING ${DOCKER_IMAGE_SPRING}
+        validate_secret GITOPS_EMAIL ${GITOPS_EMAIL}
+        validate_secret GITOPS_TOKEN ${GITOPS_TOKEN}
+        validate_secret GITOPS_ORG ${GITOPS_ORG}
 
         if [ "${FAIL}" = "true" ]; then
           exit 1
@@ -43,6 +46,10 @@ jobs:
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         DOCKER_REPOSITORY: ${{ secrets.DOCKER_REPOSITORY }}
         DOCKER_IMAGE_SPRING: ${{ secrets.DOCKER_IMAGE_SPRING }}
+        GITOPS_EMAIL: ${{ secrets.GITOPS_EMAIL }}
+        GITOPS_TOKEN: ${{ secrets.GITOPS_TOKEN }}
+        GITOPS_ORG: ${{ secrets.GITOPS_ORG }}
+
   build-docker-images:
     needs:
       validate-docker-secrets
@@ -55,22 +62,17 @@ jobs:
       env:
         DEFAULT_BUMP: patch
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Install Appsody CLI
+      id: install-appsody-cli
+      uses: ibm-cloud-architecture/appsody-install-action@master
     - name: Build the SpringContainerMS docker image
       id: build-springcontainer-image
       run: |
         IMAGE_NAME="${DOCKER_R}/${DOCKER_I}"
         docker login -u ${DOCKER_U} -p ${DOCKER_P}
-        
-        echo "Installing Appsody..."
-        APPSODY_RELEASE=$(curl -s https://api.github.com/repos/appsody/appsody/releases/latest \
-        | grep "browser_download_url.*deb" \
-        | cut -d : -f 2,3 \
-        | tr -d \")
-        echo "Latest Appsody Release found: ${APPSODY_RELEASE}"
-        wget ${APPSODY_RELEASE}
-        sudo apt install -f ./appsody_*_amd64.deb
 
         echo "Build and push the docker image"
+        cd ${WORKDIR}
         appsody build -v --tag ${IMAGE_NAME}:${IMAGE_TAG} --push
         docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${IMAGE_NAME}:latest
         docker push ${IMAGE_NAME}
@@ -79,14 +81,35 @@ jobs:
         DOCKER_P: ${{ secrets.DOCKER_PASSWORD }}
         DOCKER_R: ${{ secrets.DOCKER_REPOSITORY }}
         DOCKER_I: ${{ secrets.DOCKER_IMAGE_SPRING }}
+        WORKDIR: .
         DOCKERFILE: Dockerfile
         IMAGE_TAG: ${{ steps.bump-version-action.outputs.new_tag }}
-    - name: Webhook to GitOps repo
-      id: gitops-repo-webhook
-      uses: osowski/repository-dispatch@v1
-      if: startsWith(github.repository, 'ibm-cloud-architecture/')
+    - name: Save app-deploy.yaml
+      uses: actions/upload-artifact@v2
       with:
-        token: ${{ secrets.WEBHOOK_TOKEN }}
-        repository: ibm-cloud-architecture/refarch-kc-gitops
-        event-type: gitops-refresh
-        client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}", "source": "${{ github.repository }}"}'
+        name: app-deploy.yaml
+        path: ./app-deploy.yaml
+
+  update-gitops:
+    needs:
+      build-docker-images
+    runs-on: ubuntu-latest
+    steps:
+    - name: Configure git client
+      id: configure-git
+      uses: ibm-cloud-architecture/git-config-action@master
+      with:
+        user-email: ${{ secrets.GITOPS_EMAIL }}
+        gitops-token: ${{ secrets.GITOPS_TOKEN }}
+    - name: Retrieve app-deploy.yaml
+      uses: actions/download-artifact@v2
+      with:
+        name: app-deploy.yaml
+        path: springcontainerms
+    - name: Update springcontainerms app-deploy.yaml in GitOps repo
+      id: update-springcontainer-gitops
+      uses: ibm-cloud-architecture/appsody-gitops-update-action@master
+      with:
+        service-name: springcontainerms
+        github-org: ${{ secrets.GITOPS_ORG }}
+        gitops-repo-name: refarch-kc-gitops
