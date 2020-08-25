@@ -72,18 +72,18 @@ spec:
   - name: POSTGRESQL_URL
     valueFrom:
       secretKeyRef:
-        key: binding
-        name: postgresql-url
+        key: url
+        name: postgresql-creds
   - name: POSTGRESQL_USER
     valueFrom:
       secretKeyRef:
-        key: binding
-        name: postgresql-user
+        key: username
+        name: postgresql-creds
   - name: POSTGRESQL_PWD
     valueFrom:
       secretKeyRef:
-        key: binding
-        name: postgresql-pwd
+        key: password
+        name: postgresql-creds
   - name: ANOMALY_THRESHOLD
     valueFrom:
       configMapKeyRef:
