@@ -41,7 +41,7 @@ metadata:
     stack.appsody.dev/version: 0.3.30
   name: spring-container-ms
 spec:
-  applicationImage: ibmcase/kcontainer-spring-container-ms:latest
+  applicationImage: quay.io/ibmcase/kcontainer-spring-container-ms:latest
   createKnativeService: false
   env:
   - name: KAFKA_BROKERS
